@@ -140,10 +140,17 @@ var Game = function(width, height){
 	this.kickedPlayers = new Array();
 	this.currentPlayer = 0;
 	this.maxPlayers = 4;
+	// XXX: MAYBE NOT NECESSARY
+	this.status = this.START;
 }
+// XXX: MAYBE NOT NECESSARY
+Game.prototype.START = 0;
+// XXX: MAYBE NOT NECESSARY
+Game.prototype.TURN = 1;
+
 
 Game.prototype.turn = function(loc) {
-	var crntPlayer = this.activePlayers[this.currentPlayer];
+	var crntPlayer = this.getCurrentPlayer();
 	var nextLoc = crntPlayer.getNextLocation();
 	this.track.getSurrounding(nextLoc);
 
@@ -151,6 +158,7 @@ Game.prototype.turn = function(loc) {
 		crntPlayer.setNextLocation(nextLoc);
 		this.currentPlayer++;
 	} else {
+		var index = this.activePlayers.indexOf(crntPlayer);
     	this.activePlayers.splice(index, 1);
 		this.kickedPlayers.push(crntPlayer);
 	}
@@ -195,7 +203,11 @@ Game.prototype.convertCoordToLoc = function(x,y) {
 	// var newy = yMult * this.yDelta;
 
 	// return new Location(newX, newY);
-	return new Location(xMult, yMult);
+	return new Location(xMult*this.xDelta, yMult*this.yDelta);
+};
+
+Game.prototype.getCurrentPlayer = function() {
+	return this.activePlayers[this.currentPlayer];
 };
 
 /* ################## */
@@ -203,12 +215,13 @@ Game.prototype.convertCoordToLoc = function(x,y) {
 /* ################## */
 
 
-var	Player = function(name, car){
+var	Player = function(name, car, no){
 	this.name = name;
 	this.car = car;
 	this.avgSpeed = 0;
 	this.distance = 0;
 	this.historyLocs = new Array();
+	this.no = no;
 }
 
 Player.prototype.crntLoc = function() {
