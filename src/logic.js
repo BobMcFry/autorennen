@@ -14,7 +14,13 @@ var Car = function(typ, col){
 /* #### LOCATION #### */
 /* ################## */
 
-var Location = function(x,y){
+var Location = function(x, y, addOn){
+	this.x = x;
+	this.y = y;
+	this.addOn = addOn;
+}
+
+var Location = function(x, y){
 	this.x = x;
 	this.y = y;
 	this.addOn = this.NONE;
@@ -79,7 +85,18 @@ Location.prototype.getRawSurrounding = function() {
 	surr.push(new Location(this.x+1, this.y-1 ));
 	surr.push(new Location(this.x  , this.y-1 ));
 	surr.push(new Location(this.x-1, this.y-1 ));
+	return surr;
 };
+
+Location.prototype.isNeighbor = function(loc){
+	if (-1 >= (this.x - loc.x) || (this.x - loc.x) <= 1
+			&&
+			-1 >= (this.y - loc.y) || (this.y - loc.y) <= 1){
+		return true;
+	}
+
+	return false;
+}
 
 
 /* ################## */
@@ -90,33 +107,70 @@ var	Track = function(width, height){
 	this.width = width;
 	this.height = height;
 	this.gamePoints = [height*width];
-
+	// XXX: brauch ich das noch? wird das jemals verwendet?
 	var cnt = 0;
 	for (var i = 0; i < height; i++) {
 		for (var j = 0; j < width; j++) {
-			this.gamePoints[cnt++] = new Location(i,j);
+			this.gamePoints[cnt++] = new Location(j,i);
 		};
 	};
 
 	this.trackPoints = new Array();
-	this.borderPoints = new Array();
+	this.trackBorders = new Array();
+	this.surrPoints = new Array();
 }
 
-Track.prototype.isOnTrack = function(loc) {
-	for (var i = 0; i < trackPoints.length; i++) {
-		if (trackPoints[i].equals(loc)){
+Track.prototype.isGamePoint = function(loc) {
+	for (var i = 0; i < this.gamePoints.length; i++) {
+		if (this.gamePoints[i].equals(loc)){
 			return true;
 		}
 	};
 	return false;
 };
 
-Track.prototype.getSurrounding = function(loc) {
-	var rawSurr = loc.getRawSurrounding;
+Track.prototype.isOnTrack = function(loc) {
+	for (var i = 0; i < this.trackPoints.length; i++) {
+		if (this.trackPoints[i].equals(loc)){
+			return true;
+		}
+	};
+	return false;
+};
+
+Track.prototype.isBorder = function(loc) {
+	for (var i = 0; i < this.trackBorders.length; i++) {
+		if (this.trackBorders[i].equals(loc)){
+			return true;
+		}
+	};
+	return false;	
+};
+
+Track.prototype.isSurrounding = function(loc) {
+	for (var i = 0; i < this.surrPoints.length; i++) {
+		if (this.surrPoints[i].equals(loc)){
+			return true;
+		}
+	};
+	return false;	
+};
+
+Track.prototype.getSurrounding = function(loc, track) {
+	var rawSurr = loc.getRawSurrounding();
 	var realSurr = new Array();
 	for (var i = 0; i < rawSurr.length; i++) {
-		if (this.isOnTrack(rawSurr[i])){
-			realSurr.push(rawSurr[i]);
+		// checks validity of Locations on trackPoints
+		if (track){
+			if (this.isOnTrack(rawSurr[i])){
+				realSurr.push(rawSurr[i]);
+			}
+		}
+		// checks validity of Locations on possible gamepoints
+		else{
+			if (this.isGamePoint(rawSurr[i])){
+				realSurr.push(rawSurr[i]);
+			}
 		}
 	};
 	return realSurr;
@@ -128,6 +182,7 @@ Track.prototype.getSurrounding = function(loc) {
 
 
 var Game = function(width, height){
+	// XXX: Evtl auch h oder w direkt hier rein?
 	this.width = width;
 	this.height = height;
 	// XXX: MAYBE THESE CAN BE SET SOMETIMES (SMALLER SCREENS)
@@ -152,7 +207,7 @@ Game.prototype.TURN = 1;
 Game.prototype.turn = function(loc) {
 	var crntPlayer = this.getCurrentPlayer();
 	var nextLoc = crntPlayer.getNextLocation();
-	this.track.getSurrounding(nextLoc);
+	this.track.getSurrounding(nextLoc, true);
 
 	if (this.track.isOnTrack(nextLoc)){
 		crntPlayer.setNextLocation(nextLoc);
@@ -181,30 +236,33 @@ Game.prototype.turn = function(loc) {
 	
 };
 
-Game.prototype.convertLocToXCoord = function(loc) {
-	return loc.x * xDelta;
+Game.prototype.toXCoord = function(loc) {
+	return loc.x * this.xDelta;
 };
 
-Game.prototype.convertLocToYCoord = function(loc) {
-	return loc.y * yDelta;	
+Game.prototype.toYCoord = function(loc) {
+	return loc.y * this.yDelta;	
 };
 
-Game.prototype.convertCoordToLoc = function(x,y) {
+Game.prototype.toLoc = function(x,y) {
 	var xMult = parseInt(x / this.xDelta);
 	var xDiff = x % this.xDelta;
 	if (xDiff / this.xDelta > 0.5)
 		xMult++;
-	// var newX = xMult * this.xDelta;
 
 	var yMult = parseInt(y / this.yDelta);
 	var yDiff = y % this.yDelta;
 	if (yDiff / this.yDelta > 0.5)
 		yMult++;
-	// var newy = yMult * this.yDelta;
 
 	// return new Location(newX, newY);
-	return new Location(xMult*this.xDelta, yMult*this.yDelta);
+	return new Location(xMult/* *this.xDelta */, yMult/* *this.yDelta*/ );
 };
+
+// Game.prototype.polishCoord = function(x,y) {
+// 	var loc = this.toLoc(x,y);
+// 	return new Location(this.toXCoord(loc), this.toYCoord(loc));
+// };
 
 Game.prototype.getCurrentPlayer = function() {
 	return this.activePlayers[this.currentPlayer];

@@ -1,3 +1,16 @@
+BUILD_Track  = 0;
+BUILD_SET_START  = 1;
+BUILD_DONE  = 2;
+// XXX: make pics to global vars to make editing afterwards easier
+manifest = [
+	{src:"img/background_norights.jpg", id:"background"},
+	{src:"img/background_norights.jpg", id:"hud1"},
+	{src:"img/background_norights.jpg", id:"hud2"},
+	{src:"img/background_norights.jpg", id:"hud3"},
+	{src:"img/background_norights.jpg", id:"hud4"}
+];
+
+
 function init() {
 	stage = new createjs.Stage("board");
 	// XXX: HARD CODED SIZES!!!!!!!!
@@ -12,26 +25,22 @@ function init() {
 	menuContainer.visible = false;
 	HUDContainer = new createjs.Container();
 	HUDContainer.visible = false;
-	// XXX: make pics to global vars to make editing afterwards easier
-	manifest = [
-	{src:"img/background_norights.jpg", id:"background"},
-	{src:"img/background_norights.jpg", id:"hud1"},
-	{src:"img/background_norights.jpg", id:"hud2"},
-	{src:"img/background_norights.jpg", id:"hud3"},
-	{src:"img/background_norights.jpg", id:"hud4"}
-	];
-
+	buildStatus = BUILD_OUTER_BORDER;
 	preloadStuff();
 	
 	// TESTS!!!!!!!!!!!
 	// var circle = this.view.drawColoredCircle(undefined, new Location(100,100), 50);
 	// this.view.updateCars(circle, new Location(200,200), 2, 1000, 60);
 	// var text = this.view.initScore(true);
-	createjs.Ticker.addEventListener("tick", handleTick);	
+	// This is for stuff that happens randomly 
+	createjs.Ticker._interval = 1000;
+	createjs.Ticker.addEventListener("tick", handleTick);
+	
 }
 
 function handleTick() {
     stage.update();
+    console.log("Scrumble");
     // Maybe here can be done some action someday..like adding addons ...
 }
 
@@ -125,9 +134,11 @@ function prepareMenu() {
 	play.on("click", turn, null, false, undefined);
 	function playMouseover(e){
 		play.color = "red";
+		stage.update();
 	}
 	function playMouseout(e){
 		play.color = "DeepSkyBlue";
+		stage.update();
 	}
 	menuContainer.addChild(play);
 	menuContainer.visible = true;
@@ -136,28 +147,22 @@ function prepareMenu() {
 
 	// display choice of tracks. This should be painted to the canvas immediately on browsing through them
 	// -The Listener sets and paints the track right away!
-	for (var y = 0; y < game.height; y+= game.yDelta){
-		for (var x = 0; x < game.width; x+= game.xDelta){
-			console.log(x+"|"+y);
-			var loc = game.convertCoordToLoc(x,y);
-			// console.log(loc);
-			stage.addChild(drawColoredCircle("red", loc, 5));
-		}
-	}
 
 	// display choice of playerdesign (car, color,...)
 	// -MOCKUP Version: simply change color on clicking trough...
 	
 	stage.addChild(menuContainer);
+	// XXX: IF CUSTOM TRACK IS CHOSEN
+	buildTrack();
+	// stage.on("click", turn, null, false, undefined);
 };
 
 function turn(e){
+	var x = e.stageX;
+	var y = e.stageY;
 
-	console.log(e);
-	var x = e.rawX;
-	var y = e.rawY;
-
-	
+	var loc = game.toLoc(x,y);
+	console.log(loc.x+"|"+loc.y);
 }
 
 
@@ -167,7 +172,7 @@ function turn(e){
 
 /* Is called by a click-event Listener */
 function movePlayer(x,y) {
-	var loc = game.convertCoordToLoc(x,y);
+	var loc = game.toLoc(x,y);
 	game.turn(loc);
 	// create animation that displays movement from last to current pos
 	var crntPlayer = game.getCurrentPlayer();
@@ -185,7 +190,8 @@ function toggleSound() {
 };
 
 
-function updateAddOns(loc) {
+function updateAddOns(l) {
+	var loc = new Location(game.toXCoord(l), game.toYCoord(l), l.addOn);
 	// search for addonchild by name of its location
 	var name = loc.x + "," +  loc.y;
 	var addOn = addOnContainer.getChildByName(name);
@@ -208,20 +214,29 @@ function updateAddOns(loc) {
 	}
 };
 
-function drawLine(type, fromLoc, toLoc, color) {
-
+function drawLine(type, srcL, destL, color) {
+	var srcLoc = new Location(game.toXCoord(srcL), game.toYCoord(srcL), srcL.addOn);
+	var destLoc = new Location(game.toXCoord(destL), game.toYCoord(destL), destL.addOn);
 };
 
-function drawColoredCircle(color, loc, size) {
+function drawColoredCircle(color, l, size, fill) {
+	var loc = new Location(game.toXCoord(l), game.toYCoord(l), l.addOn);
+
 	var circle = new createjs.Shape();
-	circle.graphics.beginFill("CornflowerBlue").drawCircle(0, 0, size);
+	if (fill){
+		circle.graphics.beginFill(color).drawCircle(0, 0, size);
+	}else{
+		circle.graphics.setStrokeStyle(1);
+ 		circle.graphics.beginStroke(color).drawCircle(0, 0, size);
+	}
 	circle.x = loc.x;
 	circle.y = loc.y;
 	return circle;
 };
 
+function drawPicture(pic, l, width, height, name) {
+	var loc = new Location(game.toXCoord(l), game.toYCoord(l), l.addOn);
 
-function drawPicture(pic, loc, width, height, name) {
 	var bg = new createjs.Bitmap(pic);
     bg.name = name;
     bg.x = loc.x;
@@ -255,15 +270,332 @@ function initScore() {
 };
 
 function initCars(visible) {
-	for (var i = 0; i < finishLine.length; i++){
 
-	}
 };
 
-function updateCars(no, loc, speed, time, fps) {
+function updateCars(no, l, speed, time, fps) {
+	var loc = new Location(game.toXCoord(loc), game.toYCoord(loc), l.addOn);
 	createjs.Tween.get(cars[no], { loop: false })
   	.to({ x: loc.x, y: loc.y }, time, createjs.Ease.getPowInOut(speed));
 };
+
+
+
+
+
+
+/* BUILD STUFF */ 
+
+function buildTrack(){
+	stage.removeAllEventListeners();
+	
+	switch(buildStatus){
+		case BUILD_Track:
+			buildTrack();
+		break;
+		case BUILD_SET_START:
+			setStartPoints();
+		break;
+		case BUILD_DONE:
+			// TURN???
+		break;
+		default: console.log("Well OK?");
+	}
+
+// XXX: needs to be niceified
+function buildTrack(){
+	var outerTrackBorders = new Array();
+	var start = true;
+	var startLoc = undefined;
+
+	shape = new createjs.Shape();
+	stage.addChild(shape);
+
+	// set up our defaults:
+	var color = "#0FF";
+	var size = 10;
+	var oldX, oldY;
+	var paint = false;
+	var timedown = 0;
+	var timeup = Date.now();
+
+	// add handler for stage mouse events:
+	stage.on("stagemousedown", function(evt) {
+		// capture press time
+		timedown = Date.now();
+		if (start){
+			var circle = drawColoredCircle("red", game.toLoc(evt.stageX, evt.stageY), 10, false);
+			// XXX: CONTAINER
+			stage.addChild(circle);
+			start = false;
+		}
+		paint = true;
+	})                
+	
+	stage.on("stagemouseup", function(evt) {
+		paint = false;
+		// capture press time
+		timeup = Date.now();
+		// compare times and determine wether the user wants to fill a circle
+		if (timeup - timedown < 300){
+			detectFilling(game.toLoc(evt.stageX, evt.stageY));
+			for (var j = 0; j < game.track.surrPoints.length; j++){
+				var circle = drawColoredCircle("red", game.track.surrPoints[j], 4, true);
+				// XXX: CONTAINER
+				stage.addChild(circle);
+			}
+
+		}
+		else{
+			color = createjs.Graphics.getHSL(Math.random()*360, 100, 50);
+			
+			var newBorders = new Array();
+			// add missing points between pushed points
+			for (var i = 0; i < outerTrackBorders.length-1; i++){
+				var srcLoc = outerTrackBorders[i];
+				var destLoc = outerTrackBorders[i+1];
+				var between = detectPointsInBetween(srcLoc, destLoc);
+				
+				newBorders.push(srcLoc);
+				newBorders = newBorders.concat(between);
+				newBorders.push(destLoc);
+			}
+			
+			// console.log(newBorders);
+
+			var doubled = false;
+			for (var i = 0; i < newBorders.length; i++){
+				doubled = false;
+				for (var j = 0; j < game.track.trackBorders.length; j++){
+					if (newBorders[i].equals(game.track.trackBorders[j])){
+						doubled = true;
+						break;
+					}
+				}
+				if (!doubled){
+					game.track.trackBorders.push(newBorders[i]);
+				}
+			}
+			for (var j = 0; j < game.track.trackBorders.length; j++){
+				var circle = drawColoredCircle("red", game.track.trackBorders[j], 4, true);
+				// XXX: CONTAINER
+				stage.addChild(circle);
+			}
+			// clear outerTrackBorders
+			outerTrackBorders.length = 0;
+		}
+	})
+	 
+	
+    stage.on("stagemousemove", function(evt) {
+
+		if (paint) {
+			shape.graphics.beginStroke(color)
+						  .setStrokeStyle(size, "round")
+						  .moveTo(oldX, oldY)
+						  .lineTo(evt.stageX, evt.stageY);
+			stage.update();
+
+			outerTrackBorders.push(game.toLoc(evt.stageX, evt.stageY));
+			
+		}
+		oldX = evt.stageX;
+		oldY = evt.stageY;
+	})
+
+	// XXX: IMPLEMENT A BUTTON WITH LISTENER THAT SETS STATUS ON +1 AND CALLS BUILDTRACK()
+}
+
+// XXX: needs to be ported (translated)
+function detectPointsInBetween(srcLoc, destLoc){
+
+	var xDiff = srcLoc.x - destLoc.x;
+	var yDiff = srcLoc.y - destLoc.y;
+	var xMult = -1;
+	var yMult = -1;
+	// var x = x1;
+	// var y = y1;
+
+	if (xDiff < 0)
+		xMult = 1;
+	if (yDiff < 0)
+		yMult = 1;
+
+	// hier muss immer ein Delta vorangeschritten werden, von x oder y...
+	// wobei immer von dem delta vorangeschritten wird, welches prozentual
+	// zurückliegt
+	var xProzent = 0;
+	var yProzent = 0;
+	var xCounter = 1;
+	var yCounter = 1;
+	var between = new Array();
+	var x = srcLoc.x;
+	var y = srcLoc.y;
+
+	// oder, damit es nicht gleich aufhoert, sobald x oder y auf höhe sind
+	while (Math.abs(xProzent) < 1 || Math.abs(yProzent) < 1){
+		xProzent = xCounter / xDiff;
+		yProzent = yCounter / yDiff;
+
+		if (Math.abs(yProzent) > Math.abs(xProzent)){
+			x += xMult;
+			xCounter++;
+		}
+		else {
+			y += yMult;
+			yCounter++;
+		}
+		between.push(new Location(x, y));
+	}
+
+	return between;
+}
+
+function detectFilling(loc){
+	// XXX: This if needs to be checked before putting stuff on the stack...
+	if (game.track.isBorder(loc) || game.track.isSurrounding(loc) ){
+		return;
+	}
+	game.track.surrPoints.push(loc);
+	var radialPoints = game.track.getSurrounding(loc, false);
+
+	for (var i = 0; i < radialPoints.length; i++){
+		detectFilling(radialPoints[i]);
+	}
+}
+
+// XXX: needs to be ported
+function defineOuterTrackFilling(){
+	$('#board').on('click', function(e){
+			$('#board').off('click');
+			var x2 = e.pageX-this.offsetLeft;
+			var y2 = e.pageY-this.offsetTop;
+    		
+    		x2 = polishXCoordinate(x2);
+    		y2 = polishYCoordinate(y2);
+			
+			detectFilling(x2,y2, true);
+			circleLayer.clear();
+			circleLayer.draw();
+			buildingProcess++;
+			buildTrack();
+	});
+}
+
+// XXX: needs to be ported
+function buildInnerTrack(){
+	innerTrackBorders = new Array();
+	start = true;
+	xStart = -1;
+	yStart = -1;
+
+	$('#board').on('click', function(e){
+		var x2 = e.pageX-this.offsetLeft;
+		var y2 = e.pageY-this.offsetTop;
+		
+		x2 = polishXCoordinate(x2);
+		y2 = polishYCoordinate(y2);
+
+		if (start){
+			xStart = x2;
+			yStart = y2;
+			innerTrackBorders.push(x2);
+			innerTrackBorders.push(y2);
+			start = false;
+		}
+		else{
+			var x1 = innerTrackBorders[innerTrackBorders.length-2];
+			var y1 = innerTrackBorders[innerTrackBorders.length-1];
+			var line = new Kinetic.Line({
+				points: [x1, y1, x2, y2],
+				stroke: 'red',
+				strokeWidth: 2,
+				lineCap: 'round',
+				lineJoin: 'round',
+			});
+			// store points in between
+			innerTrackBorders = innerTrackBorders.concat(detectPointsInBetween(x1,y1,x2,y2));
+
+			// store TargetPoint if not the starting Point
+			if (x2 == xStart && y2 == yStart){
+				//start = true;
+				$('#board').off('click');
+				buildingProcess++;
+				buildTrack();
+			}    					
+			else{
+				innerTrackBorders.push(x2);
+				innerTrackBorders.push(y2);
+			}
+			
+			trackLayer.add(line);
+			trackLayer.draw();
+		}
+	});
+}
+
+// XXX: needs to be ported
+function defineInnerTrackFilling(){
+	$('#board').on('click', function(e){
+		$('#board').off('click');
+		var x2 = e.pageX-this.offsetLeft;
+		var y2 = e.pageY-this.offsetTop;
+		
+		x2 = polishXCoordinate(x2);
+		y2 = polishYCoordinate(y2);
+		
+		detectFilling(x2,y2,false);
+		gamePoints = flatten(gamePoints);
+		for (var i = 0; i < gamePoints.length; i += 2){
+			var x = gamePoints[i];
+			var y = gamePoints[i+1];
+			if (isBorder(x,y,false)){
+				gamePoints[i] = undefined;
+				gamePoints[i+1] = undefined;
+			}
+		}
+		flatten(gamePoints);
+		circleLayer.clear();
+		circleLayer.draw();
+		buildingProcess++;
+		paintTrack();
+		buildTrack();
+	});
+}
+
+// XXX: needs to be ported
+function setStartPoints(){
+	startPointCounter = 0;
+	$('#board').on('click', function(e){
+		var x2 = e.pageX-this.offsetLeft;
+		var y2 = e.pageY-this.offsetTop;
+		
+		x2 = polishXCoordinate(x2);
+		y2 = polishYCoordinate(y2);
+		startPoints.push(x2);
+		startPoints.push(y2);
+		console.log(x2);
+		console.log(y2);
+		var circle = new Kinetic.Circle({
+	        x: x2,
+	        y: y2,
+	        radius: 5,
+	        stroke: 'blue',
+	        strokeWidth: 2
+	    });
+	    trackLayer.add(circle);
+	    trackLayer.draw();
+		startPointCounter++;
+		if (startPointCounter >= maxPlayer){	// genug startpoints???? Maxplayer bei null??????????????
+			$('#board').off('click');
+			buildingProcess++;
+			buildTrack();		
+		}
+	});
+}
+
+
+}
 
 
 
