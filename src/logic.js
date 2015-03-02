@@ -4,9 +4,9 @@
 
 var Car = function(typ, col){
 	/* Type of Car */
-	this.typ = typ;
+	this.type = typ;
 	/* Color of Car */
-	this.col = col;
+	this.color = col;
 }
 
 
@@ -217,6 +217,26 @@ Game.prototype.START = 0;
 // XXX: MAYBE NOT NECESSARY
 Game.prototype.TURN = 1;
 
+/* Checks surrounding for Occupation by other Players */
+Game.prototype.getSurrounding = function(loc, track) {
+	var surr = this.track.getSurrounding(loc, track);
+	var newSurr = new Array();
+	for (var i = 0; i < surr.length; i++){
+		if (!this.isOccupied(surr[i])){
+			newSurr.push(surr[i]);
+		}
+	}
+	return newSurr;
+};
+
+Game.prototype.isOccupied = function(loc) {
+	for (var i = 0; i < this.activePlayers.length; i++){
+		if (loc.equals(this.activePlayers[i].crntLoc())){
+			return true;
+		}
+	}
+	return false;
+};
 
 Game.prototype.turn = function(loc) {
 	var crntPlayer = this.getCurrentPlayer();
