@@ -1,6 +1,8 @@
 BUILD_TRACK  = 0;
-BUILD_SET_START  = 1;
-BUILD_DONE  = 2;
+SET_START  = 1;
+PLACE_PLAYERS = 2;
+PREPARE_TURN  = 3;
+
 // XXX: make pics to global vars to make editing afterwards easier
 manifest = [
 	{src:"img/background_norights.jpg", id:"background"},
@@ -12,25 +14,38 @@ manifest = [
 CIRCLE_SIZE = 10;
 
 function init() {
+
+	/* **************** */
+	/* GLOBAL VARIABLES */
+	/* **************** */
+
 	stage = new createjs.Stage("board");
 	// XXX: HARD CODED SIZES!!!!!!!!
 	w = 1000;//500;
 	h = 600;//300;
 	game = new Game(w, h);
-	cars = new Array(4);
-	finishLine = new Array();
+	
+	// Cars
+	carContainer = new Array(4);
+	// addOns/PickUps/Items
 	addOnContainer = new createjs.Container();
-	addOnContainer.visible = false;
+	// MenuObjects
 	menuContainer = new createjs.Container();
-	menuContainer.visible = false;
+	// HUD
 	HUDContainer = new createjs.Container();
-	HUDContainer.visible = false;
+	// TrackPoints
 	trackContainer = new createjs.Container();
+	// finishLinePoints
 	finishLineContainer = new createjs.Container();
+	// Next Fields
+	choiceContainer = new createjs.Container();
+	// Playerobjects
+	playerContainer = new createjs.Container();
 	
-	buildStatus = BUILD_TRACK;
-	
-	// Preload stuff
+	/* ************** */
+	/* PRELOAD IMAGES */
+	/* ************** */
+
 	// XXX: false is for local loading (?), true is for the internet stuff
 	var preload = new createjs.LoadQueue(false);
 	// XXX: PUT NICE BAR WITH GLOBAL PROGRESS VALUE THAT INDICATES LOAD OF ASSET STATUS
@@ -39,6 +54,10 @@ function init() {
 	preload.on("complete", prepareMenu);
 	preload.loadManifest(manifest);
 
+	/* ****** */
+	/* TICKER */
+	/* ****** */
+	// XXX: MAYBE OK WITHOUT TICKER???
 	// This is for stuff that happens randomly 
 	createjs.Ticker._interval = 1000;
 	createjs.Ticker.addEventListener("tick", handleTick);
@@ -47,7 +66,6 @@ function init() {
 
 function handleTick() {
     stage.update();
-    console.log("Scrumble");
     // Maybe here can be done some action someday..like adding addons ...
 }
 
@@ -89,11 +107,9 @@ function handleLoadedStuff(e){
 
 	if (container == undefined){
 		stage.addChild(pic);
-		pic.visible = false;
 	}
 	else{
 		container.addChild(pic);
-		container.visible = false;
 		stage.addChild(container);
 	}
 }
@@ -105,7 +121,6 @@ function prepareMenu() {
 
 	// display HUD
 	initScore();
-	HUDContainer.visible = true;
 	stage.addChild(HUDContainer);
 
 	// XXX: USE DRAWTEXT METHOD
@@ -140,43 +155,65 @@ function prepareMenu() {
 		stage.update();
 	}
 	menuContainer.addChild(play);
-	menuContainer.visible = true;
 
 	// display sound on/off symbol with clickevent
 
 	// display choice of tracks. This should be painted to the canvas immediately on browsing through them
 	// -The Listener sets and paints the track right away!
+	// XXX: THIS NEEDS TO BE SET DEPENDANT ON CHOICE OF TRACK. EITHER CREATE OWN OR CHOOSE EXISTING
+	buildStatus = BUILD_TRACK;
+	// OR
+	// buildStatus = PLACE_PLAYERS;
 
 	// display choice of playerdesign (car, color,...)
 	// -MOCKUP Version: simply change color on clicking trough...
 	
 	stage.addChild(menuContainer);
 	
-	game.activePlayers.push(new Player("Furraro1", new Car(null, null), 1))
-	game.activePlayers.push(new Player("Furraro2", new Car(null, null), 2))
-	game.activePlayers.push(new Player("Furraro3", new Car(null, null), 3))
-	game.activePlayers.push(new Player("Furraro4", new Car(null, null), 4))
+	// XXX: Testing Purposes
+	game.activePlayers.push(new Player("Furraro1", new Car(null, null), 0))
+	game.activePlayers.push(new Player("Furraro2", new Car(null, null), 1))
+	game.activePlayers.push(new Player("Furraro3", new Car(null, null), 2))
+	game.activePlayers.push(new Player("Furraro4", new Car(null, null), 3))
 
 	prepareTrack();
-	// stage.on("click", turn, null, false, undefined);
 };
 
 function prepareTurn(){
+	var crntPlayer = game.getCurrentPlayer();
+	var nextLoc = crntPlayer.getNextLocation();
 
+	var surr = game.track.getSurrounding(nextLoc);
+	if (surr.length == 0){
+		doMove();
+		return;
+	}
+	for (var i = 0; i < surr.length; i++){
+		var circle = drawColoredCircle("orange", surr[i], CIRCLE_SIZE, true);
+		choiceContainer.addChild(circle);
+		circle.on("click", doMove, null, false, {location: surr[i]});
+	}
+	stage.addChild(choiceContainer);
 }
 
-function doMove(evt){
-	var loc = game.toLoc(evt.stageX, evt.stageY);
-
-	game.turn(loc);
-	// create animation that displays movement from last to current pos
-	var crntPlayer = game.getCurrentPlayer();
-	view.updateCars(crntPlayer.no, loc, crntPlayer.getSpeed(), 1000, 60);
-	// update addons
-	view.updateAddOns(loc);
-	// update score
-	updateScore(crntPlayer);
+function doMove(evt, data){
+	// XXX: I think this could be useful at other locations in the code
+	choiceContainer.removeAllChildren();
+	if (data != undefined){
+		var loc = data.location
+		// create animation that displays movement from last to current pos
+		var crntPlayer = game.getCurrentPlayer();
+		updateCars(crntPlayer, loc, crntPlayer.getSpeed(), 1000, 60);
+		// update addons
+		// view.updateAddOns(loc);
+		// update score
+		// updateScore(crntPlayer);
+	}
+	
 	// check if won?
+	game.turn(loc);
+	// else prepare again
+	prepareTurn();
 }
 
 
@@ -210,8 +247,14 @@ function updateAddOns(l) {
 };
 
 function drawLine(type, srcL, destL, color) {
-	var srcLoc = new Location(game.toXCoord(srcL), game.toYCoord(srcL), srcL.addOn);
-	var destLoc = new Location(game.toXCoord(destL), game.toYCoord(destL), destL.addOn);
+	var srcLoc = new Location(game.toXCoord(srcL), game.toYCoord(srcL));
+	var destLoc = new Location(game.toXCoord(destL), game.toYCoord(destL));
+	var g = new createjs.Graphics();
+ 	g.setStrokeStyle(1);
+ 	g.beginStroke("#000000");
+ 	g.moveTo(srcLoc.x, srcLoc.y);
+ 	g.lineTo(destLoc.x, destLoc.y);
+ 	return new createjs.Shape(g);
 };
 
 function drawColoredCircle(color, l, radius, fill) {
@@ -305,10 +348,13 @@ function initCars(visible) {
 
 };
 
-function updateCars(no, l, speed, time, fps) {
-	var loc = new Location(game.toXCoord(loc), game.toYCoord(loc), l.addOn);
-	createjs.Tween.get(cars[no], { loop: false })
+function updateCars(player, l, speed, time, fps) {
+	var loc = new Location(game.toXCoord(l), game.toYCoord(l));
+	
+	createjs.Tween.get(playerContainer.getChildAt(player.no), { loop: false })
   	.to({ x: loc.x, y: loc.y }, time, createjs.Ease.getPowInOut(speed));
+  	var line = drawLine(undefined, player.crntLoc(), l, "DeepSkyBlue");
+  	stage.addChild(line);
 };
 
 
@@ -328,18 +374,18 @@ function prepareTrack(){
 		case BUILD_TRACK:
 			buildTrack();
 		break;
-		case BUILD_SET_START:
+		case SET_START:
 			setStartPoints();
 		break;
-		case BUILD_DONE:
+		case PLACE_PLAYERS:
 			stage.removeChild(stage.getChildByName("buildPainting1"));
 			stage.removeChild(stage.getChildByName("buildPainting2"));
-			HUDContainer.visible = false;
 			// Determine Locations of players
 			setPlayers();
-			// prepareTurn();
-			// TURN???
-			// turn()
+		break;
+		case PREPARE_TURN:
+			HUDContainer.visible = true;;
+			prepareTurn();
 		break;
 		default: console.log("Well OK?");
 	}
@@ -643,18 +689,21 @@ function setPlayers(){
 		var currentCircle;
 		
 		child.on("mouseover", function(evt){
-			console.log("OVER");
+			
 			var loc = game.toLoc(evt.stageX, evt.stageY);
 			finishLineContainer.removeChild(currentCircle);
 			currentCircle = drawColoredCircle("yellow", loc , CIRCLE_SIZE, true);
 			currentCircle.cursor = "pointer";
 			currentCircle.on("click", function(evt){
-				console.log("Click No: "+no);
-				game.activePlayers[no++].historyLocs.push(game.toLoc(evt.stageX, evt.stageY));
+				game.activePlayers[no].historyLocs.push(game.toLoc(evt.stageX, evt.stageY));
+				no++;
 				finishLineContainer.removeChild(currentCircle);
 				var c = finishLineContainer.getChildByName(loc.x + "," + loc.y);
 				c.removeAllEventListeners();
-				stage.update();
+				// XXX: PERSONALIZE COLOR
+				var playercircle = drawColoredCircle("Yellow", loc, CIRCLE_SIZE+5, false);
+				playerContainer.addChild(playercircle);
+				stage.addChild(playerContainer);
 				if (no == max){
 					finishLineContainer.removeChild(currentCircle);
 					for (var j = 0; j < finishLineContainer.getNumChildren(); j++) {
@@ -662,6 +711,7 @@ function setPlayers(){
 						ch.removeAllEventListeners();
 					}
 					buildStatus++;
+					game.calculateTrackPoints();
 					prepareTrack();
 					return;
 				}

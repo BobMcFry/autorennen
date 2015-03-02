@@ -199,7 +199,7 @@ var Game = function(width, height){
 	// XXX: Evtl auch h oder w direkt hier rein?
 	this.width = width;
 	this.height = height;
-	// XXX: MAYBE THESE CAN BE SET SOMETIMES (SMALLER SCREENS)
+	// XXX: MAYBE THESE CAN BE SET SOMETIMES (SMALLER SCREENS)...maybe also dependant on the size...
 	this.xBoxes = 50;
 	this.yBoxes = 30;
 	this.track = new Track(this.xBoxes, this.yBoxes);
@@ -220,11 +220,11 @@ Game.prototype.TURN = 1;
 
 Game.prototype.turn = function(loc) {
 	var crntPlayer = this.getCurrentPlayer();
-	var nextLoc = crntPlayer.getNextLocation();
-	this.track.getSurrounding(nextLoc, true);
+	// var nextLoc = crntPlayer.getNextLocation();
+	// this.track.getSurrounding(nextLoc, true);
 
-	if (this.track.isOnTrack(nextLoc)){
-		crntPlayer.setNextLocation(nextLoc);
+	if (this.track.isOnTrack(loc)){
+		crntPlayer.setNextLocation(loc);
 		this.currentPlayer++;
 	} else {
 		var index = this.activePlayers.indexOf(crntPlayer);
@@ -248,6 +248,17 @@ Game.prototype.turn = function(loc) {
 	// 	this.track.gamePoints[pos].assignRandomItem();
 	// }
 	
+};
+
+Game.prototype.calculateTrackPoints = function() {
+	for (var i = 0; i < this.track.gamePoints.length; i++){
+		var p = this.track.gamePoints[i];
+		if (!this.track.isBorder(p) 
+				&& !this.track.isSurrounding(p)
+				&& !this.track.isFinishLine(p)){
+			this.track.trackPoints.push(p);
+		}
+	}
 };
 
 Game.prototype.toXCoord = function(loc) {
@@ -291,7 +302,7 @@ var	Player = function(name, car, no){
 }
 
 Player.prototype.crntLoc = function() {
-	return this.historyLocs[this.historyLocs.length];
+	return this.historyLocs[this.historyLocs.length-1];
 };
 
 Player.prototype.lastLoc = function() {
@@ -299,7 +310,7 @@ Player.prototype.lastLoc = function() {
 		return this.historyLocs[0];
 	}
 
-	return this.historyLocs[this.historyLocs.length-1];
+	return this.historyLocs[this.historyLocs.length-2];
 };
 
 Player.prototype.getNextLocation = function() {
@@ -309,7 +320,7 @@ Player.prototype.getNextLocation = function() {
 Player.prototype.setNextLocation = function(loc) {
 	this.historyLocs.push(loc);
 	this.setAVGSpeed(this.getSpeed());
-	this.distance += this.lastLoc().distanceTo(crntLoc());
+	this.distance += this.lastLoc().distanceTo(this.crntLoc());
 };
 
 Player.prototype.getSpeed = function() {
