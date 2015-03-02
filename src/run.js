@@ -1,4 +1,4 @@
-BUILD_Track  = 0;
+BUILD_TRACK  = 0;
 BUILD_SET_START  = 1;
 BUILD_DONE  = 2;
 // XXX: make pics to global vars to make editing afterwards easier
@@ -9,13 +9,13 @@ manifest = [
 	{src:"img/background_norights.jpg", id:"hud3"},
 	{src:"img/background_norights.jpg", id:"hud4"}
 ];
-
+CIRCLE_SIZE = 10;
 
 function init() {
 	stage = new createjs.Stage("board");
 	// XXX: HARD CODED SIZES!!!!!!!!
-	w = 500;
-	h = 300;
+	w = 1000;//500;
+	h = 600;//300;
 	game = new Game(w, h);
 	cars = new Array(4);
 	finishLine = new Array();
@@ -25,13 +25,20 @@ function init() {
 	menuContainer.visible = false;
 	HUDContainer = new createjs.Container();
 	HUDContainer.visible = false;
-	buildStatus = BUILD_OUTER_BORDER;
-	preloadStuff();
+	trackContainer = new createjs.Container();
+	finishLineContainer = new createjs.Container();
 	
-	// TESTS!!!!!!!!!!!
-	// var circle = this.view.drawColoredCircle(undefined, new Location(100,100), 50);
-	// this.view.updateCars(circle, new Location(200,200), 2, 1000, 60);
-	// var text = this.view.initScore(true);
+	buildStatus = BUILD_TRACK;
+	
+	// Preload stuff
+	// XXX: false is for local loading (?), true is for the internet stuff
+	var preload = new createjs.LoadQueue(false);
+	// XXX: PUT NICE BAR WITH GLOBAL PROGRESS VALUE THAT INDICATES LOAD OF ASSET STATUS
+	// preload.on("progress", handleProgress);
+	preload.on("fileload", handleLoadedStuff);
+	preload.on("complete", prepareMenu);
+	preload.loadManifest(manifest);
+
 	// This is for stuff that happens randomly 
 	createjs.Ticker._interval = 1000;
 	createjs.Ticker.addEventListener("tick", handleTick);
@@ -42,17 +49,6 @@ function handleTick() {
     stage.update();
     console.log("Scrumble");
     // Maybe here can be done some action someday..like adding addons ...
-}
-
-function preloadStuff(){
-	// XXX: false is for local loading (?), true is for the internet stuff
-	var preload = new createjs.LoadQueue(false);
-	// XXX: PUT NICE BAR WITH GLOBAL PROGRESS VALUE THAT INDICATES LOAD OF ASSET STATUS
-	// preload.on("progress", handleProgress);
-	preload.on("fileload", handleLoadedStuff);
-	preload.on("complete", prepareMenu);
-
-	preload.loadManifest(manifest);
 }
 
 function handleLoadedStuff(e){
@@ -106,11 +102,13 @@ function prepareMenu() {
  	
 	// display background
 	stage.getChildByName("background").visible = true;
+
 	// display HUD
 	initScore();
 	HUDContainer.visible = true;
 	stage.addChild(HUDContainer);
 
+	// XXX: USE DRAWTEXT METHOD
 	// display Header
 	var header = new createjs.Text("AUTORENNEN", "18px Arial", "DeepSkyBlue");
 	header.name = "header";
@@ -118,6 +116,7 @@ function prepareMenu() {
 	header.y = 20;
 	menuContainer.addChild(header);
 
+	// XXX: USE DRAWTEXT METHOD
 	// display Play Button with clickevent and nice haptic mouseover
 	var play = new createjs.Text("PLAY", "18px Arial", "DeepSkyBlue");
 	play.name = "play";
@@ -129,9 +128,9 @@ function prepareMenu() {
 	var s = new createjs.Shape();
 	s.graphics.beginFill("#f00").drawRect(0,0,play.getMeasuredWidth(), play.getMeasuredHeight());
 	play.hitArea = s;
-	play.on("mouseover", playMouseover, null, false, undefined);
-	play.on("mouseout", playMouseout, null, false, undefined);
-	play.on("click", turn, null, false, undefined);
+	play.on("mouseover", playMouseover);
+	play.on("mouseout", playMouseout);
+	// play.on("click", turn);
 	function playMouseover(e){
 		play.color = "red";
 		stage.update();
@@ -152,27 +151,23 @@ function prepareMenu() {
 	// -MOCKUP Version: simply change color on clicking trough...
 	
 	stage.addChild(menuContainer);
-	// XXX: IF CUSTOM TRACK IS CHOSEN
-	buildTrack();
+	
+	game.activePlayers.push(new Player("Furraro1", new Car(null, null), 1))
+	game.activePlayers.push(new Player("Furraro2", new Car(null, null), 2))
+	game.activePlayers.push(new Player("Furraro3", new Car(null, null), 3))
+	game.activePlayers.push(new Player("Furraro4", new Car(null, null), 4))
+
+	prepareTrack();
 	// stage.on("click", turn, null, false, undefined);
 };
 
-function turn(e){
-	var x = e.stageX;
-	var y = e.stageY;
+function prepareTurn(){
 
-	var loc = game.toLoc(x,y);
-	console.log(loc.x+"|"+loc.y);
 }
 
+function doMove(evt){
+	var loc = game.toLoc(evt.stageX, evt.stageY);
 
-
-
-
-
-/* Is called by a click-event Listener */
-function movePlayer(x,y) {
-	var loc = game.toLoc(x,y);
 	game.turn(loc);
 	// create animation that displays movement from last to current pos
 	var crntPlayer = game.getCurrentPlayer();
@@ -182,8 +177,8 @@ function movePlayer(x,y) {
 	// update score
 	updateScore(crntPlayer);
 	// check if won?
+}
 
-};
 
 function toggleSound() {
 	// if on turn off and vice versa
@@ -219,20 +214,54 @@ function drawLine(type, srcL, destL, color) {
 	var destLoc = new Location(game.toXCoord(destL), game.toYCoord(destL), destL.addOn);
 };
 
-function drawColoredCircle(color, l, size, fill) {
+function drawColoredCircle(color, l, radius, fill) {
 	var loc = new Location(game.toXCoord(l), game.toYCoord(l), l.addOn);
 
 	var circle = new createjs.Shape();
 	if (fill){
-		circle.graphics.beginFill(color).drawCircle(0, 0, size);
+		circle.graphics.beginFill(color).drawCircle(0, 0, radius);
 	}else{
 		circle.graphics.setStrokeStyle(1);
- 		circle.graphics.beginStroke(color).drawCircle(0, 0, size);
+ 		circle.graphics.beginStroke(color).drawCircle(0, 0, radius);
 	}
+	circle.name = l.x + "," +  l.y;
 	circle.x = loc.x;
 	circle.y = loc.y;
+	circle.setBounds(loc.x-radius, loc.y-radius, radius*2, radius*2);
+
 	return circle;
 };
+function drawText (content, name, loc, size, font, color, mouseover) {
+	// display Play Button with clickevent and nice haptic mouseover
+	var text = new createjs.Text(content, size + " " + font, color);
+	text.name = name;
+	text.x = loc.x;
+	text.y = loc.y;
+	// XXX: ALIGN?????????
+
+	if (mouseover){
+		stage.enableMouseOver();	
+		text.cursor = "pointer";
+		
+		// Hitarea for Mouseover
+		var s = new createjs.Shape();
+		s.graphics.beginFill("#f00").drawRect(0,0,text.getMeasuredWidth(), text.getMeasuredHeight());
+		text.hitArea = s;
+		text.on("mouseover", textMouseover);
+		text.on("mouseout", textMouseout);
+
+		function textMouseover(e){
+			text.color = "red";
+			stage.update();
+		}
+		function textMouseout(e){
+			text.color = "DeepSkyBlue";
+			stage.update();
+		}
+	}
+	
+	return text;
+}
 
 function drawPicture(pic, l, width, height, name) {
 	var loc = new Location(game.toXCoord(l), game.toYCoord(l), l.addOn);
@@ -247,15 +276,18 @@ function drawPicture(pic, l, width, height, name) {
 };
 
 function updateScore(player) {
+	// XXX: USE DRAWTEXT METHOD
  	displayedText = player.name + "\n" 
  					+ player.getSpeed() + "(" + player.avgSpeed + ")\n"
  					+ player.distance;
- 	var text = stage.getChildByName("hud"+player.no+"_text");
+
+ 	var text = HUDContainer.getChildByName("hud"+player.no+"_text");
  	text = displayedText;
 };
 
 function initScore() {
 	for (var i = 1; i < 5; i++) {
+		// XXX: USE DRAWTEXT METHOD
 		var text = new createjs.Text("Player"+i, "18px Arial", "DeepSkyBlue");
 		text.name = "hud"+i+"_text";
 		switch (i){
@@ -286,29 +318,41 @@ function updateCars(no, l, speed, time, fps) {
 
 /* BUILD STUFF */ 
 
-function buildTrack(){
+function prepareTrack(){
 	stage.removeAllEventListeners();
-	
+	finishLineContainer.removeAllEventListeners();
+	// hide scores
+	HUDContainer.visible = false;
+
 	switch(buildStatus){
-		case BUILD_Track:
+		case BUILD_TRACK:
 			buildTrack();
 		break;
 		case BUILD_SET_START:
 			setStartPoints();
 		break;
 		case BUILD_DONE:
+			stage.removeChild(stage.getChildByName("buildPainting1"));
+			stage.removeChild(stage.getChildByName("buildPainting2"));
+			HUDContainer.visible = false;
+			// Determine Locations of players
+			setPlayers();
+			// prepareTurn();
 			// TURN???
+			// turn()
 		break;
 		default: console.log("Well OK?");
 	}
+}
 
 // XXX: needs to be niceified
 function buildTrack(){
+	
 	var outerTrackBorders = new Array();
 	var start = true;
-	var startLoc = undefined;
 
-	shape = new createjs.Shape();
+	var shape = new createjs.Shape();
+	shape.name = "buildPainting1";
 	stage.addChild(shape);
 
 	// set up our defaults:
@@ -321,12 +365,15 @@ function buildTrack(){
 
 	// add handler for stage mouse events:
 	stage.on("stagemousedown", function(evt) {
+		// XXX: THIS IS A TEMP FIX TO PREVENT THE STAGEEVENT FROM BEING FIRED WHEN THE DONE BUTTON IS CLICKED
+		var obj = stage.getObjectUnderPoint(evt.stageX, evt.stageY);
+		if (obj != null && obj.name == "doneButton"){
+			return;
+		}
+
 		// capture press time
 		timedown = Date.now();
 		if (start){
-			var circle = drawColoredCircle("red", game.toLoc(evt.stageX, evt.stageY), 10, false);
-			// XXX: CONTAINER
-			stage.addChild(circle);
 			start = false;
 		}
 		paint = true;
@@ -338,19 +385,33 @@ function buildTrack(){
 		timeup = Date.now();
 		// compare times and determine wether the user wants to fill a circle
 		if (timeup - timedown < 300){
+			// XXX: THIS IS A TEMP FIX TO PREVENT THE STAGEEVENT FROM BEING FIRED WHEN THE DONE BUTTON IS CLICKED
+			var obj = stage.getObjectUnderPoint(evt.stageX, evt.stageY);
+			if (obj != null && obj.name == "doneButton1"){
+				return;
+			}
 			detectFilling(game.toLoc(evt.stageX, evt.stageY));
+			
 			for (var j = 0; j < game.track.surrPoints.length; j++){
-				var circle = drawColoredCircle("red", game.track.surrPoints[j], 4, true);
-				// XXX: CONTAINER
-				stage.addChild(circle);
+				var circle = drawColoredCircle("green", game.track.surrPoints[j], CIRCLE_SIZE, true);
+				circle.cache(-CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2,CIRCLE_SIZE*2);
+				trackContainer.addChild(circle);
+			}
+			
+			// XXX: HERE SHOULD BE CORRECT BOUNDS...NOW EVERYTHING IS CACHED...
+			try{
+				trackContainer.updateCache(0, 0, w, h);
+			} catch(err){
+				trackContainer.cache(0, 0, w, h);
 			}
 
+			stage.addChild(trackContainer);
 		}
 		else{
-			color = createjs.Graphics.getHSL(Math.random()*360, 100, 50);
+			// color = createjs.Graphics.getHSL(Math.random()*360, 100, 50);
 			
-			var newBorders = new Array();
 			// add missing points between pushed points
+			var newBorders = new Array();
 			for (var i = 0; i < outerTrackBorders.length-1; i++){
 				var srcLoc = outerTrackBorders[i];
 				var destLoc = outerTrackBorders[i+1];
@@ -360,27 +421,35 @@ function buildTrack(){
 				newBorders = newBorders.concat(between);
 				newBorders.push(destLoc);
 			}
-			
-			// console.log(newBorders);
 
 			var doubled = false;
 			for (var i = 0; i < newBorders.length; i++){
 				doubled = false;
-				for (var j = 0; j < game.track.trackBorders.length; j++){
-					if (newBorders[i].equals(game.track.trackBorders[j])){
-						doubled = true;
-						break;
-					}
-				}
-				if (!doubled){
+				if (!game.track.isBorder(newBorders[i])
+						&& !game.track.isSurrounding(newBorders[i])){
 					game.track.trackBorders.push(newBorders[i]);
 				}
 			}
+			
 			for (var j = 0; j < game.track.trackBorders.length; j++){
-				var circle = drawColoredCircle("red", game.track.trackBorders[j], 4, true);
-				// XXX: CONTAINER
-				stage.addChild(circle);
+				// var circle = drawColoredCircle("red", game.track.trackBorders[j], 4, true);
+				// circle.cache(-4, -4, 8,8);
+				// trackContainer.addChild(circle);
+				if (trackContainer.getChildByName(game.track.trackBorders[j].x+","+game.track.trackBorders[j].y) == null){
+					var circle = drawColoredCircle("red", game.track.trackBorders[j], CIRCLE_SIZE, true);
+					circle.cache(-CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2,CIRCLE_SIZE*2);
+					trackContainer.addChild(circle);	
+				}
 			}
+			
+			// XXX: HERE SHOULD BE CORRECT BOUNDS...NOW EVERYTHING IS CACHED...
+			try{
+				trackContainer.updateCache(0, 0, w, h);
+			} catch(err){
+				trackContainer.cache(0, 0, w, h);
+			}
+			stage.addChild(trackContainer);
+
 			// clear outerTrackBorders
 			outerTrackBorders.length = 0;
 		}
@@ -403,41 +472,45 @@ function buildTrack(){
 		oldY = evt.stageY;
 	})
 
-	// XXX: IMPLEMENT A BUTTON WITH LISTENER THAT SETS STATUS ON +1 AND CALLS BUILDTRACK()
+	// XXX: IMPLEMENT A BUTTON WITH LISTENER THAT SETS STATUS ON +1 AND CALLS BUILDTRACK() and removes itself and the buildpainting
+	var text = drawText ("Done", "doneButton", new Location(w/2 - 80, h-30), "20px", "Arial", "DeepSkyBlue", true);
+	
+	stage.addChild(text);
+	text.on("click", function (evt){
+		console.log("DONE");
+		buildStatus++;
+		prepareTrack();
+		var child = stage.getChildByName("doneButton");
+		stage.removeChild(child);
+	});
+	
 }
 
-// XXX: needs to be ported (translated)
 function detectPointsInBetween(srcLoc, destLoc){
 
 	var xDiff = srcLoc.x - destLoc.x;
 	var yDiff = srcLoc.y - destLoc.y;
 	var xMult = -1;
 	var yMult = -1;
-	// var x = x1;
-	// var y = y1;
 
 	if (xDiff < 0)
 		xMult = 1;
 	if (yDiff < 0)
 		yMult = 1;
 
-	// hier muss immer ein Delta vorangeschritten werden, von x oder y...
-	// wobei immer von dem delta vorangeschritten wird, welches prozentual
-	// zurückliegt
-	var xProzent = 0;
-	var yProzent = 0;
+	var xPercent = 0;
+	var yPercent = 0;
 	var xCounter = 1;
 	var yCounter = 1;
 	var between = new Array();
 	var x = srcLoc.x;
 	var y = srcLoc.y;
 
-	// oder, damit es nicht gleich aufhoert, sobald x oder y auf höhe sind
-	while (Math.abs(xProzent) < 1 || Math.abs(yProzent) < 1){
-		xProzent = xCounter / xDiff;
-		yProzent = yCounter / yDiff;
+	while (Math.abs(xPercent) < 1 || Math.abs(yPercent) < 1){
+		xPercent = xCounter / xDiff;
+		yPercent = yCounter / yDiff;
 
-		if (Math.abs(yProzent) > Math.abs(xProzent)){
+		if (Math.abs(yPercent) > Math.abs(xPercent)){
 			x += xMult;
 			xCounter++;
 		}
@@ -452,148 +525,161 @@ function detectPointsInBetween(srcLoc, destLoc){
 }
 
 function detectFilling(loc){
-	// XXX: This if needs to be checked before putting stuff on the stack...
-	if (game.track.isBorder(loc) || game.track.isSurrounding(loc) ){
-		return;
-	}
 	game.track.surrPoints.push(loc);
 	var radialPoints = game.track.getSurrounding(loc, false);
-
 	for (var i = 0; i < radialPoints.length; i++){
-		detectFilling(radialPoints[i]);
+		if (!game.track.isBorder(radialPoints[i]) && !game.track.isSurrounding(radialPoints[i]) ){
+			detectFilling(radialPoints[i]);
+		}
 	}
 }
 
-// XXX: needs to be ported
-function defineOuterTrackFilling(){
-	$('#board').on('click', function(e){
-			$('#board').off('click');
-			var x2 = e.pageX-this.offsetLeft;
-			var y2 = e.pageY-this.offsetTop;
-    		
-    		x2 = polishXCoordinate(x2);
-    		y2 = polishYCoordinate(y2);
-			
-			detectFilling(x2,y2, true);
-			circleLayer.clear();
-			circleLayer.draw();
-			buildingProcess++;
-			buildTrack();
-	});
-}
 
-// XXX: needs to be ported
-function buildInnerTrack(){
-	innerTrackBorders = new Array();
-	start = true;
-	xStart = -1;
-	yStart = -1;
-
-	$('#board').on('click', function(e){
-		var x2 = e.pageX-this.offsetLeft;
-		var y2 = e.pageY-this.offsetTop;
-		
-		x2 = polishXCoordinate(x2);
-		y2 = polishYCoordinate(y2);
-
-		if (start){
-			xStart = x2;
-			yStart = y2;
-			innerTrackBorders.push(x2);
-			innerTrackBorders.push(y2);
-			start = false;
-		}
-		else{
-			var x1 = innerTrackBorders[innerTrackBorders.length-2];
-			var y1 = innerTrackBorders[innerTrackBorders.length-1];
-			var line = new Kinetic.Line({
-				points: [x1, y1, x2, y2],
-				stroke: 'red',
-				strokeWidth: 2,
-				lineCap: 'round',
-				lineJoin: 'round',
-			});
-			// store points in between
-			innerTrackBorders = innerTrackBorders.concat(detectPointsInBetween(x1,y1,x2,y2));
-
-			// store TargetPoint if not the starting Point
-			if (x2 == xStart && y2 == yStart){
-				//start = true;
-				$('#board').off('click');
-				buildingProcess++;
-				buildTrack();
-			}    					
-			else{
-				innerTrackBorders.push(x2);
-				innerTrackBorders.push(y2);
-			}
-			
-			trackLayer.add(line);
-			trackLayer.draw();
-		}
-	});
-}
-
-// XXX: needs to be ported
-function defineInnerTrackFilling(){
-	$('#board').on('click', function(e){
-		$('#board').off('click');
-		var x2 = e.pageX-this.offsetLeft;
-		var y2 = e.pageY-this.offsetTop;
-		
-		x2 = polishXCoordinate(x2);
-		y2 = polishYCoordinate(y2);
-		
-		detectFilling(x2,y2,false);
-		gamePoints = flatten(gamePoints);
-		for (var i = 0; i < gamePoints.length; i += 2){
-			var x = gamePoints[i];
-			var y = gamePoints[i+1];
-			if (isBorder(x,y,false)){
-				gamePoints[i] = undefined;
-				gamePoints[i+1] = undefined;
-			}
-		}
-		flatten(gamePoints);
-		circleLayer.clear();
-		circleLayer.draw();
-		buildingProcess++;
-		paintTrack();
-		buildTrack();
-	});
-}
-
-// XXX: needs to be ported
 function setStartPoints(){
-	startPointCounter = 0;
-	$('#board').on('click', function(e){
-		var x2 = e.pageX-this.offsetLeft;
-		var y2 = e.pageY-this.offsetTop;
-		
-		x2 = polishXCoordinate(x2);
-		y2 = polishYCoordinate(y2);
-		startPoints.push(x2);
-		startPoints.push(y2);
-		console.log(x2);
-		console.log(y2);
-		var circle = new Kinetic.Circle({
-	        x: x2,
-	        y: y2,
-	        radius: 5,
-	        stroke: 'blue',
-	        strokeWidth: 2
-	    });
-	    trackLayer.add(circle);
-	    trackLayer.draw();
-		startPointCounter++;
-		if (startPointCounter >= maxPlayer){	// genug startpoints???? Maxplayer bei null??????????????
-			$('#board').off('click');
-			buildingProcess++;
-			buildTrack();		
+	
+	var finishLine = new Array();
+
+	var shape = new createjs.Shape();
+	shape.name = "buildPainting2";
+	stage.addChild(shape);
+
+	// set up our defaults:
+	var color = "#00F";
+	var size = 10;
+	var oldX, oldY;
+	var paint = false;
+	var timedown = 0;
+	var timeup = Date.now();
+
+	// add handler for stage mouse events:
+	stage.on("stagemousedown", function(evt) {
+		// capture press time
+		timedown = Date.now();
+		paint = true;
+	})                
+	
+	stage.on("stagemouseup", function(evt) {
+		paint = false;
+		// capture press time
+		timeup = Date.now();
+		// add missing points between pushed points
+		var newFinishLine = new Array();
+		for (var i = 0; i < finishLine.length-1; i++){
+			var srcLoc = finishLine[i];
+			var destLoc = finishLine[i+1];
+			var between = detectPointsInBetween(srcLoc, destLoc);
+			
+			newFinishLine.push(srcLoc);
+			newFinishLine = newFinishLine.concat(between);
+			newFinishLine.push(destLoc);
 		}
+
+		for (var i = 0; i < newFinishLine.length; i++){	
+			if (!game.track.isFinishLine(newFinishLine[i]) 
+					&& !game.track.isBorder(newFinishLine[i]) 
+					&& !game.track.isSurrounding(newFinishLine[i])){
+				game.track.finishLine.push(newFinishLine[i]);
+			}
+		}
+		for (var j = 0; j < game.track.finishLine.length; j++){
+			if (finishLineContainer.getChildByName(game.track.finishLine[j].x+","+game.track.finishLine[j].y) == null){
+				var circle = drawColoredCircle("blue", game.track.finishLine[j], CIRCLE_SIZE, true);
+				circle.cache(-CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2,CIRCLE_SIZE*2);
+				finishLineContainer.addChild(circle);	
+			}
+			
+		}
+		
+		// XXX: HERE SHOULD BE CORRECT BOUNDS...NOW EVERYTHING IS CACHED...
+		try{
+			finishLineContainer.updateCache(0, 0, w, h);
+		} catch(err){
+			finishLineContainer.cache(0, 0, w, h);
+		}
+		stage.addChild(finishLineContainer);
+		// clear finishLine
+		finishLine.length = 0;
+		
+	})
+	
+    stage.on("stagemousemove", function(evt) {
+		if (paint) {
+			shape.graphics.beginStroke(color)
+						  .setStrokeStyle(size, "round")
+						  .moveTo(oldX, oldY)
+						  .lineTo(evt.stageX, evt.stageY);
+			stage.update();
+			finishLine.push(game.toLoc(evt.stageX, evt.stageY));
+		}
+		oldX = evt.stageX;
+		oldY = evt.stageY;
+	})
+
+	// XXX: IMPLEMENT A BUTTON WITH LISTENER THAT SETS STATUS ON +1 AND CALLS BUILDTRACK() and removes itself and the buildpainting
+	var text = drawText ("Done", "doneButton", new Location(w/2 - 80, h-30), "20px", "Arial", "DeepSkyBlue", true);
+	
+	stage.addChild(text);
+	text.on("click", function (evt){
+		console.log("DONE");
+		
+		buildStatus++;
+		prepareTrack();
+		var child = stage.getChildByName("doneButton");
+		stage.removeChild(child);
+		// child.removeAllEventListeners("click");
 	});
+	
 }
 
+function setPlayers(){
+	finishLineContainer.uncache();
+	var max = game.activePlayers.length;
+	no = 0;
+	
+	for (var i = 0; i < finishLineContainer.getNumChildren(); i++) {
+		var child = finishLineContainer.getChildAt(i);
+		child.uncache();
+
+		var currentCircle;
+		
+		child.on("mouseover", function(evt){
+			console.log("OVER");
+			var loc = game.toLoc(evt.stageX, evt.stageY);
+			finishLineContainer.removeChild(currentCircle);
+			currentCircle = drawColoredCircle("yellow", loc , CIRCLE_SIZE, true);
+			currentCircle.cursor = "pointer";
+			currentCircle.on("click", function(evt){
+				console.log("Click No: "+no);
+				game.activePlayers[no++].historyLocs.push(game.toLoc(evt.stageX, evt.stageY));
+				finishLineContainer.removeChild(currentCircle);
+				var c = finishLineContainer.getChildByName(loc.x + "," + loc.y);
+				c.removeAllEventListeners();
+				stage.update();
+				if (no == max){
+					finishLineContainer.removeChild(currentCircle);
+					for (var j = 0; j < finishLineContainer.getNumChildren(); j++) {
+						var ch = finishLineContainer.getChildAt(j);
+						ch.removeAllEventListeners();
+					}
+					buildStatus++;
+					prepareTrack();
+					return;
+				}
+			})
+
+			finishLineContainer.addChild(currentCircle);
+			stage.update()
+		})
+
+		child.on("mouseout", function(evt){
+			if (finishLineContainer.getObjectUnderPoint() == currentCircle){
+				return
+			}
+			var loc = game.toLoc(evt.stageX, evt.stageY);
+			finishLineContainer.removeChild(currentCircle);
+			stage.update()
+		})
+	};
 
 }
 

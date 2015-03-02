@@ -4,7 +4,7 @@
 
 var Car = function(typ, col){
 	/* Type of Car */
-	this.typ = type;
+	this.typ = typ;
 	/* Color of Car */
 	this.col = col;
 }
@@ -118,7 +118,12 @@ var	Track = function(width, height){
 	this.trackPoints = new Array();
 	this.trackBorders = new Array();
 	this.surrPoints = new Array();
+	this.finishLine = new Array();
 }
+
+// XXX: THINK ABOUT A NICER SHORTER SOLUTION
+// XXX: THINK ABOUT A NICER SHORTER SOLUTION
+// XXX: THINK ABOUT A NICER SHORTER SOLUTION
 
 Track.prototype.isGamePoint = function(loc) {
 	for (var i = 0; i < this.gamePoints.length; i++) {
@@ -148,6 +153,15 @@ Track.prototype.isBorder = function(loc) {
 };
 
 Track.prototype.isSurrounding = function(loc) {
+	for (var i = 0; i < this.surrPoints.length; i++) {
+		if (this.surrPoints[i].equals(loc)){
+			return true;
+		}
+	};
+	return false;	
+};
+
+Track.prototype.isFinishLine = function(loc) {
 	for (var i = 0; i < this.surrPoints.length; i++) {
 		if (this.surrPoints[i].equals(loc)){
 			return true;
@@ -255,14 +269,8 @@ Game.prototype.toLoc = function(x,y) {
 	if (yDiff / this.yDelta > 0.5)
 		yMult++;
 
-	// return new Location(newX, newY);
-	return new Location(xMult/* *this.xDelta */, yMult/* *this.yDelta*/ );
+	return new Location(xMult, yMult);
 };
-
-// Game.prototype.polishCoord = function(x,y) {
-// 	var loc = this.toLoc(x,y);
-// 	return new Location(this.toXCoord(loc), this.toYCoord(loc));
-// };
 
 Game.prototype.getCurrentPlayer = function() {
 	return this.activePlayers[this.currentPlayer];
