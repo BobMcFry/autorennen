@@ -205,6 +205,7 @@ var Game = function(width, height){
 	this.track = new Track(this.xBoxes, this.yBoxes);
 	this.xDelta = this.width / this.xBoxes;
 	this.yDelta = this.height / this.yBoxes;
+	this.players = new Array();
 	this.activePlayers = new Array();
 	this.kickedPlayers = new Array();
 	this.currentPlayer = 0;
@@ -238,28 +239,41 @@ Game.prototype.isOccupied = function(loc) {
 	return false;
 };
 
+Game.prototype.isKicked = function(player) {
+	for (var i = 0; i < this.kickedPlayers.length; i++){
+		if (this.kickedPlayers[i].no == player.no){
+			return true;
+		}
+	}
+	return false;
+};
+
+Game.prototype.getTurn = function() {
+	var ret = {};
+	var noValidPlayer = true;
+	while(noValidPlayer){
+		ret.player = this.getCurrentPlayer();
+		ret.surrounding = this.getSurrounding(ret.player.getNextLocation(), true);
+		ret.win = this.activePlayers.length == 1;
+		ret.draw = this.activePlayers.length == 0;
+		if (ret.surrounding.length == 0 && (!ret.win || !ret.draw)){
+			var index = this.activePlayers.indexOf(ret.player);
+			this.activePlayers.splice(index, 1);
+			this.kickedPlayers.push(ret.player);
+			this.currentPlayer = this.currentPlayer % this.activePlayers.length;
+			noValidPlayer = true;
+			continue;
+		}
+		noValidPlayer = false;
+	}
+	return ret;
+};
+
 Game.prototype.turn = function(loc) {
 	var crntPlayer = this.getCurrentPlayer();
-	// var nextLoc = crntPlayer.getNextLocation();
-	// this.track.getSurrounding(nextLoc, true);
-
-	if (this.track.isOnTrack(loc)){
-		crntPlayer.setNextLocation(loc);
-		this.currentPlayer++;
-	} else {
-		var index = this.activePlayers.indexOf(crntPlayer);
-    	this.activePlayers.splice(index, 1);
-		this.kickedPlayers.push(crntPlayer);
-	}
-
-	if (this.activePlayers.length == 1){
-		// XXX: BLBLBLBAAA
-		console.log("WINNING GUY");
-		return;
-	}else{
-		// Set next player
-		this.currentPlayer = this.currentPlayer % this.activePlayers.length;
-	}
+	crntPlayer.setNextLocation(loc);
+	this.currentPlayer++;
+	this.currentPlayer = this.currentPlayer % this.activePlayers.length;
 
 	// Put AddOns on Track with certain probability
 	// TEMP INACTIVE FOR TESTING PURPOSES

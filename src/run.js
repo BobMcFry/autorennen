@@ -5,7 +5,9 @@ PLACE_PLAYERS = 2;
 PREPARE_TURN  = 3;
 
 /* Circle Size used to draw them to the canvas */
-CIRCLE_SIZE = 10;
+CIRCLE_SIZE = 6;
+
+// XXX: define layers that are used by addChild as second argument...so one can assure, that everything is on the right height
 
 // XXX: make pics to global vars to make editing afterwards easier
 /* Images and Sounds used in the game. This manifest is loaded with preload. */
@@ -54,13 +56,16 @@ function init() {
 	/* PRELOAD IMAGES */
 	/* ************** */
 
+	// XXX: TEMPORARILY COMMENTED OUT FOR TESTING STUFF)
+	prepareMenu(); // XXX: TEMP
 	// XXX: false is for local loading (?), true is for the internet stuff
-	var preload = new createjs.LoadQueue(false);
-	// XXX: PUT NICE BAR WITH GLOBAL PROGRESS VALUE THAT INDICATES LOAD OF ASSET STATUS
-	// preload.on("progress", handleProgress);
-	preload.on("fileload", handleLoadedStuff);
-	preload.on("complete", prepareMenu);
-	preload.loadManifest(manifest);
+	// var preload = new createjs.LoadQueue(false);
+	// // XXX: PUT NICE BAR WITH GLOBAL PROGRESS VALUE THAT INDICATES LOAD OF ASSET STATUS
+	// // preload.on("progress", handleProgress);
+	// preload.on("fileload", handleLoadedStuff);
+	// preload.on("complete", prepareMenu);
+	// preload.loadManifest(manifest);
+
 
 	/* ****** */
 	/* TICKER */
@@ -138,6 +143,10 @@ function prepareMenu() {
 	game.activePlayers.push(new Player("Furraro2", new Car(null, "#66FF33"), 1))
 	game.activePlayers.push(new Player("Furraro3", new Car(null, "#00CCFF"), 2))
 	game.activePlayers.push(new Player("Furraro4", new Car(null, "#0033CC"), 3))
+	game.players.push(game.activePlayers[0]);
+	game.players.push(game.activePlayers[1]);
+	game.players.push(game.activePlayers[2]);
+	game.players.push(game.activePlayers[3]);
 
 	// display HUD
 	initScore();
@@ -197,7 +206,7 @@ function prepareTrack(){
 		break;
 		case PREPARE_TURN:
 			HUDContainer.visible = true;;
-			prepareTurn();
+			doMove();
 		break;
 		default: console.log("Well OK?");
 	}
@@ -336,7 +345,6 @@ function buildTrack(){
 	
 	stage.addChild(text);
 	text.on("click", function (evt){
-		console.log("DONE");
 		buildStatus++;
 		prepareTrack();
 		var child = stage.getChildByName("doneButton");
@@ -550,42 +558,39 @@ function setPlayers(){
 
 
 
-function prepareTurn(){
-	var crntPlayer = game.getCurrentPlayer();
-	var nextLoc = crntPlayer.getNextLocation();
+function doMove(){
+	// XXX: I think this could be useful at other locations in the code
+	choiceContainer.removeAllChildren();
 
-	var surr = game.getSurrounding(nextLoc, true);
-	if (surr.length == 0){
-		doMove();
+	var crntTurn = game.getTurn();
+
+	updateScores();
+
+	if (crntTurn.win){
+		alert(crntTurn.player.name + "  hat gewonnen.");
 		return;
 	}
+	if (crntTurn.draw){
+		alert("Es ist unentschieden ausgegangen.");
+		return;
+	}
+
+	var surr = crntTurn.surrounding;
 	for (var i = 0; i < surr.length; i++){
-		var circle = drawColoredCircle("orange", surr[i], CIRCLE_SIZE, true);
+		var circle = drawColoredCircle(crntTurn.player.car.color, surr[i], CIRCLE_SIZE, true);
 		choiceContainer.addChild(circle);
-		circle.on("click", doMove, null, false, {location: surr[i]});
+		circle.on("click", function(evt){
+			var loc = game.toLoc(evt.stageX, evt.stageY);
+			updateCars(crntTurn.player, loc, /*crntPlayer.getSpeed()*/4, 1000, 60);
+			// update addons
+			// view.updateAddOns(loc);
+			// update score
+			game.turn(loc);
+			doMove();
+		});
 	}
 	stage.addChild(choiceContainer);
 	stage.update();
-}
-
-function doMove(evt, data){
-	// XXX: I think this could be useful at other locations in the code
-	choiceContainer.removeAllChildren();
-	if (data != undefined){
-		var loc = data.location
-		// create animation that displays movement from last to current pos
-		var crntPlayer = game.getCurrentPlayer();
-		updateCars(crntPlayer, loc, /*crntPlayer.getSpeed()*/4, 1000, 60);
-		// update addons
-		// view.updateAddOns(loc);
-		// update score
-		updateScore(crntPlayer);
-	}
-	
-	// check if won?
-	game.turn(loc);
-	// else prepare again
-	prepareTurn();
 }
 
 
@@ -690,15 +695,19 @@ function drawPicture(pic, l, width, height, name) {
     return bg;
 };
 
-function updateScore(player) {
+function updateScores() {
 	// XXX: MAKE NICER
- 	var displayedText = player.name + "\n" 
+	for (var i = 0; i < game.players.length; i++){
+		var player = game.players[i];
+		var displayedText = player.name + (game.isKicked(player) ? " KICKED": "") + "\n" 
  					 + player.getSpeed().toFixed(1) + "kmh (" + player.avgSpeed.toFixed(1) + "dschn.kmh)\n"
  					 + player.distance.toFixed(1) +"m";
- 	var t = HUDContainer.getChildByName("hud"+player.no+"_text");
- 	t.text = displayedText;
- 	// XXX: needs to be set in initScore!!!
- 	t.color = player.car.color;
+	 	var t = HUDContainer.getChildByName("hud"+player.no+"_text");
+	 	t.text = displayedText;
+	 	// XXX: needs to be set in initScore!!!
+	 	// XXX: needs to be on top of everything!!!
+	 	t.color = player.car.color;	
+	}
 };
 
 function initScore() {
