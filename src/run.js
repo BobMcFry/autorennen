@@ -58,6 +58,7 @@ function init() {
 
 	// XXX: TEMPORARILY COMMENTED OUT FOR TESTING STUFF)
 	prepareMenu(); // XXX: TEMP
+
 	// XXX: false is for local loading (?), true is for the internet stuff
 	// var preload = new createjs.LoadQueue(false);
 	// // XXX: PUT NICE BAR WITH GLOBAL PROGRESS VALUE THAT INDICATES LOAD OF ASSET STATUS
@@ -486,71 +487,66 @@ function setStartPoints(){
 
 	// XXX: IMPLEMENT A BUTTON WITH LISTENER THAT SETS STATUS ON +1 AND CALLS BUILDTRACK() and removes itself and the buildpainting
 	var text = drawText ("Done", "doneButton", new Location(w/2 - 80, h-30), "20px", "Arial", "DeepSkyBlue", true);
-	
 	stage.addChild(text);
 	text.on("click", function (evt){
 		buildStatus++;
 		prepareTrack();
-		var child = stage.getChildByName("doneButton");
-		stage.removeChild(child);
+		var c = evt.currentTarget;
+		stage.removeChild(c);
 		stage.update();
 	});
 	
 }
 
+function hover (evt, data){
+	var c = evt.currentTarget;
+	switch(data.obj){
+		case "circle": c.graphics.beginFill( data.color ).drawCircle( 0, 0, CIRCLE_SIZE ).endFill(); break;
+		case "text": c.color = data.color; break;
+		default: console.log("Missing case in hover.");break;
+	}
+	
+	// XXX: As long as there is the ticker with 60 fps we need not to do this everytime.........
+	// stage.update()
+}
+
 function setPlayers(){
 	finishLineContainer.uncache();
 	var max = game.activePlayers.length;
-	no = 0;
+	var no = 0;
 	
 	for (var i = 0; i < finishLineContainer.getNumChildren(); i++) {
 		var child = finishLineContainer.getChildAt(i);
 		child.uncache();
+		child.cursor = "pointer";
+		child.on("mouseover", hover, false, null, {color: "red", obj: "circle"});
+		child.on("mouseout", hover, false, null, {color: "blue", obj: "circle"});
+		child.on("click", function(evt){
+			var c = evt.currentTarget;
+			c.removeAllEventListeners();
 
-		var currentCircle;
-		
-		child.on("mouseover", function(evt){
+			var loc = game.toLoc(evt.stageX, evt.stageY);
+			game.activePlayers[no].historyLocs.push(loc);
 			
-			var loc = game.toLoc(evt.stageX, evt.stageY);
-			finishLineContainer.removeChild(currentCircle);
-			currentCircle = drawColoredCircle("yellow", loc , CIRCLE_SIZE, true);
-			currentCircle.cursor = "pointer";
-			currentCircle.on("click", function(evt){
-				game.activePlayers[no].historyLocs.push(game.toLoc(evt.stageX, evt.stageY));
-				no++;
-				finishLineContainer.removeChild(currentCircle);
-				var c = finishLineContainer.getChildByName(loc.x + "," + loc.y);
-				c.removeAllEventListeners();
-				// XXX: PERSONALIZE COLOR
-				var playercircle = drawColoredCircle(game.activePlayers[no-1].car.color, loc, CIRCLE_SIZE+5, false);
-				playerContainer.addChild(playercircle);
-				stage.addChild(playerContainer);
-				stage.update();
-				if (no == max){
-					finishLineContainer.removeChild(currentCircle);
-					for (var j = 0; j < finishLineContainer.getNumChildren(); j++) {
-						var ch = finishLineContainer.getChildAt(j);
-						ch.removeAllEventListeners();
-					}
-					stage.update();
-					buildStatus++;
-					game.calculateTrackPoints();
-					prepareTrack();
-					return;
+			var playercircle = drawColoredCircle(game.activePlayers[no].car.color, loc, CIRCLE_SIZE+5, false);
+			playerContainer.addChild(playercircle);
+			stage.addChild(playerContainer);
+			stage.update();
+
+			no++;
+			if (no == max){
+				// XXX: MAYBE MOVE THAT INTO PREPARE TRACK...SINCE THERE WILL BE DELETED EVERY EVENT LISTENER
+				for (var j = 0; j < finishLineContainer.getNumChildren(); j++) {
+					var ch = finishLineContainer.getChildAt(j);
+					ch.removeAllEventListeners();
+					// restore Look of FinishLine Point
+					ch.graphics.beginFill( "blue" ).drawCircle( 0, 0, CIRCLE_SIZE ).endFill();
 				}
-			})
-
-			finishLineContainer.addChild(currentCircle);
-			stage.update()
-		})
-
-		child.on("mouseout", function(evt){
-			if (finishLineContainer.getObjectUnderPoint() == currentCircle){
-				return
+				buildStatus++;
+				game.calculateTrackPoints();
+				prepareTrack();
+				stage.update();
 			}
-			var loc = game.toLoc(evt.stageX, evt.stageY);
-			finishLineContainer.removeChild(currentCircle);
-			stage.update()
 		})
 	};
 
@@ -667,17 +663,9 @@ function drawText (content, name, loc, size, font, color, mouseover) {
 		var s = new createjs.Shape();
 		s.graphics.beginFill("#f00").drawRect(0,0,text.getMeasuredWidth(), text.getMeasuredHeight());
 		text.hitArea = s;
-		text.on("mouseover", textMouseover);
-		text.on("mouseout", textMouseout);
-
-		function textMouseover(e){
-			text.color = "red";
-			stage.update();
-		}
-		function textMouseout(e){
-			text.color = "DeepSkyBlue";
-			stage.update();
-		}
+		// XXX: THESE/THIS (?) DO NOT WORK IN FIREFOX???????? (EVENTTYPES)
+		text.on("mouseover", hover, false, null, {color: "red", obj: "text"});
+		text.on("mouseout", hover, false, null, {color: "DeepSkyBlue", obj: "text"});
 	}
 	
 	return text;
@@ -736,6 +724,7 @@ function updateCars(player, l, speed, time, fps) {
 	var car = playerContainer.getChildAt(player.no);
 	createjs.Tween.get(car, { loop: false })
   	.to({ x: loc.x, y: loc.y }, time, createjs.Ease.getPowInOut(speed));
+  	// XXX: These can be cached!
   	var line = drawLine(1, player.crntLoc(), l, player.car.color);
   	stage.addChild(line);
 };
