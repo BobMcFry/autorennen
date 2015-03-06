@@ -200,8 +200,8 @@ var Game = function(width, height){
 	this.width = width;
 	this.height = height;
 	// XXX: MAYBE THESE CAN BE SET SOMETIMES (SMALLER SCREENS)...maybe also dependant on the size...
-	this.xBoxes = 50;
-	this.yBoxes = 30;
+	this.xBoxes = 55;
+	this.yBoxes = 45;
 	this.track = new Track(this.xBoxes, this.yBoxes);
 	this.xDelta = this.width / this.xBoxes;
 	this.yDelta = this.height / this.yBoxes;
@@ -209,7 +209,7 @@ var Game = function(width, height){
 	this.activePlayers = new Array();
 	this.kickedPlayers = new Array();
 	this.currentPlayer = 0;
-	this.maxPlayers = 4;
+	this.MAXPLAYERS = 4;
 	// XXX: MAYBE NOT NECESSARY
 	this.status = this.START;
 }

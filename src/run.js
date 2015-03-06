@@ -5,18 +5,18 @@ PLACE_PLAYERS = 2;
 PREPARE_TURN  = 3;
 
 /* Circle Size used to draw them to the canvas */
-CIRCLE_SIZE = 6;
+CIRCLE_SIZE = 5;
 
 // XXX: define layers that are used by addChild as second argument...so one can assure, that everything is on the right height
 
 // XXX: make pics to global vars to make editing afterwards easier
 /* Images and Sounds used in the game. This manifest is loaded with preload. */
 manifest = [
-	{src:"img/background_norights.jpg", id:"background"},
-	{src:"img/background_norights.jpg", id:"hud1"},
-	{src:"img/background_norights.jpg", id:"hud2"},
-	{src:"img/background_norights.jpg", id:"hud3"},
-	{src:"img/background_norights.jpg", id:"hud4"}
+	{src:"img/background.jpg", id:"background"},
+	{src:"img/background.jpg", id:"hud1"},
+	{src:"img/background.jpg", id:"hud2"},
+	{src:"img/background.jpg", id:"hud3"},
+	{src:"img/background.jpg", id:"hud4"}
 ];
 
 /* This functin is called on pageload */
@@ -34,40 +34,74 @@ function init() {
 	
 	
 	/* Container that allow for faster allocation of Objects */
-	// Cars
-	carContainer = new Array(4);
-	// addOns/PickUps/Items
-	addOnContainer = new createjs.Container();
-	// MenuObjects
-	menuContainer = new createjs.Container();
-	// HUD
-	HUDContainer = new createjs.Container();
-	// TrackPoints
-	trackContainer = new createjs.Container();
+	// Background
+	backgroundContainer = new createjs.Container();
+	stage.addChildAt( backgroundContainer, 0 );
 	// finishLinePoints
 	finishLineContainer = new createjs.Container();
-	// Next Fields
-	choiceContainer = new createjs.Container();
+	stage.addChildAt( finishLineContainer, 1 );
+	// TrackPoints
+	trackContainer = new createjs.Container();
+	stage.addChildAt( trackContainer, 2 );
+	// Painting from creation
+	paintContainer = new createjs.Container();
+	stage.addChildAt( paintContainer, 3 );
+	// Lines from Cars
+	lineContainer = new createjs.Container();
+	stage.addChildAt( lineContainer, 4 );
+	// addOns/PickUps/Items
+	addOnContainer = new createjs.Container();
+	stage.addChildAt( addOnContainer, 5 );
 	// Playerobjects
 	playerContainer = new createjs.Container();
-	
+	stage.addChildAt( playerContainer, 6 );
+	// Next Fields
+	choiceContainer = new createjs.Container();
+	stage.addChildAt( choiceContainer, 7 );
+	// MenuObjects
+	menuContainer = new createjs.Container();
+	stage.addChildAt( menuContainer, 8 );
+	// HUD
+	HUDContainer = new createjs.Container();
+	stage.addChildAt( HUDContainer, 9 );
+	// XXX: STUFF TEMPPPPP
+	stuffContainer = new createjs.Container();
+	stage.addChildAt( stuffContainer, 10 );
+
 
 	/* ************** */
 	/* PRELOAD IMAGES */
 	/* ************** */
 
-	// XXX: TEMPORARILY COMMENTED OUT FOR TESTING STUFF)
-	prepareMenu(); // XXX: TEMP
-
 	// XXX: false is for local loading (?), true is for the internet stuff
 	// var preload = new createjs.LoadQueue(false);
-	// // XXX: PUT NICE BAR WITH GLOBAL PROGRESS VALUE THAT INDICATES LOAD OF ASSET STATUS
-	// // preload.on("progress", handleProgress);
+	// // // XXX: PUT NICE BAR WITH GLOBAL PROGRESS VALUE THAT INDICATES LOAD OF ASSET STATUS
+	// // // preload.on("progress", handleProgress);
 	// preload.on("fileload", handleLoadedStuff);
 	// preload.on("complete", prepareMenu);
 	// preload.loadManifest(manifest);
 
+	/* *********************** */
+	/* Initialize DOM Elements */
+	/* *********************** */
 
+	for (var i = 0; i < game.MAXPLAYERS; i++){
+		var input = document.getElementById("input-player-"+i);
+		var dom = new createjs.DOMElement(input);
+		dom.name = "input-player-"+i;
+		var width = dom.htmlElement.clientWidth;
+		var height = dom.htmlElement.clientHeight;
+		var OFFSET = 20;
+		switch(i){
+			case 0: dom.x = OFFSET; dom.y = OFFSET; break;
+			case 1: dom.x = w-width-OFFSET; dom.y = OFFSET; break;
+			case 2: dom.x = OFFSET; dom.y = h-height-OFFSET; break;
+			case 3: dom.x = w-width-OFFSET; dom.y = h-height-OFFSET; break;
+		}
+		menuContainer.addChild(dom);
+	}
+	// XXX: TEMPORARILY COMMENTED OUT FOR TESTING STUFF)
+	prepareMenu(); // XXX: TEMP
 	/* ****** */
 	/* TICKER */
 	/* ****** */
@@ -76,6 +110,7 @@ function init() {
 	// This is for stuff that happens randomly 
 	// createjs.Ticker._interval = 1000;
 	// createjs.Ticker.addEventListener("tick", handleTick);
+	// stage.addChild(menuContainer);
 	createjs.Ticker.addEventListener("tick", stage);
 	
 }
@@ -95,7 +130,8 @@ function handleLoadedStuff(e){
 	switch(e.item.id){
 		case "background": 	
 				x = 0;    y = 0;    
-				width = w; height = h; 
+				width = w; height = h;
+				container = backgroundContainer;
 		break;
 		case "hud1": 		
 				x = 0;    y = 0;    
@@ -119,22 +155,16 @@ function handleLoadedStuff(e){
 		break;
 		default: console.log("SCREW YOU!"); break;
 	}
-
+	
+	var obj;
 	if (image){
-		pic = drawPicture(e.result, new Location(x,y), width, height, e.item.id);	
+		obj = drawPicture(e.result, new Location(x,y), width, height, e.item.id);	
 	}else{
 		// Sound
-		// XXX: TODO
+		// XXX: TODO 
 	}
 	
-	// XXX: distinction between sound and image
-	if (container == undefined){
-		stage.addChild(pic);
-	}
-	else{
-		container.addChild(pic);
-		stage.addChild(container);
-	}
+	container.addChild( obj );
 }
 
 function prepareMenu() {
@@ -151,7 +181,6 @@ function prepareMenu() {
 
 	// display HUD
 	initScore();
-	stage.addChild(HUDContainer);
 
 	// XXX: USE DRAWTEXT METHOD
 	// display Header
@@ -169,18 +198,12 @@ function prepareMenu() {
 
 	// display choice of playerdesign (car, color,...)
 	// -MOCKUP Version: simply change color on clicking trough...
-	
-	stage.addChild(menuContainer);
 
 	var header = drawText("PLAY", "header", new Location(w/2, h-80), "18px", "Arial", "DeepSkyBlue", true);
-	menuContainer.addChild(header);
-
-	// XXX: This needs to be put at the bottom of this function when rest is done
-	stage.update();
+	menuContainer.addChild( header );
 	
-	// This is meant to be in the playbuttononclickevent
+	// XXX: This is meant to be in the playbuttononclickevent
 	prepareTrack();
-
 };
 
 
@@ -200,8 +223,7 @@ function prepareTrack(){
 			setStartPoints();
 		break;
 		case PLACE_PLAYERS:
-			stage.removeChild(stage.getChildByName("buildPainting1"));
-			stage.removeChild(stage.getChildByName("buildPainting2"));
+			paintContainer.removeAllChildren();
 			// Determine Locations of players
 			setPlayers();
 		break;
@@ -221,7 +243,7 @@ function buildTrack(){
 
 	var shape = new createjs.Shape();
 	shape.name = "buildPainting1";
-	stage.addChild(shape);
+	paintContainer.addChild( shape );
 
 	// set up our defaults:
 	var color = "#0FF";
@@ -262,19 +284,16 @@ function buildTrack(){
 			
 			for (var j = 0; j < game.track.surrPoints.length; j++){
 				var circle = drawColoredCircle("green", game.track.surrPoints[j], CIRCLE_SIZE, true);
-				circle.cache(-CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2,CIRCLE_SIZE*2);
-				trackContainer.addChild(circle);
+				var cacheRect = {};
+				circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2, CIRCLE_SIZE*2 );
+				trackContainer.addChild( circle );
 			}
-			
 			// XXX: HERE SHOULD BE CORRECT BOUNDS...NOW EVERYTHING IS CACHED...
 			try{
 				trackContainer.updateCache(0, 0, w, h);
 			} catch(err){
 				trackContainer.cache(0, 0, w, h);
 			}
-
-			stage.addChild(trackContainer);
-			stage.update();
 		}
 		else{
 			// color = createjs.Graphics.getHSL(Math.random()*360, 100, 50);
@@ -310,15 +329,12 @@ function buildTrack(){
 					trackContainer.addChild(circle);	
 				}
 			}
-			
 			// XXX: HERE SHOULD BE CORRECT BOUNDS...NOW EVERYTHING IS CACHED...
 			try{
 				trackContainer.updateCache(0, 0, w, h);
 			} catch(err){
 				trackContainer.cache(0, 0, w, h);
 			}
-			stage.addChild(trackContainer);
-			stage.update();
 			// clear outerTrackBorders
 			outerTrackBorders.length = 0;
 		}
@@ -344,12 +360,12 @@ function buildTrack(){
 	// XXX: IMPLEMENT A BUTTON WITH LISTENER THAT SETS STATUS ON +1 AND CALLS BUILDTRACK() and removes itself and the buildpainting
 	var text = drawText ("Done", "doneButton", new Location(w/2 - 80, h-30), "20px", "Arial", "DeepSkyBlue", true);
 	
-	stage.addChild(text);
+	stuffContainer.addChild(text);
 	text.on("click", function (evt){
 		buildStatus++;
 		prepareTrack();
 		var child = stage.getChildByName("doneButton");
-		stage.removeChild(child);
+		stuffContainer.removeChild(child);
 		stage.update();
 	});
 	
@@ -410,7 +426,7 @@ function setStartPoints(){
 
 	var shape = new createjs.Shape();
 	shape.name = "buildPainting2";
-	stage.addChild(shape);
+	paintContainer.addChild(shape);
 
 	// set up our defaults:
 	var color = "#00F";
@@ -465,8 +481,6 @@ function setStartPoints(){
 		} catch(err){
 			finishLineContainer.cache(0, 0, w, h);
 		}
-		stage.addChild(finishLineContainer);
-		stage.update();
 		// clear finishLine
 		finishLine.length = 0;
 		
@@ -487,12 +501,12 @@ function setStartPoints(){
 
 	// XXX: IMPLEMENT A BUTTON WITH LISTENER THAT SETS STATUS ON +1 AND CALLS BUILDTRACK() and removes itself and the buildpainting
 	var text = drawText ("Done", "doneButton", new Location(w/2 - 80, h-30), "20px", "Arial", "DeepSkyBlue", true);
-	stage.addChild(text);
+	stuffContainer.addChild(text);
 	text.on("click", function (evt){
 		buildStatus++;
 		prepareTrack();
 		var c = evt.currentTarget;
-		stage.removeChild(c);
+		stuffContainer.removeChild(c);
 		stage.update();
 	});
 	
@@ -530,7 +544,6 @@ function setPlayers(){
 			
 			var playercircle = drawColoredCircle(game.activePlayers[no].car.color, loc, CIRCLE_SIZE+5, false);
 			playerContainer.addChild(playercircle);
-			stage.addChild(playerContainer);
 			stage.update();
 
 			no++;
@@ -585,8 +598,6 @@ function doMove(){
 			doMove();
 		});
 	}
-	stage.addChild(choiceContainer);
-	stage.update();
 }
 
 
@@ -604,7 +615,7 @@ function updateAddOns(l) {
 	// XXX: replace loc.addon by Location.NONE...
 	if (addOn != null && loc.addOn == 0){
 		// ... and remove it from stage and array
-    	stage.removeChild(addOn);
+    	addOnContainer.removeChild(addOn);
 	} 
 	if (addOn != null && loc.addOn != 0) {
 		// ... and do nothing
@@ -678,8 +689,12 @@ function drawPicture(pic, l, width, height, name) {
     bg.name = name;
     bg.x = loc.x;
     bg.y = loc.y;
+    // XXX: SCALES WITH FIXED RATIO
+    // var ratio = bg.image.width/bg.image.height;
     bg.scaleX = width/bg.image.width;
     bg.scaleY = height/bg.image.height;
+    // XXX: SCALES WITH FIXED RATIO
+    // bg.scaleY = bg.scaleX * (1/ratio);
     return bg;
 };
 
@@ -726,7 +741,7 @@ function updateCars(player, l, speed, time, fps) {
   	.to({ x: loc.x, y: loc.y }, time, createjs.Ease.getPowInOut(speed));
   	// XXX: These can be cached!
   	var line = drawLine(1, player.crntLoc(), l, player.car.color);
-  	stage.addChild(line);
+  	lineContainer.addChild(line);
 };
 
 
