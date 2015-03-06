@@ -7,16 +7,20 @@ PREPARE_TURN  = 3;
 /* Circle Size used to draw them to the canvas */
 CIRCLE_SIZE = 5;
 
+/* HUD SIZE (percentage of width and height*/
+HUD_SIZE = 0.15;
+HUD_OFFSET = 0.1;
+
 // XXX: define layers that are used by addChild as second argument...so one can assure, that everything is on the right height
 
 // XXX: make pics to global vars to make editing afterwards easier
 /* Images and Sounds used in the game. This manifest is loaded with preload. */
 manifest = [
 	{src:"img/background.jpg", id:"background"},
+	{src:"img/background.jpg", id:"hud0"},
 	{src:"img/background.jpg", id:"hud1"},
 	{src:"img/background.jpg", id:"hud2"},
-	{src:"img/background.jpg", id:"hud3"},
-	{src:"img/background.jpg", id:"hud4"}
+	{src:"img/background.jpg", id:"hud3"}
 ];
 
 /* This functin is called on pageload */
@@ -58,12 +62,12 @@ function init() {
 	// Next Fields
 	choiceContainer = new createjs.Container();
 	stage.addChildAt( choiceContainer, 7 );
-	// MenuObjects
-	menuContainer = new createjs.Container();
-	stage.addChildAt( menuContainer, 8 );
 	// HUD
 	HUDContainer = new createjs.Container();
-	stage.addChildAt( HUDContainer, 9 );
+	stage.addChildAt( HUDContainer, 8 );
+	// MenuObjects
+	menuContainer = new createjs.Container();
+	stage.addChildAt( menuContainer, 9 );
 	// XXX: STUFF TEMPPPPP
 	stuffContainer = new createjs.Container();
 	stage.addChildAt( stuffContainer, 10 );
@@ -74,51 +78,44 @@ function init() {
 	/* ************** */
 
 	// XXX: false is for local loading (?), true is for the internet stuff
-	// var preload = new createjs.LoadQueue(false);
+	var preload = new createjs.LoadQueue(false);
 	// // // XXX: PUT NICE BAR WITH GLOBAL PROGRESS VALUE THAT INDICATES LOAD OF ASSET STATUS
 	// // // preload.on("progress", handleProgress);
-	// preload.on("fileload", handleLoadedStuff);
-	// preload.on("complete", prepareMenu);
-	// preload.loadManifest(manifest);
+	preload.on("fileload", handleLoadedStuff);
+	preload.on("complete", prepareMenu);
+	preload.loadManifest(manifest);
 
-	/* *********************** */
-	/* Initialize DOM Elements */
-	/* *********************** */
+	// /* *********************** */
+	// /* Initialize DOM Elements */
+	// /* *********************** */
+	// for (var i = 0; i < game.MAXPLAYERS; i++){
+	// 	var input = document.getElementById("input-player-"+i);
+	// 	var dom = new createjs.DOMElement(input);
+	// 	dom.name = "input-player-"+i;
+	// 	var width = dom.htmlElement.clientWidth;
+	// 	var height = dom.htmlElement.clientHeight;
+	// 	var OFFSET = 20;
+	// 	switch(i){
+	// 		case 0: dom.x = OFFSET; dom.y = OFFSET; break;
+	// 		case 1: dom.x = w-width-OFFSET; dom.y = OFFSET; break;
+	// 		case 2: dom.x = OFFSET; dom.y = h-height-OFFSET; break;
+	// 		case 3: dom.x = w-width-OFFSET; dom.y = h-height-OFFSET; break;
+	// 	}
+	// 	menuContainer.addChild(dom);
+	// }
 
-	for (var i = 0; i < game.MAXPLAYERS; i++){
-		var input = document.getElementById("input-player-"+i);
-		var dom = new createjs.DOMElement(input);
-		dom.name = "input-player-"+i;
-		var width = dom.htmlElement.clientWidth;
-		var height = dom.htmlElement.clientHeight;
-		var OFFSET = 20;
-		switch(i){
-			case 0: dom.x = OFFSET; dom.y = OFFSET; break;
-			case 1: dom.x = w-width-OFFSET; dom.y = OFFSET; break;
-			case 2: dom.x = OFFSET; dom.y = h-height-OFFSET; break;
-			case 3: dom.x = w-width-OFFSET; dom.y = h-height-OFFSET; break;
-		}
-		menuContainer.addChild(dom);
-	}
+
 	// XXX: TEMPORARILY COMMENTED OUT FOR TESTING STUFF)
-	prepareMenu(); // XXX: TEMP
+	// prepareMenu(); // XXX: TEMP
+	
 	/* ****** */
 	/* TICKER */
 	/* ****** */
 	
 	// XXX: MAYBE OK WITHOUT TICKER???
-	// This is for stuff that happens randomly 
-	// createjs.Ticker._interval = 1000;
-	// createjs.Ticker.addEventListener("tick", handleTick);
-	// stage.addChild(menuContainer);
 	createjs.Ticker.addEventListener("tick", stage);
 	
 }
-
-// function handleTick() {
-//     stage.update();
-//     // Maybe here can be done some action someday..like adding addons ...
-// }
 
 function handleLoadedStuff(e){
 	var x = 0;
@@ -129,51 +126,80 @@ function handleLoadedStuff(e){
 	var image = true;
 	switch(e.item.id){
 		case "background": 	
-				x = 0;    y = 0;    
-				width = w; height = h;
-				container = backgroundContainer;
+			x = 0;    y = 0;    
+			width = w; height = h;
+			container = backgroundContainer;
+		break;
+		case "hud0": 		
+			width = w*HUD_SIZE; height = h*HUD_SIZE;
+			x = 0;    y = 0;    
+			container = HUDContainer;
 		break;
 		case "hud1": 		
-				x = 0;    y = 0;    
-				width = 75; height = 50;
-				container = HUDContainer;
+			width = w*HUD_SIZE; height = h*HUD_SIZE;
+			x = w-width; y = 0;
+			container = HUDContainer;
 		break;
 		case "hud2": 		
-				x = w-75; y = 0;    
-				width = 75; height = 50;
-				container = HUDContainer;
+			width = w*HUD_SIZE; height = h*HUD_SIZE;
+			x = 0;    y = h-height; 
+			container = HUDContainer;
 		break;
 		case "hud3": 		
-				x = 0;    y = h-50; 
-				width = 75; height = 50;
-				container = HUDContainer;
-		break;
-		case "hud4": 		
-				x = w-75; y = h-50; 
-				width = 75; height = 50;
-				container = HUDContainer;
+			width = w*HUD_SIZE; height = h*HUD_SIZE;
+			x = w-width; y = h-height; 
+			container = HUDContainer;
 		break;
 		default: console.log("SCREW YOU!"); break;
 	}
 	
 	var obj;
 	if (image){
+		// var loc = game.toLoc(x,y);
 		obj = drawPicture(e.result, new Location(x,y), width, height, e.item.id);	
 	}else{
 		// Sound
 		// XXX: TODO 
-	}
-	
+	}	
 	container.addChild( obj );
 }
+
+function initScore() {
+	for (var i = 0; i < 4; i++) {
+		// XXX: USE DRAWTEXT METHOD
+		var text = new createjs.Text("Player"+i, "18px Arial", "black");
+		text.name = "hud"+i+"_text";
+		var parent = HUDContainer.getChildByName( "hud"+i );
+		text.textAlign = "left";
+		text.textBaseline = "top";
+		text.x = parent.x + parent.width*HUD_OFFSET;
+		text.y = parent.y + parent.height*HUD_OFFSET;
+		HUDContainer.addChild(text);
+	};
+};
+
+function updateScores() {
+	// XXX: MAKE NICER
+	for (var i = 0; i < game.players.length; i++){
+		var player = game.players[i];
+		var displayedText = player.name + (game.isKicked(player) ? " KICKED": "") + "\n" 
+ 					 + player.getSpeed().toFixed(1) + " (\u00D8 " + player.avgSpeed.toFixed(1) + ")kmh\n"
+ 					 + player.distance.toFixed(1) +"m";
+	 	var t = HUDContainer.getChildByName("hud"+player.no+"_text");
+	 	t.text = displayedText;
+	 	// XXX: needs to be set in initScore!!!
+	 	// XXX: needs to be on top of everything!!!
+	 	t.color = player.car.color;	
+	}
+};
 
 function prepareMenu() {
 
 	// XXX: Testing Purposes
-	game.activePlayers.push(new Player("Furraro1", new Car(null, "#FF0066"), 0))
-	game.activePlayers.push(new Player("Furraro2", new Car(null, "#66FF33"), 1))
-	game.activePlayers.push(new Player("Furraro3", new Car(null, "#00CCFF"), 2))
-	game.activePlayers.push(new Player("Furraro4", new Car(null, "#0033CC"), 3))
+	game.activePlayers.push(new Player("John", new Car(null, "#FF0066"), 0))
+	game.activePlayers.push(new Player("Peter", new Car(null, "#66FF33"), 1))
+	game.activePlayers.push(new Player("Clint", new Car(null, "#00CCFF"), 2))
+	game.activePlayers.push(new Player("Harry", new Car(null, "#0033CC"), 3))
 	game.players.push(game.activePlayers[0]);
 	game.players.push(game.activePlayers[1]);
 	game.players.push(game.activePlayers[2]);
@@ -213,7 +239,7 @@ function prepareTrack(){
 	stage.removeAllEventListeners();
 	finishLineContainer.removeAllEventListeners();
 	// hide scores
-	HUDContainer.visible = false;
+	// HUDContainer.visible = false;
 
 	switch(buildStatus){
 		case BUILD_TRACK:
@@ -626,7 +652,6 @@ function updateAddOns(l) {
 	if (addOn == null && loc.addOn != 0) {
 		// ... and add it to the stage
 		addOn = drawPicture(loc.addOn, loc);
-		addOn.name = name;
 	}
 };
 
@@ -682,8 +707,7 @@ function drawText (content, name, loc, size, font, color, mouseover) {
 	return text;
 }
 
-function drawPicture(pic, l, width, height, name) {
-	var loc = new Location(game.toXCoord(l), game.toYCoord(l), l.addOn);
+function drawPicture(pic, loc, width, height, name) {
 
 	var bg = new createjs.Bitmap(pic);
     bg.name = name;
@@ -693,41 +717,11 @@ function drawPicture(pic, l, width, height, name) {
     // var ratio = bg.image.width/bg.image.height;
     bg.scaleX = width/bg.image.width;
     bg.scaleY = height/bg.image.height;
+    bg.width = width;
+    bg.height = height;
     // XXX: SCALES WITH FIXED RATIO
     // bg.scaleY = bg.scaleX * (1/ratio);
     return bg;
-};
-
-function updateScores() {
-	// XXX: MAKE NICER
-	for (var i = 0; i < game.players.length; i++){
-		var player = game.players[i];
-		var displayedText = player.name + (game.isKicked(player) ? " KICKED": "") + "\n" 
- 					 + player.getSpeed().toFixed(1) + "kmh (" + player.avgSpeed.toFixed(1) + "dschn.kmh)\n"
- 					 + player.distance.toFixed(1) +"m";
-	 	var t = HUDContainer.getChildByName("hud"+player.no+"_text");
-	 	t.text = displayedText;
-	 	// XXX: needs to be set in initScore!!!
-	 	// XXX: needs to be on top of everything!!!
-	 	t.color = player.car.color;	
-	}
-};
-
-function initScore() {
-	for (var i = 0; i < 4; i++) {
-		// XXX: USE DRAWTEXT METHOD
-		var text = new createjs.Text("Player"+i, "18px Arial", "DeepSkyBlue");
-		text.name = "hud"+i+"_text";
-		switch (i){
-			case 0: text.x = 10;   text.y = 30;   text.textAlign = "left"; break;
-			case 1: text.x = w-40; text.y = 30;   text.textAlign = "right"; break;
-			case 2: text.x = 10;   text.y = h-80; text.textAlign = "left"; break;
-			case 3: text.x = w-40; text.y = h-80; text.textAlign = "right"; break;
-		}
-		text.textBaseline = "alphabetic";
-		HUDContainer.addChild(text);
-	};
-	stage.update();
 };
 
 function initCars(visible) {
