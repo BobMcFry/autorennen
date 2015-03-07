@@ -11,7 +11,7 @@ CIRCLE_SIZE = 5;
 HUD_SIZE = 0.2;
 HUD_OFFSET = 0.1;
 
-// XXX: define layers that are used by addChild as second argument...so one can assure, that everything is on the right height
+// XXX: maybe put the code that is related to drawing stuff somewhere else
 
 // XXX: make pics to global vars to make editing afterwards easier
 /* Images and Sounds used in the game. This manifest is loaded with preload. */
@@ -39,7 +39,8 @@ manifest = [
 	{src:"img/music_on_hover.png", id:"music_on_hover"},
 	{src:"img/music_off_hover.png", id:"music_off_hover"},
 	{src:"img/play_normal.png", id:"play_normal"},
-	{src:"img/play_hover.png", id:"play_hover"}
+	{src:"img/play_hover.png", id:"play_hover"},
+	{src:"img/sprite_car_1.png", id:"sprite_car_1"}
 ];
 
 /* This functin is called on pageload */
@@ -190,6 +191,7 @@ function updateScores() {
 	}
 };
 
+// XXX: Make sizes and stuff more dependant on the canvas size (See HUD_SIZE as an example)
 function prepareMenu() {
 	// XXX: Testing Purposes
 	game.activePlayers.push( new Player( "John", new Car( null, "#FF0066" ), 0 ));
@@ -388,7 +390,47 @@ function prepareMenu() {
 	// XXX: THIS NEEDS TO BE SET DEPENDANT ON CHOICE OF TRACK. EITHER CREATE OWN OR CHOOSE EXISTING
 	buildStatus = BUILD_TRACK;
 	// OR
-	// buildStatus = PLACE_PLAYERS;	
+	// buildStatus = PLACE_PLAYERS;
+
+	var animation, spriteSheet;
+	sprite_car_1 = {
+		images: [preload.getResult("sprite_car_1")],
+		frames: {width:100, height:77},
+		animations: {drive:[0,6], park:[0]},
+		framerate: 15
+ 	};
+	var spriteSheet = new createjs.SpriteSheet(sprite_car_1);
+	var animation = new createjs.Sprite(spriteSheet, "drive");
+	animation.name = "sprite_car_1_hud0";
+	animation.x = 60;
+	animation.y = 40;
+	animation.scaleX = .8;
+	animation.scaleY = .8;
+	menuContainer.addChild(animation);
+
+	animation = new createjs.Sprite(spriteSheet, "drive");
+	animation.name = "sprite_car_1_hud1";
+	animation.scaleX = .8;
+	animation.scaleY = .8;
+	animation.x = w-60-60;
+	animation.y = 40;
+	menuContainer.addChild(animation);
+
+	animation = new createjs.Sprite(spriteSheet, "drive");
+	animation.name = "sprite_car_1_hud2";
+	animation.x = 60;
+	animation.y = h-40-50;
+	animation.scaleX = .8;
+	animation.scaleY = .8;
+	menuContainer.addChild(animation);
+
+	animation = new createjs.Sprite(spriteSheet, "drive");
+	animation.name = "sprite_car_1_hud3";
+	animation.x = w-60-60;
+	animation.y = h-40-50;
+	animation.scaleX = .8;
+	animation.scaleY = .8;
+	menuContainer.addChild(animation);
 
 	// XXX: This is meant to be in the playbuttononclickevent
 	prepareTrack();
