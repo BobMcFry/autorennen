@@ -2,6 +2,7 @@
 /* ####### CAR ###### */
 /* ################## */
 
+// XXX: remove car
 var Car = function(typ, col){
 	/* Type of Car */
 	this.type = typ;
@@ -325,9 +326,8 @@ Game.prototype.getCurrentPlayer = function() {
 /* ##### PLAYER ##### */
 /* ################## */
 
-
-var	Player = function(name, car, no){
-	this.name = name;
+// XXX: remove car
+var	Player = function( car, no){
 	this.car = car;
 	this.avgSpeed = 0;
 	this.distance = 0;
