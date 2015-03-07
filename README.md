@@ -2,13 +2,13 @@ Autorennen
 ==========
 This is a javascript based paper game.
 
-To start the PreGamma version follow these steps:
+To start the PreBeta version follow these steps:
 
-1: clone everything
+1: clone/download everything
 
 2: open autorennen.html in your browser
 
-3: Now you can draw on the canvas in the following way:
+3: After hitting Play you can draw on the canvas in the following way:
 
 	3.1 dragging the mouse over the canvas will paint a line and
 	generates points afterwards. These are the borders.
