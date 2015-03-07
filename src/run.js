@@ -8,7 +8,7 @@ PREPARE_TURN  = 3;
 CIRCLE_SIZE = 5;
 
 /* HUD SIZE (percentage of width and height*/
-HUD_SIZE = 0.15;
+HUD_SIZE = 0.2;
 HUD_OFFSET = 0.1;
 
 // XXX: define layers that are used by addChild as second argument...so one can assure, that everything is on the right height
@@ -17,10 +17,29 @@ HUD_OFFSET = 0.1;
 /* Images and Sounds used in the game. This manifest is loaded with preload. */
 manifest = [
 	{src:"img/background.jpg", id:"background"},
-	{src:"img/background.jpg", id:"hud0"},
-	{src:"img/background.jpg", id:"hud1"},
-	{src:"img/background.jpg", id:"hud2"},
-	{src:"img/background.jpg", id:"hud3"}
+	{src:"img/hud_le_to.png", id:"hud0"},
+	{src:"img/hud_ri_to.png", id:"hud1"},
+	{src:"img/hud_le_bo.png", id:"hud2"},
+	{src:"img/hud_ri_bo.png", id:"hud3"},
+	{src:"img/back_header.png", id:"back_header"},
+	{src:"img/back_name.png", id:"back_name"},
+	{src:"img/autorennen_header.png", id:"header"},
+	{src:"img/circle_normal_1.png", id:"circle_normal_1"},
+	{src:"img/circle_normal_2.png", id:"circle_normal_2"},
+	{src:"img/circle_normal_3.png", id:"circle_normal_3"},
+	{src:"img/circle_normal_4.png", id:"circle_normal_4"},
+	{src:"img/circle_finish_1.png", id:"circle_finish_1"},
+	{src:"img/circle_finish_2.png", id:"circle_finish_2"},
+	{src:"img/left_hover.png", id:"left_hover"},
+	{src:"img/left_normal.png", id:"left_normal"},
+	{src:"img/right_hover.png", id:"right_hover"},
+	{src:"img/right_normal.png", id:"right_normal"},
+	{src:"img/music_on_normal.png", id:"music_on_normal"},
+	{src:"img/music_off_normal.png", id:"music_off_normal"},
+	{src:"img/music_on_hover.png", id:"music_on_hover"},
+	{src:"img/music_off_hover.png", id:"music_off_hover"},
+	{src:"img/play_normal.png", id:"play_normal"},
+	{src:"img/play_hover.png", id:"play_hover"}
 ];
 
 /* This functin is called on pageload */
@@ -79,7 +98,7 @@ function init() {
 	/* ************** */
 
 	// XXX: false is for local loading ( ? ), true is for the internet stuff
-	var preload = new createjs.LoadQueue( false );
+	preload = new createjs.LoadQueue( false );
 	// // // XXX: PUT NICE BAR WITH GLOBAL PROGRESS VALUE THAT INDICATES LOAD OF ASSET STATUS
 	// // // preload.on( "progress", handleProgress );
 	preload.on( "fileload", handleLoadedStuff );
@@ -105,10 +124,6 @@ function init() {
 	// 	}
 	// 	menuContainer.addChild( dom );
 	// }
-
-
-	// XXX: TEMPORARILY COMMENTED OUT FOR TESTING STUFF)
-	// prepareMenu(); // XXX: TEMP
 	
 	/* ****** */
 	/* TICKER */
@@ -119,64 +134,51 @@ function init() {
 	
 }
 
+// XXX: HERE A PROGRESSVALUE IS INCREASED ON EVERY LOAD OF AN OBJECT
 function handleLoadedStuff( e ){
-	var x = 0;
-	var y = 0;
-	var width = 0;
-	var height = 0;
-	var container = undefined;
-	var image = true;
 	switch( e.item.id ){
 		case "background": 	
-			x = 0;    y = 0;    
-			width = w; height = h;
-			container = backgroundContainer;
-		break;
-		case "hud0": 		
-			width = w*HUD_SIZE; height = h*HUD_SIZE;
-			x = 0;    y = 0;    
-			container = HUDContainer;
-		break;
-		case "hud1": 		
-			width = w*HUD_SIZE; height = h*HUD_SIZE;
-			x = w-width; y = 0;
-			container = HUDContainer;
-		break;
-		case "hud2": 		
-			width = w*HUD_SIZE; height = h*HUD_SIZE;
-			x = 0;    y = h-height; 
-			container = HUDContainer;
-		break;
-		case "hud3": 		
-			width = w*HUD_SIZE; height = h*HUD_SIZE;
-			x = w-width; y = h-height; 
-			container = HUDContainer;
+		case "hud0":
+		case "hud1":
+		case "hud2":
+		case "hud3":
+		case "header":
+		case "back_header":
+		case "back_name":
+		case "left_normal":
+		case "right_normal":
+		case "music_on_normal":
+		case "play_normal":
+		case "circle_normal_1":
+		case "circle_normal_2":
+		case "circle_normal_3":
+		case "circle_normal_4":
+		case "circle_finish_1":
+		case "circle_finish_2":
+		case "left_hover":
+		case "right_hover":
+		case "music_on_hover":
+		case "music_off_normal":
+		case "music_off_hover":
+		case "play_hover":
+			console.log( e.item.id + " loaded" );
+			return;
 		break;
 		default: console.log( "SCREW YOU!" ); break;
 	}
-	
-	var obj;
-	if ( image ){
-		// var loc = game.toLoc( x,y );
-		obj = drawPicture( e.result, new Location(x,y), width, height, e.item.id );	
-	}else{
-		// Sound
-		// XXX: TODO 
-	}	
-	container.addChild( obj );
 }
 
 function initScore() {
+	// XXX: FONT AENDERN....
 	for ( var i = 0; i < 4; i++ ) {
 		var parent = HUDContainer.getChildByName( "hud"+i );
 		var loc = new Location( parent.x + parent.width*HUD_OFFSET, parent.y + parent.height*HUD_OFFSET );
-		var text = drawText( "Player"+i, "hud"+i+"_text", loc, "18px", "Arial", "black", false, "left", "top" );
+		var text = drawText( "Player"+i, "hud"+i+"_text", loc, "20px", "Arial", "black", false, "left", "top" );
 		HUDContainer.addChild( text );
 	};
 };
 
 function updateScores() {
-	// XXX: MAKE NICER
 	for ( var i = 0; i < game.players.length; i++ ){
 		var player = game.players[i];
 		var displayedText = player.name + ( game.isKicked(player) ? " KICKED": "" ) + "\n" 
@@ -189,7 +191,6 @@ function updateScores() {
 };
 
 function prepareMenu() {
-
 	// XXX: Testing Purposes
 	game.activePlayers.push( new Player( "John", new Car( null, "#FF0066" ), 0 ));
 	game.activePlayers.push( new Player( "Peter", new Car( null, "#66FF33" ), 1 ));
@@ -200,29 +201,195 @@ function prepareMenu() {
 	game.players.push( game.activePlayers[2] );
 	game.players.push( game.activePlayers[3] );
 
+	// helper for displaying objects (graphics and shapes)
+	var obj, g, s;
+	
+	// display Background
+	obj = drawPicture( "background", new Location(0, 0), w, h, "background", false );
+	backgroundContainer.addChild(obj);
+	
+	// display Background of Header
+	obj = drawPicture( "back_header", new Location(w/2-550/2, 20), 550, -1, "back_header", true );
+	menuContainer.addChild( obj );
+	// display Header
+	obj = drawPicture( "header", new Location(w/2-350/2, 40), 350, -1, "header", true );
+	menuContainer.addChild( obj );
+	
+	// display sound on/off symbol with clickevent
+	obj = drawPicture( "music_on_normal", new Location(3*w/4, h-80), 50, -1, "music_on_normal", true );
+	menuContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "music_on_normal", img: "music_on_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "music_on_normal", img: "music_on_normal", obj: "pic"} );
+	// XXX: ONCLICK
+	menuContainer.addChild( s );
+	
+	// trackMenu: display right arrow
+	obj = drawPicture( "right_normal", new Location(w-100, h/2-60/2), 50, 60, "right_normal_track", false );
+	menuContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_track", img: "right_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_track", img: "right_normal", obj: "pic"} );
+	// XXX: ONCLICK
+	menuContainer.addChild( s );
+	// trackMenu: display left arrow
+	obj = drawPicture( "left_normal", new Location(100-50, h/2-60/2), 50, 60, "left_normal_track", false );
+	menuContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_track", img: "left_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_track", img: "left_normal", obj: "pic"} );
+	// XXX: ONCLICK
+	menuContainer.addChild( s );
+	// trackMenu: name box
+	obj = drawPicture( "back_name", new Location(w/2-400/2, h/2-100/2), 400, 100, "back_name", false );
+	menuContainer.addChild( obj );
+	
+	// HUD: left top
+	obj = drawPicture( "hud0", new Location(0, 0), w*HUD_SIZE, h*HUD_SIZE, "hud0", false );
+	HUDContainer.addChild( obj );
+	// HUD: right top
+	obj = drawPicture( "hud1", new Location(w-w*HUD_SIZE, 0), w*HUD_SIZE, h*HUD_SIZE, "hud1", false );
+	HUDContainer.addChild( obj );
+	// HUD: left bottom
+	obj = drawPicture( "hud2", new Location(0, h-h*HUD_SIZE), w*HUD_SIZE, h*HUD_SIZE, "hud2", false );
+	HUDContainer.addChild( obj );
+	// HUD: right bottom
+	obj = drawPicture( "hud3", new Location(w-w*HUD_SIZE, h-h*HUD_SIZE), w*HUD_SIZE, h*HUD_SIZE, "hud3", false );
+	HUDContainer.addChild( obj );
+	
+	// carchoice: left top: right arrow
+	obj = drawPicture( "right_normal", new Location(140, 50), 20, 30, "right_normal_car0", false );
+	menuContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car0", img: "right_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car0", img: "right_normal", obj: "pic"} );
+	// XXX: ONCLICK
+	menuContainer.addChild( s );
+	// carchoice: left top: left arrow
+	obj = drawPicture( "left_normal", new Location(40, 50), 20, 30, "left_normal_car0", false );
+	menuContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car0", img: "left_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car0", img: "left_normal", obj: "pic"} );
+	// XXX: ONCLICK
+	menuContainer.addChild( s );
+	
+	// carchoice: right top: right arrow
+	obj = drawPicture( "right_normal", new Location(w-40, 50), 20, 30, "right_normal_car1", false );
+	menuContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car1", img: "right_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car1", img: "right_normal", obj: "pic"} );
+	// XXX: ONCLICK
+	menuContainer.addChild( s );
+	// carchoice: right top: left arrow
+	obj = drawPicture( "left_normal", new Location(w-140, 50), 20, 30, "left_normal_car1", false );
+	menuContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car1", img: "left_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car1", img: "left_normal", obj: "pic"} );
+	// XXX: ONCLICK
+	menuContainer.addChild( s );
+	
+	// carchoice: left bottom: right arrow
+	obj = drawPicture( "right_normal", new Location(140, h-50-30), 20, 30, "right_normal_car2", false );
+	menuContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car2", img: "right_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car2", img: "right_normal", obj: "pic"} );
+	// XXX: ONCLICK
+	menuContainer.addChild( s );
+	// carchoice: left bottom: left arrow
+	obj = drawPicture( "left_normal", new Location(40, h-50-30), 20, 30, "left_normal_car2", false );
+	menuContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car2", img: "left_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car2", img: "left_normal", obj: "pic"} );
+	// XXX: ONCLICK
+	menuContainer.addChild( s );
+
+	// carchoice: right bottom: right arrow
+	obj = drawPicture( "right_normal", new Location(w-40, h-50-30), 20, 30, "right_normal_car3", false );
+	menuContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car3", img: "right_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car3", img: "right_normal", obj: "pic"} );
+	// XXX: ONCLICK
+	menuContainer.addChild( s );
+	// carchoice: right bottom: left arrow
+	obj = drawPicture( "left_normal", new Location(w-140, h-50-30), 20, 30, "left_normal_car3", false );
+	menuContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car3", img: "left_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car3", img: "left_normal", obj: "pic"} );
+	// XXX: ONCLICK
+	menuContainer.addChild( s );
+
+	// display Play button with hover
+	obj = drawPicture( "play_normal", new Location(w/2-150/2, h-100), 150, -1, "play_normal", true );
+	menuContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_normal", obj: "pic"} );
+	// XXX: onClick
+	menuContainer.addChild( s );
+	
 	// display HUD
 	initScore();
 
-	// XXX: USE DRAWTEXT METHOD
-	// display Header
-	var header = drawText ( "AUTORENNEN", "header", new Location( w/2, 20 ), "18px", "Arial", "DeepSkyBlue", false, "center", "middle"  );
-	menuContainer.addChild( header );
-
-	// display sound on/off symbol with clickevent
-
-	// display choice of tracks. This should be painted to the canvas immediately on browsing through them ( CACHING!!!! )
-	// -The Listener sets and paints the track right away!
 	// XXX: THIS NEEDS TO BE SET DEPENDANT ON CHOICE OF TRACK. EITHER CREATE OWN OR CHOOSE EXISTING
 	buildStatus = BUILD_TRACK;
 	// OR
-	// buildStatus = PLACE_PLAYERS;
+	// buildStatus = PLACE_PLAYERS;	
 
-	// display choice of playerdesign ( car, color,... )
-	// -MOCKUP Version: simply change color on clicking trough...
-
-	var header = drawText( "PLAY", "header", new Location(w/2, h-80), "18px", "Arial", "DeepSkyBlue", true, "center", "middle" );
-	menuContainer.addChild( header );
-	
 	// XXX: This is meant to be in the playbuttononclickevent
 	prepareTrack();
 };
@@ -378,7 +545,6 @@ function buildTrack(){
 		oldY = evt.stageY;
 	})
 
-	// XXX: IMPLEMENT A BUTTON WITH LISTENER THAT SETS STATUS ON +1 AND CALLS BUILDTRACK() and removes itself and the buildpainting
 	var text = drawText ( "Done", "doneButton", new Location(w/2 - 80, h-30), "20px", "Arial", "DeepSkyBlue", true, "left", "top" );
 	
 	stuffContainer.addChild( text );
@@ -520,7 +686,6 @@ function setStartPoints(){
 		oldY = evt.stageY;
 	})
 
-	// XXX: IMPLEMENT A BUTTON WITH LISTENER THAT SETS STATUS ON +1 AND CALLS BUILDTRACK() and removes itself and the buildpainting
 	var text = drawText ( "Done", "doneButton", new Location( w/2 - 80, h-30 ), "20px", "Arial", "DeepSkyBlue", true, "left", "top" );
 	stuffContainer.addChild( text );
 	text.on( "click", function ( evt ){
@@ -538,11 +703,12 @@ function hover ( evt, data ){
 	switch( data.obj ){
 		case "circle": c.graphics.beginFill( data.color ).drawCircle( 0, 0, CIRCLE_SIZE ).endFill(); break;
 		case "text": c.color = data.color; break;
-		default: console.log( "Missing case in hover." );break;
+		case "pic":
+			var target = data.container.getChildByName( data.target );
+			target.image = preload.getResult( data.img );
+		break;
+		default: console.log( "Missing case in hover." ); break;
 	}
-	
-	// XXX: As long as there is the ticker with 60 fps we need not to do this everytime.........
-	// stage.update()
 }
 
 function setPlayers(){
@@ -569,7 +735,6 @@ function setPlayers(){
 
 			no++;
 			if ( no == max ){
-				// XXX: MAYBE MOVE THAT INTO PREPARE TRACK...SINCE THERE WILL BE DELETED EVERY EVENT LISTENER
 				for ( var j = 0; j < finishLineContainer.getNumChildren(); j++ ) {
 					var ch = finishLineContainer.getChildAt( j );
 					ch.removeAllEventListeners();
@@ -611,10 +776,9 @@ function doMove(){
 		choiceContainer.addChild( circle );
 		circle.on( "click", function( evt ){
 			var loc = game.toLoc( evt.stageX, evt.stageY );
-			updateCars( crntTurn.player, loc, /*crntPlayer.getSpeed()*/4, 1000, 60 );
+			updateCars( crntTurn.player, loc, crntTurn.player.getSpeed()+1, 1000, 60 );
 			// update addons
 			// view.updateAddOns( loc );
-			// update score
 			game.turn( loc );
 			doMove();
 		});
@@ -646,7 +810,7 @@ function updateAddOns( l ) {
 	}
 	if ( addOn == null && loc.addOn != 0 ) {
 		// ... and add it to the stage
-		addOn = drawPicture( loc.addOn, loc );
+		// addOn = drawPicture( loc.addOn, loc );
 	}
 };
 
@@ -708,22 +872,30 @@ function drawText ( content, name, loc, size, font, color, mouseover, textAlign,
 	return text;
 }
 
-function drawPicture( pic, loc, width, height, name ) {
-
-	var bg = new createjs.Bitmap( pic );
+function drawPicture( pic, loc, width, height, name, keepRatio ) {
+	var img = preload.getResult( pic );
+	var bg = new createjs.Bitmap( img );
+	// console.log(bg);
     bg.name = name;
     bg.x = loc.x;
     bg.y = loc.y;
-    // XXX: SCALES WITH FIXED RATIO
-    // var ratio = bg.image.width/bg.image.height;
-    bg.scaleX = width/bg.image.width;
-    bg.scaleY = height/bg.image.height;
-    bg.width = width;
-    bg.height = height;
-    // XXX: SCALES WITH FIXED RATIO
-    // bg.scaleY = bg.scaleX * ( 1/ratio );
+    if ( keepRatio ){
+    	bg.scaleX = width/bg.image.width;
+    	bg.scaleY = getNewScaleY( width, bg.image.width, bg.image.height );
+    } else {
+	    bg.scaleX = width/bg.image.width;
+	    bg.scaleY = height/bg.image.height;
+	}
+	bg.width = bg.image.width*bg.scaleX;
+    bg.height = bg.image.height*bg.scaleY;
     return bg;
 };
+
+function getNewScaleY( newWidth, oldWidth, oldHeight ){
+	var ratio = oldWidth/oldHeight;
+	var scaleX = newWidth/oldWidth;
+	return oldWidth * scaleX * (1/(ratio*oldHeight));
+}
 
 function initCars( visible ) {
 
