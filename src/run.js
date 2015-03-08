@@ -16,32 +16,32 @@ HUD_OFFSET = 0.1;
 // XXX: make pics to global vars to make editing afterwards easier
 /* Images and Sounds used in the game. This manifest is loaded with preload. */
 manifest = [
-	{src:"img/background.jpg", id:"background"},
-	{src:"img/hud_le_to.png", id:"hud0"},
-	{src:"img/hud_ri_to.png", id:"hud1"},
-	{src:"img/hud_le_bo.png", id:"hud2"},
-	{src:"img/hud_ri_bo.png", id:"hud3"},
-	{src:"img/back_header.png", id:"back_header"},
-	{src:"img/back_name.png", id:"back_name"},
-	{src:"img/autorennen_header.png", id:"header"},
-	{src:"img/circle_normal_1.png", id:"circle_normal_1"},
-	{src:"img/circle_normal_2.png", id:"circle_normal_2"},
-	{src:"img/circle_normal_3.png", id:"circle_normal_3"},
-	{src:"img/circle_normal_4.png", id:"circle_normal_4"},
-	{src:"img/circle_finish_1.png", id:"circle_finish_1"},
-	{src:"img/circle_finish_2.png", id:"circle_finish_2"},
-	{src:"img/left_hover.png", id:"left_hover"},
-	{src:"img/left_normal.png", id:"left_normal"},
-	{src:"img/right_hover.png", id:"right_hover"},
-	{src:"img/right_normal.png", id:"right_normal"},
-	{src:"img/music_on_normal.png", id:"music_on_normal"},
-	{src:"img/music_off_normal.png", id:"music_off_normal"},
-	{src:"img/music_on_hover.png", id:"music_on_hover"},
-	{src:"img/music_off_hover.png", id:"music_off_hover"},
-	{src:"img/play_normal.png", id:"play_normal"},
-	{src:"img/play_hover.png", id:"play_hover"},
-	{src:"img/sprite_none.png", id:"sprite_none"},
-	{src:"img/sprite_car_1.png", id:"sprite_car_1"}
+	{ src:"img/background.jpg", 		id:"background" },
+	{ src:"img/hud_le_to.png", 			id:"hud0" },
+	{ src:"img/hud_ri_to.png", 			id:"hud1" },
+	{ src:"img/hud_le_bo.png", 			id:"hud2" },
+	{ src:"img/hud_ri_bo.png", 			id:"hud3" },
+	{ src:"img/back_header.png", 		id:"back_header" },
+	{ src:"img/back_name.png", 			id:"back_name" },
+	{ src:"img/autorennen_header.png", 	id:"header" },
+	{ src:"img/circle_normal_1.png", 	id:"circle_normal_1" },
+	{ src:"img/circle_normal_2.png", 	id:"circle_normal_2" },
+	{ src:"img/circle_normal_3.png", 	id:"circle_normal_3" },
+	{ src:"img/circle_normal_4.png", 	id:"circle_normal_4" },
+	{ src:"img/circle_finish_1.png", 	id:"circle_finish_1" },
+	{ src:"img/circle_finish_2.png", 	id:"circle_finish_2" },
+	{ src:"img/left_hover.png", 		id:"left_hover" },
+	{ src:"img/left_normal.png", 		id:"left_normal" },
+	{ src:"img/right_hover.png", 		id:"right_hover" },
+	{ src:"img/right_normal.png", 		id:"right_normal" },
+	{ src:"img/music_on_normal.png", 	id:"music_on_normal" },
+	{ src:"img/music_off_normal.png", 	id:"music_off_normal" },
+	{ src:"img/music_on_hover.png", 	id:"music_on_hover" },
+	{ src:"img/music_off_hover.png", 	id:"music_off_hover" },
+	{ src:"img/play_normal.png", 		id:"play_normal" },
+	{ src:"img/play_hover.png", 		id:"play_hover" },
+	{ src:"img/sprite_none.png", 		id:"sprite_none" },
+	{ src:"img/sprite_car_1.png", 		id:"sprite_car_1" }
 ];
 
 spriteSheets = [];
@@ -223,17 +223,18 @@ function prepareMenu() {
 	menuContainer.addChild( obj );
 	
 	// display sound on/off symbol with clickevent
-	obj = drawPicture( "music_on_normal", new Location(3*w/4, h-80), 50, -1, "music_on_normal", true );
-	menuContainer.addChild( obj );
+	obj = drawPicture( "music_on_normal", new Location(3*w/4, h-80), 50, -1, "music_toggle", true );
+	HUDContainer.addChild( obj );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
 	s = new createjs.Shape( g );
 	s.alpha = 0.01;
+	s.name = "music_toggle_hitArea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "music_on_normal", img: "music_on_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "music_on_normal", img: "music_on_normal", obj: "pic"} );
-	// XXX: ONCLICK
-	menuContainer.addChild( s );
+	s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
+	s.on( "click" , toggleSound, false, null, {img: "music_off_normal"});
+	HUDContainer.addChild( s );
 	
 	// trackMenu: display right arrow
 	obj = drawPicture( "right_normal", new Location(w-100, h/2-60/2), 50, 60, "right_normal_track", false );
@@ -828,7 +829,6 @@ function setPlayers(){
 			}
 		})
 	};
-
 }
 
 
@@ -866,8 +866,23 @@ function doMove(){
 }
 
 
-function toggleSound() {
-	// if on turn off and vice versa
+function toggleSound( evt, data ) {
+	var hitArea = HUDContainer.getChildByName( "music_toggle_hitArea" );
+	var pic = HUDContainer.getChildByName( "music_toggle" );
+	hitArea.removeAllEventListeners();
+	if ( data.on ){
+		pic.image = preload.getResult( "music_on_normal" );
+		hitArea.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
+		hitArea.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
+		hitArea.on( "click" , toggleSound, false, null, {on: false});
+		// XXX: Toggle sound
+	} else {
+		pic.image = preload.getResult( "music_off_normal" );
+		hitArea.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_off_hover", obj: "pic"} );
+		hitArea.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_off_normal", obj: "pic"} );
+		hitArea.on( "click" , toggleSound, false, null, {on: true});
+		// XXX: Toggle sound
+	}
 };
 
 
