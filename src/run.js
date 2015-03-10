@@ -46,7 +46,12 @@ manifest = [
 	{ src:"img/play_normal.png", 		id:"play_normal" },
 	{ src:"img/play_hover.png", 		id:"play_hover" },
 	{ src:"img/sprite_none.png", 		id:"sprite_none" },
-	{ src:"img/sprite_car_1.png", 		id:"sprite_car_1" }
+	{ src:"img/sprite_car_1.png", 		id:"sprite_car_1" },
+	{ src:"img/trackname_own.png", 		id:"trackname_own" },
+	{ src:"img/trackname_doodoo.png", 	id:"trackname_doodoo" },
+	{ src:"img/trackname_drag.png", 	id:"trackname_drag" },
+	{ src:"img/trackname_lummerland.png", id:"trackname_lummerland" },
+	{ src:"img/trackname_spaceship.png", id:"trackname_spaceship" }
 ];
 
 spriteSheets = [];
@@ -207,6 +212,10 @@ function prepareMenu() {
 	// display Background of Header
 	obj = drawPicture( "back_header", new Location(w/2-550/2, 20), 550, -1, "back_header", true );
 	menuContainer.addChild( obj );
+	// display Title of init Track
+	obj = drawPicture( "trackname_"+game.track.name, new Location(w/2-300/2,h/2-60/2), 300, 60, "trackname", true );
+	menuContainer.addChild( obj );
+
 	// display Header
 	obj = drawPicture( "header", new Location(w/2-350/2, 40), 350, -1, "header", true );
 	menuContainer.addChild( obj );
@@ -462,14 +471,18 @@ function changeCar( evt, data ){
 function changeTrack ( evt, data ) {
 	finishLineContainer.removeAllChildren();
 	trackContainer.removeAllChildren();
+	// XXX: Remove child by name???
+	menuContainer.removeChild(menuContainer.getChildByName("trackname"));
+
 	// sets a position of the current chosen track
 	track_position = (track_position + (data.dir == "right" ? +1 : -1)) % tracks.length;
 	if ( track_position < 0 ) {
 		track_position = tracks.length-1; 
 	}
-	console.log(track_position);
-	console.log(tracks);
+	// XXX: Display the corresponding name in the middle
 	game.track = tracks[track_position];
+	var trackTitle = drawPicture( "trackname_"+game.track.name, new Location(w/2-300/2,h/2-60/2), 300, 60, "trackname", true );
+	menuContainer.addChild(trackTitle);
 	paintTrack( game.track.trackBorders, 0 );
 	paintTrack( game.track.surrPoints, 1 );
 	paintTrack( game.track.finishLine, 2 );
