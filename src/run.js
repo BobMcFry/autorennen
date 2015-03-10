@@ -108,26 +108,6 @@ function init() {
 	preload.on( "fileload", handleLoadedStuff );
 	preload.on( "complete", prepareMenu );
 	preload.loadManifest( manifest );
-
-	// XXX: DO I NEED THIS???
-	// /* *********************** */
-	// /* Initialize DOM Elements */
-	// /* *********************** */
-	// for ( var i = 0; i < game.MAXPLAYERS; i++ ){
-	// 	var input = document.getElementById( "input-player-"+i );
-	// 	var dom = new createjs.DOMElement( input );
-	// 	dom.name = "input-player-"+i;
-	// 	var width = dom.htmlElement.clientWidth;
-	// 	var height = dom.htmlElement.clientHeight;
-	// 	var OFFSET = 20;
-	// 	switch( i ){
-	// 		case 0: dom.x = OFFSET; dom.y = OFFSET; break;
-	// 		case 1: dom.x = w-width-OFFSET; dom.y = OFFSET; break;
-	// 		case 2: dom.x = OFFSET; dom.y = h-height-OFFSET; break;
-	// 		case 3: dom.x = w-width-OFFSET; dom.y = h-height-OFFSET; break;
-	// 	}
-	// 	menuContainer.addChild( dom );
-	// }
 	
 	/* ****** */
 	/* TICKER */
@@ -139,8 +119,8 @@ function init() {
 }
 
 // XXX: HERE A PROGRESSVALUE IS INCREASED ON EVERY LOAD OF AN OBJECT
-function handleLoadedStuff( e ){
-	switch( e.item.id ){
+function handleLoadedStuff( evt ){
+	switch( evt.item.id ){
 		case "background": 	
 		case "hud0":
 		case "hud1":
@@ -165,7 +145,7 @@ function handleLoadedStuff( e ){
 		case "music_off_normal":
 		case "music_off_hover":
 		case "play_hover":
-			console.log( e.item.id + " loaded" );
+			console.log( evt.item.id + " loaded" );
 			return;
 		break;
 		default: console.log( "SCREW YOU!" ); break;
@@ -402,34 +382,35 @@ function prepareMenu() {
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_normal", obj: "pic"} );
 	// XXX: onClick
-	s.on( "click", prepareTrack);
+	s.on( "click", function( evt ){
+		// XXX: HERE CHECK WHICH TRACK WAS CHOSEN
+		// XXX: dependant on that set buildStatus on setPlayers or BUILDtrack
+		// XXX: game.track = track setzen... ( auch leerer track bei custom track )
+		buildStatus = BUILD_TRACK;
+		prepareTrack();
+	});
 	menuContainer.addChild( s );
 	
 	// display HUD
 	initScore();
 
-	// XXX: THIS NEEDS TO BE SET DEPENDANT ON CHOICE OF TRACK. EITHER CREATE OWN OR CHOOSE EXISTING
-	buildStatus = BUILD_TRACK;
-	// OR
-	// buildStatus = PLACE_PLAYERS;
-
 	// ANIMATIONS
 	var animation, spriteSheet;
 	spriteSheets.push({
-		images: [preload.getResult("sprite_none")],
+		images: [preload.getResult( "sprite_none" )],
 		frames: {width:100, height:78},
 		animations: {move:[0,4], hold:[0]},
 		framerate: 7
  	});
 	spriteSheets.push({
-		images: [preload.getResult("sprite_car_1")],
+		images: [preload.getResult( "sprite_car_1" )],
 		frames: {width:100, height:77},
 		animations: {move:[0,6], hold:[0]},
 		framerate: 15
  	});
  	menu_car_positions = [0,0,0,0];
 	var spriteSheet = new createjs.SpriteSheet(spriteSheets[0]);
-	var animation = new createjs.Sprite(spriteSheet, "move");
+	var animation = new createjs.Sprite(spriteSheet, "move" );
 	animation.name = "sprite_hud0";
 	animation.x = 60;
 	animation.y = 30;
@@ -462,8 +443,31 @@ function prepareMenu() {
 	menuContainer.addChild(animation);
 };
 
+function changeCar( evt, data ){
+	var inc = (data.dir == "right" ? +1 : -1);
+	menu_car_positions[data.no] = (menu_car_positions[data.no] + inc) % spriteSheets.length; 
+	if ( menu_car_positions[data.no] < 0 ) {
+		menu_car_positions[data.no] = spriteSheets.length-1; 
+	}
+	var c = menuContainer.getChildByName(data.target);
+	c.spriteSheet = new createjs.SpriteSheet(spriteSheets[menu_car_positions[data.no]]);
+}
 
-/* BUILD STUFF */ 
+function changeTrack ( evt, data ) {
+	// sets a position of the current chosen track
+	// paintTrack( data.track.trackBorders, 0 );
+	// paintTrack( data.track.surrPoints, 1 );
+	// paintTrack( data.track.finishLine, 2 );
+	// paintTrack( data.track.trackPoints, 3 );
+}
+
+
+
+
+
+/* = ************* = */
+/* =  BUILD STUFF  = */
+/* = ************* = */
 
 function prepareTrack(){
 	menuContainer.visible = false;
@@ -481,6 +485,7 @@ function prepareTrack(){
 		break;
 		case PLACE_PLAYERS:
 			paintContainer.removeAllChildren();
+			console.log( game.track );
 			// Determine Locations of players
 			setPlayers();
 		break;
@@ -490,21 +495,6 @@ function prepareTrack(){
 		break;
 		default: console.log( "Well OK?" );
 	}
-}
-
-function changeCar( evt, data ){
-	var inc = (data.dir == "right" ? +1 : -1);
-	menu_car_positions[data.no] = (menu_car_positions[data.no] + inc) % spriteSheets.length; 
-	if ( menu_car_positions[data.no] < 0 ) {
-		menu_car_positions[data.no] = spriteSheets.length-1; 
-	}
-	var c = menuContainer.getChildByName(data.target);
-	c.spriteSheet = new createjs.SpriteSheet(spriteSheets[menu_car_positions[data.no]]);
-}
-
-function changeTrack ( evt, data ) {
-	// XXX: changes the canvas background to the corresponding picture (!) of a track
-	// sets a position of the current chosen track
 }
 
 function buildTrack(){
@@ -610,43 +600,47 @@ function buildTrack(){
 }
 
 function paintTrack( array, type ){
+	var container;
 	switch( type ) {
 		case 0: 
+			container = trackContainer;
 			for ( var j = 0; j < array.length; j++ ){
 				if ( trackContainer.getChildByName( array[j].x+","+array[j].y ) == null ){
 					var circle = drawColoredCircle( "red", array[j], CIRCLE_SIZE, true );
 					circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2,CIRCLE_SIZE*2 );
 					trackContainer.addChild( circle );	
 				}
-			}
+			}	
 		break;
 		case 1: 
+			container = trackContainer;
 			for ( var j = 0; j < array.length; j++ ){
 				var circle = drawColoredCircle( "green", array[j], CIRCLE_SIZE, true );
 				circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2, CIRCLE_SIZE*2 );
 				trackContainer.addChild( circle );
-			}
+			}	
 		break;
 		case 2: 
+			container = finishLineContainer;
 			for ( var j = 0; j < array.length; j++ ){
 				if ( finishLineContainer.getChildByName( array[j].x+","+array[j].y ) == null ){
 					var circle = drawColoredCircle( "blue", array[j], CIRCLE_SIZE, true );
 					circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2,CIRCLE_SIZE*2 );
 					finishLineContainer.addChild( circle );	
 				}
-			}
+			}	
 		break;
 		case 3: 
 			console.log ( "track" );
+			// container = ???
 		break;
 		default: console.log( "SCREW YOU!" ); break;
-
-		// XXX: HERE SHOULD BE CORRECT BOUNDS...NOW EVERYTHING IS CACHED...
-		try{
-			finishLineContainer.updateCache( 0, 0, w, h );
-		} catch( err ){
-			finishLineContainer.cache( 0, 0, w, h );
-		}
+	}
+	// // XXX: HERE SHOULD BE CORRECT BOUNDS...NOW EVERYTHING IS CACHED...
+	try{
+		container.updateCache( 0, 0, w, h );
+	} catch( err ){
+		container.cache( 0, 0, w, h );
 	}
 
 }
