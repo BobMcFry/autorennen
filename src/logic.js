@@ -3,7 +3,7 @@
 /* ################## */
 
 // XXX: remove car
-var Car = function(typ, col){
+var Car = function( typ, col ){
 	/* Type of Car */
 	this.type = typ;
 	/* Color of Car */
@@ -15,13 +15,13 @@ var Car = function(typ, col){
 /* #### LOCATION #### */
 /* ################## */
 
-var Location = function(x, y, addOn){
+var Location = function( x, y, addOn ){
 	this.x = x;
 	this.y = y;
 	this.addOn = addOn;
 }
 
-var Location = function(x, y){
+var Location = function( x, y ){
 	this.x = x;
 	this.y = y;
 	this.addOn = this.NONE;
@@ -38,29 +38,29 @@ Location.prototype.ELEGANT = 5;
 Location.prototype.OTHERSELEGANT = 6;
 
 Location.prototype.assignRandomItem = function() {
-	loc.addOn = Math.floor((Math.random() * loc.NEGNOOFITEMS * -1) + 1);
+	loc.addOn = Math.floor(( Math.random() * loc.NEGNOOFITEMS * -1 ) + 1 );
 };
 
-Location.prototype.getMove = function(lastLoc) {
-	if (this.addOn == this.NONE){
+Location.prototype.getMove = function( lastLoc ) {
+	if ( this.addOn == this.NONE ){
 		// TODO
 	}
-	if (this.addOn == this.SUPERFAST){
+	if ( this.addOn == this.SUPERFAST ){
 		// TODO
 	}
-	var newX = this.x + (this.x - lastLoc.x);
-	var newY = this.y + (this.y - lastLoc.y);
-	return new Location(newX, newY);
+	var newX = this.x + ( this.x - lastLoc.x );
+	var newY = this.y + ( this.y - lastLoc.y );
+	return new Location( newX, newY );
 };
 
-Location.prototype.distanceTo = function(loc) {
+Location.prototype.distanceTo = function( loc ) {
 	var diffX = this.x - loc.x;
 	var diffY = this.y - loc.y;
-	return Math.sqrt(diffX * diffX + diffY * diffY);
+	return Math.sqrt( diffX * diffX + diffY * diffY );
 };
 
-Location.prototype.equals = function(loc) {
-	if (this.x == loc.x && this.y == loc.y){
+Location.prototype.equals = function( loc ) {
+	if ( this.x == loc.x && this.y == loc.y ){
 		return true;
 	}
 
@@ -69,30 +69,30 @@ Location.prototype.equals = function(loc) {
 
 Location.prototype.getRawSurrounding = function() {
 	var surr = new Array();
-	if (this.addOn == this.NONE){
+	if ( this.addOn == this.NONE ){
 		// TODO
 	}
-	if (this.addOn == this.DIZZY){
+	if ( this.addOn == this.DIZZY ){
 		// TODO
 	}
-	if (this.addOn == this.ELEGANT){
+	if ( this.addOn == this.ELEGANT ){
 		// TODO
 	}
-	surr.push(new Location(this.x-1, this.y   ));
-	surr.push(new Location(this.x-1, this.y+1 ));
-	surr.push(new Location(this.x  , this.y+1 ));
-	surr.push(new Location(this.x+1, this.y+1 ));
-	surr.push(new Location(this.x+1, this.y   ));
-	surr.push(new Location(this.x+1, this.y-1 ));
-	surr.push(new Location(this.x  , this.y-1 ));
-	surr.push(new Location(this.x-1, this.y-1 ));
+	surr.push( new Location( this.x-1, this.y   ));
+	surr.push( new Location( this.x-1, this.y+1 ));
+	surr.push( new Location( this.x  , this.y+1 ));
+	surr.push( new Location( this.x+1, this.y+1 ));
+	surr.push( new Location( this.x+1, this.y   ));
+	surr.push( new Location( this.x+1, this.y-1 ));
+	surr.push( new Location( this.x  , this.y-1 ));
+	surr.push( new Location( this.x-1, this.y-1 ));
 	return surr;
 };
 
-Location.prototype.isNeighbor = function(loc){
-	if (-1 >= (this.x - loc.x) || (this.x - loc.x) <= 1
+Location.prototype.isNeighbor = function( loc ){
+	if ( -1 >= ( this.x - loc.x ) || (this.x - loc.x ) <= 1
 			&&
-			-1 >= (this.y - loc.y) || (this.y - loc.y) <= 1){
+			-1 >= ( this.y - loc.y ) || ( this.y - loc.y ) <= 1 ){
 		return true;
 	}
 
@@ -100,7 +100,7 @@ Location.prototype.isNeighbor = function(loc){
 }
 
 Location.prototype.toString = function() {
-	return "("+this.x+","+ this.y+")"
+	return "( "+this.x+","+ this.y+" )"
 };
 
 
@@ -114,9 +114,9 @@ var	Track = function( width, height, name ){
 	this.gamePoints = [height*width];
 	// XXX: brauch ich das noch? wird das jemals verwendet?
 	var cnt = 0;
-	for (var i = 0; i < height; i++) {
-		for (var j = 0; j < width; j++) {
-			this.gamePoints[cnt++] = new Location(j,i);
+	for ( var i = 0; i < height; i++ ) {
+		for ( var j = 0; j < width; j++ ) {
+			this.gamePoints[cnt++] = new Location( j,i );
 		};
 	};
 
@@ -132,64 +132,64 @@ var	Track = function( width, height, name ){
 // XXX: THINK ABOUT A NICER SHORTER SOLUTION
 
 Track.prototype.isGamePoint = function( loc ) {
-	for (var i = 0; i < this.gamePoints.length; i++) {
-		if (this.gamePoints[i].equals(loc)){
+	for ( var i = 0; i < this.gamePoints.length; i++ ) {
+		if ( this.gamePoints[i].equals( loc )){
 			return true;
 		}
 	};
 	return false;
 };
 
-Track.prototype.isOnTrack = function(loc) {
-	for (var i = 0; i < this.trackPoints.length; i++) {
-		if (this.trackPoints[i].equals(loc)){
+Track.prototype.isOnTrack = function( loc ) {
+	for ( var i = 0; i < this.trackPoints.length; i++ ) {
+		if ( this.trackPoints[i].equals( loc )){
 			return true;
 		}
 	};
 	return false;
 };
 
-Track.prototype.isBorder = function(loc) {
-	for (var i = 0; i < this.trackBorders.length; i++) {
-		if (this.trackBorders[i].equals(loc)){
+Track.prototype.isBorder = function( loc ) {
+	for ( var i = 0; i < this.trackBorders.length; i++ ) {
+		if ( this.trackBorders[i].equals( loc )){
 			return true;
 		}
 	};
 	return false;	
 };
 
-Track.prototype.isSurrounding = function(loc) {
-	for (var i = 0; i < this.surrPoints.length; i++) {
-		if (this.surrPoints[i].equals(loc)){
+Track.prototype.isSurrounding = function( loc ) {
+	for ( var i = 0; i < this.surrPoints.length; i++ ) {
+		if ( this.surrPoints[i].equals( loc )){
 			return true;
 		}
 	};
 	return false;	
 };
 
-Track.prototype.isFinishLine = function(loc) {
-	for (var i = 0; i < this.finishLine.length; i++) {
-		if (this.finishLine[i].equals(loc)){
+Track.prototype.isFinishLine = function( loc ) {
+	for ( var i = 0; i < this.finishLine.length; i++ ) {
+		if ( this.finishLine[i].equals( loc )){
 			return true;
 		}
 	};
 	return false;	
 };
 
-Track.prototype.getSurrounding = function(loc, track) {
+Track.prototype.getSurrounding = function( loc, track ) {
 	var rawSurr = loc.getRawSurrounding();
 	var realSurr = new Array();
-	for (var i = 0; i < rawSurr.length; i++) {
+	for ( var i = 0; i < rawSurr.length; i++ ) {
 		// checks validity of Locations on trackPoints
-		if (track){
-			if (this.isOnTrack(rawSurr[i])){
-				realSurr.push(rawSurr[i]);
+		if ( track ){
+			if ( this.isOnTrack( rawSurr[i] )){
+				realSurr.push( rawSurr[i] );
 			}
 		}
 		// checks validity of Locations on possible gamepoints
 		else{
-			if (this.isGamePoint(rawSurr[i])){
-				realSurr.push(rawSurr[i]);
+			if ( this.isGamePoint( rawSurr[i]) ){
+				realSurr.push( rawSurr[i] );
 			}
 		}
 	};
@@ -201,14 +201,14 @@ Track.prototype.getSurrounding = function(loc, track) {
 /* ################## */
 
 
-var Game = function(width, height){
+var Game = function( width, height ){
 	// XXX: Evtl auch h oder w direkt hier rein?
 	this.width = width;
 	this.height = height;
-	// XXX: MAYBE THESE CAN BE SET SOMETIMES (SMALLER SCREENS)...maybe also dependant on the size...
+	// XXX: MAYBE THESE CAN BE SET SOMETIMES ( SMALLER SCREENS )...maybe also dependant on the size...
 	this.xBoxes = 55;
 	this.yBoxes = 45;
-	this.track = new Track(this.xBoxes, this.yBoxes, "own");
+	this.track = new Track( this.xBoxes, this.yBoxes, "own" );
 	this.xDelta = this.width / this.xBoxes;
 	this.yDelta = this.height / this.yBoxes;
 	this.players = new Array();
@@ -225,29 +225,29 @@ Game.prototype.START = 0;
 Game.prototype.TURN = 1;
 
 /* Checks surrounding for Occupation by other Players */
-Game.prototype.getSurrounding = function(loc, track) {
-	var surr = this.track.getSurrounding(loc, track);
+Game.prototype.getSurrounding = function( loc, track ) {
+	var surr = this.track.getSurrounding( loc, track );
 	var newSurr = new Array();
-	for (var i = 0; i < surr.length; i++){
-		if (!this.isOccupied(surr[i])){
-			newSurr.push(surr[i]);
+	for ( var i = 0; i < surr.length; i++ ){
+		if ( !this.isOccupied(surr[i]) ){
+			newSurr.push( surr[i] );
 		}
 	}
 	return newSurr;
 };
 
-Game.prototype.isOccupied = function(loc) {
-	for (var i = 0; i < this.activePlayers.length; i++){
-		if (loc.equals(this.activePlayers[i].crntLoc())){
+Game.prototype.isOccupied = function( loc ) {
+	for ( var i = 0; i < this.activePlayers.length; i++ ){
+		if ( loc.equals( this.activePlayers[i].crntLoc() )){
 			return true;
 		}
 	}
 	return false;
 };
 
-Game.prototype.isKicked = function(player) {
-	for (var i = 0; i < this.kickedPlayers.length; i++){
-		if (this.kickedPlayers[i].no == player.no){
+Game.prototype.isKicked = function( player ) {
+	for ( var i = 0; i < this.kickedPlayers.length; i++ ){
+		if ( this.kickedPlayers[i].no == player.no ){
 			return true;
 		}
 	}
@@ -257,15 +257,15 @@ Game.prototype.isKicked = function(player) {
 Game.prototype.getTurn = function() {
 	var ret = {};
 	var noValidPlayer = true;
-	while(noValidPlayer){
+	while( noValidPlayer ){
 		ret.player = this.getCurrentPlayer();
-		ret.surrounding = this.getSurrounding(ret.player.getNextLocation(), true);
+		ret.surrounding = this.getSurrounding( ret.player.getNextLocation(), true );
 		ret.win = this.activePlayers.length == 1;
 		ret.draw = this.activePlayers.length == 0;
-		if (ret.surrounding.length == 0 && (!ret.win || !ret.draw)){
-			var index = this.activePlayers.indexOf(ret.player);
-			this.activePlayers.splice(index, 1);
-			this.kickedPlayers.push(ret.player);
+		if ( ret.surrounding.length == 0 && (!ret.win || !ret.draw) ){
+			var index = this.activePlayers.indexOf( ret.player );
+			this.activePlayers.splice( index, 1 );
+			this.kickedPlayers.push( ret.player );
 			this.currentPlayer = this.currentPlayer % this.activePlayers.length;
 			noValidPlayer = true;
 			continue;
@@ -275,52 +275,52 @@ Game.prototype.getTurn = function() {
 	return ret;
 };
 
-Game.prototype.turn = function(loc) {
+Game.prototype.turn = function( loc ) {
 	var crntPlayer = this.getCurrentPlayer();
-	crntPlayer.setNextLocation(loc);
+	crntPlayer.setNextLocation( loc );
 	this.currentPlayer++;
 	this.currentPlayer = this.currentPlayer % this.activePlayers.length;
 
 	// Put AddOns on Track with certain probability
 	// TEMP INACTIVE FOR TESTING PURPOSES
-	// if (Math.random() > 0.85){
-	// 	var pos = Math.floor((Math.random() * this.track.gamePoints.length) + 1);
+	// if ( Math.random() > 0.85 ){
+	// 	var pos = Math.floor( (Math.random() * this.track.gamePoints.length) + 1 );
 	// 	this.track.gamePoints[pos].assignRandomItem();
 	// }
 	
 };
 
 Game.prototype.calculateTrackPoints = function() {
-	for (var i = 0; i < this.track.gamePoints.length; i++){
+	for ( var i = 0; i < this.track.gamePoints.length; i++ ){
 		var p = this.track.gamePoints[i];
-		if (!this.track.isBorder(p) 
-				&& !this.track.isSurrounding(p)
-				&& !this.track.isFinishLine(p)){
-			this.track.trackPoints.push(p);
+		if ( !this.track.isBorder(p ) 
+				&& !this.track.isSurrounding( p )
+				&& !this.track.isFinishLine( p )){
+			this.track.trackPoints.push( p );
 		}
 	}
 };
 
-Game.prototype.toXCoord = function(loc) {
+Game.prototype.toXCoord = function( loc ) {
 	return loc.x * this.xDelta;
 };
 
-Game.prototype.toYCoord = function(loc) {
+Game.prototype.toYCoord = function( loc ) {
 	return loc.y * this.yDelta;	
 };
 
-Game.prototype.toLoc = function(x,y) {
-	var xMult = parseInt(x / this.xDelta);
+Game.prototype.toLoc = function( x,y ) {
+	var xMult = parseInt( x / this.xDelta );
 	var xDiff = x % this.xDelta;
-	if (xDiff / this.xDelta > 0.5)
+	if ( xDiff / this.xDelta > 0.5 )
 		xMult++;
 
-	var yMult = parseInt(y / this.yDelta);
+	var yMult = parseInt( y / this.yDelta );
 	var yDiff = y % this.yDelta;
-	if (yDiff / this.yDelta > 0.5)
+	if ( yDiff / this.yDelta > 0.5 )
 		yMult++;
 
-	return new Location(xMult, yMult);
+	return new Location( xMult, yMult );
 };
 
 Game.prototype.getCurrentPlayer = function() {
@@ -332,7 +332,7 @@ Game.prototype.getCurrentPlayer = function() {
 /* ################## */
 
 // XXX: remove car
-var	Player = function( car, no){
+var	Player = function( car, no ){
 	this.car = car;
 	this.avgSpeed = 0;
 	this.distance = 0;
@@ -345,7 +345,7 @@ Player.prototype.crntLoc = function() {
 };
 
 Player.prototype.lastLoc = function() {
-	if (this.historyLocs.length == 1){
+	if ( this.historyLocs.length == 1 ){
 		return this.historyLocs[0];
 	}
 
@@ -353,22 +353,22 @@ Player.prototype.lastLoc = function() {
 };
 
 Player.prototype.getNextLocation = function() {
-	return this.crntLoc().getMove(this.lastLoc());
+	return this.crntLoc().getMove( this.lastLoc() );
 };
 
-Player.prototype.setNextLocation = function(loc) {
-	this.historyLocs.push(loc);
-	this.setAVGSpeed(this.getSpeed());
-	this.distance += this.lastLoc().distanceTo(this.crntLoc());
+Player.prototype.setNextLocation = function( loc ) {
+	this.historyLocs.push( loc );
+	this.setAVGSpeed( this.getSpeed() );
+	this.distance += this.lastLoc().distanceTo( this.crntLoc() );
 };
 
 Player.prototype.getSpeed = function() {
 	// XXX: STILL VERY SIMPLE
-	return this.lastLoc().distanceTo(this.crntLoc());
+	return this.lastLoc().distanceTo( this.crntLoc() );
 };
 
-Player.prototype.setAVGSpeed = function(speed){
-	var speedSum = this.avgSpeed * (this.historyLocs.length-1);
+Player.prototype.setAVGSpeed = function( speed ){
+	var speedSum = this.avgSpeed * ( this.historyLocs.length-1 );
 	speedSum += speed;
 	this.avgSpeed = speedSum / this.historyLocs.length;
 }
