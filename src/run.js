@@ -196,6 +196,9 @@ function updateScores() {
 
 // XXX: Make sizes and stuff more dependant on the canvas size (See HUD_SIZE as an example)
 function prepareMenu() {
+	// XXX: SomeWhere necessary maybe
+	// color = createjs.Graphics.getHSL( Math.random()*360, 100, 50 );
+
 
 	// XXX: Testing Purposes
 	// XXX: CAR CAN BE DELETED...NOT NECESARRY ANYMORE
@@ -504,12 +507,10 @@ function changeTrack ( evt, data ) {
 	// sets a position of the current chosen track
 }
 
-// XXX: needs to be niceified
 function buildTrack(){
 	
 	var outerTrackBorders = new Array();
 	var start = true;
-
 	var shape = new createjs.Shape();
 	shape.name = "buildPainting1";
 	paintContainer.addChild( shape );
@@ -550,23 +551,9 @@ function buildTrack(){
 				return;
 			}
 			detectFilling( game.toLoc( evt.stageX, evt.stageY ));
-			
-			for ( var j = 0; j < game.track.surrPoints.length; j++ ){
-				var circle = drawColoredCircle( "green", game.track.surrPoints[j], CIRCLE_SIZE, true );
-				var cacheRect = {};
-				circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2, CIRCLE_SIZE*2 );
-				trackContainer.addChild( circle );
-			}
-			// XXX: HERE SHOULD BE CORRECT BOUNDS...NOW EVERYTHING IS CACHED...
-			try{
-				trackContainer.updateCache( 0, 0, w, h );
-			} catch( err ){
-				trackContainer.cache( 0, 0, w, h );
-			}
+			paintTrack( game.track.surrPoints, 1 );
 		}
 		else{
-			// color = createjs.Graphics.getHSL( Math.random()*360, 100, 50 );
-			
 			// add missing points between pushed points
 			var newBorders = new Array();
 			for ( var i = 0; i < outerTrackBorders.length-1; i++ ){
@@ -587,23 +574,7 @@ function buildTrack(){
 					game.track.trackBorders.push( newBorders[i] );
 				}
 			}
-			
-			for ( var j = 0; j < game.track.trackBorders.length; j++ ){
-				// var circle = drawColoredCircle( "red", game.track.trackBorders[j], 4, true );
-				// circle.cache( -4, -4, 8,8 );
-				// trackContainer.addChild( circle );
-				if ( trackContainer.getChildByName( game.track.trackBorders[j].x+","+game.track.trackBorders[j].y ) == null ){
-					var circle = drawColoredCircle( "red", game.track.trackBorders[j], CIRCLE_SIZE, true );
-					circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2,CIRCLE_SIZE*2 );
-					trackContainer.addChild( circle );	
-				}
-			}
-			// XXX: HERE SHOULD BE CORRECT BOUNDS...NOW EVERYTHING IS CACHED...
-			try{
-				trackContainer.updateCache( 0, 0, w, h );
-			} catch( err ){
-				trackContainer.cache( 0, 0, w, h );
-			}
+			paintTrack( game.track.trackBorders, 0 );
 			// clear outerTrackBorders
 			outerTrackBorders.length = 0;
 		}
@@ -626,7 +597,7 @@ function buildTrack(){
 		oldY = evt.stageY;
 	})
 
-	var text = drawText ( "Done", "doneButton", new Location(w/2 - 80, h-30), "20px", "Arial", "DeepSkyBlue", true, "left", "top" );
+	var text = drawText ( "Done", "doneButton", new Location( w/2 - 80, h-30 ), "20px", "Arial", "DeepSkyBlue", true, "left", "top" );
 	
 	stuffContainer.addChild( text );
 	text.on( "click", function ( evt ){
@@ -636,7 +607,52 @@ function buildTrack(){
 		stuffContainer.removeChild( child );
 		stage.update();
 	});
-	
+}
+
+function paintTrack( array, type ){
+	switch( type ) {
+		case 0: 
+			for ( var j = 0; j < array.length; j++ ){
+				if ( trackContainer.getChildByName( array[j].x+","+array[j].y ) == null ){
+					var circle = drawColoredCircle( "red", array[j], CIRCLE_SIZE, true );
+					circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2,CIRCLE_SIZE*2 );
+					trackContainer.addChild( circle );	
+				}
+			}
+		break;
+		case 1: 
+			for ( var j = 0; j < array.length; j++ ){
+				var circle = drawColoredCircle( "green", array[j], CIRCLE_SIZE, true );
+				circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2, CIRCLE_SIZE*2 );
+				trackContainer.addChild( circle );
+			}
+		break;
+		case 2: 
+			for ( var j = 0; j < array.length; j++ ){
+				if ( finishLineContainer.getChildByName( array[j].x+","+array[j].y ) == null ){
+					var circle = drawColoredCircle( "blue", array[j], CIRCLE_SIZE, true );
+					circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2,CIRCLE_SIZE*2 );
+					finishLineContainer.addChild( circle );	
+				}
+			}
+		break;
+		case 3: 
+			console.log ( "track" );
+		break;
+		default: console.log( "SCREW YOU!" ); break;
+
+		// XXX: HERE SHOULD BE CORRECT BOUNDS...NOW EVERYTHING IS CACHED...
+		try{
+			finishLineContainer.updateCache( 0, 0, w, h );
+		} catch( err ){
+			finishLineContainer.cache( 0, 0, w, h );
+		}
+	}
+
+}
+
+function displayTip( content ){
+
 }
 
 function detectPointsInBetween( srcLoc, destLoc ){
@@ -734,21 +750,7 @@ function setStartPoints(){
 				game.track.finishLine.push( newFinishLine[i] );
 			}
 		}
-		for ( var j = 0; j < game.track.finishLine.length; j++ ){
-			if ( finishLineContainer.getChildByName( game.track.finishLine[j].x+","+game.track.finishLine[j].y ) == null ){
-				var circle = drawColoredCircle( "blue", game.track.finishLine[j], CIRCLE_SIZE, true );
-				circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2,CIRCLE_SIZE*2 );
-				finishLineContainer.addChild( circle );	
-			}
-			
-		}
-		
-		// XXX: HERE SHOULD BE CORRECT BOUNDS...NOW EVERYTHING IS CACHED...
-		try{
-			finishLineContainer.updateCache( 0, 0, w, h );
-		} catch( err ){
-			finishLineContainer.cache( 0, 0, w, h );
-		}
+		paintTrack( game.track.finishLine, 2 );
 		// clear finishLine
 		finishLine.length = 0;
 		
@@ -834,7 +836,6 @@ function setPlayers(){
 
 
 function doMove(){
-	// XXX: I think this could be useful at other locations in the code
 	choiceContainer.removeAllChildren();
 
 	var crntTurn = game.getTurn();
