@@ -11,6 +11,11 @@ CIRCLE_SIZE = 5;
 HUD_SIZE = 0.2;
 HUD_OFFSET = 0.1;
 
+// XXX: CHANGE EVERY VARIABLE TO CAMELCASE EXCEPT FOR CONSTANTS (ALL CAPITAL LETTERS)
+menu_car_positions = [0,0,0,0];
+tracks = [];
+track_position = 0;
+
 // XXX: maybe put the code that is related to drawing stuff somewhere else
 
 // XXX: make pics to global vars to make editing afterwards easier
@@ -60,6 +65,7 @@ function init() {
 	h = stage.canvas.height;//600;//300;
 	game = new Game( w, h );
 	
+	initializeTracks();
 	
 	/* Container that allow for faster allocation of Objects */
 	// Background
@@ -383,10 +389,11 @@ function prepareMenu() {
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_normal", obj: "pic"} );
 	// XXX: onClick
 	s.on( "click", function( evt ){
-		// XXX: HERE CHECK WHICH TRACK WAS CHOSEN
-		// XXX: dependant on that set buildStatus on setPlayers or BUILDtrack
-		// XXX: game.track = track setzen... ( auch leerer track bei custom track )
-		buildStatus = BUILD_TRACK;
+		if ( track_position == 0 ){
+			buildStatus = BUILD_TRACK;
+		} else {
+			buildStatus = PLACE_PLAYERS;
+		}
 		prepareTrack();
 	});
 	menuContainer.addChild( s );
@@ -408,7 +415,6 @@ function prepareMenu() {
 		animations: {move:[0,6], hold:[0]},
 		framerate: 15
  	});
- 	menu_car_positions = [0,0,0,0];
 	var spriteSheet = new createjs.SpriteSheet(spriteSheets[0]);
 	var animation = new createjs.Sprite(spriteSheet, "move" );
 	animation.name = "sprite_hud0";
@@ -454,11 +460,20 @@ function changeCar( evt, data ){
 }
 
 function changeTrack ( evt, data ) {
+	finishLineContainer.removeAllChildren();
+	trackContainer.removeAllChildren();
 	// sets a position of the current chosen track
-	// paintTrack( data.track.trackBorders, 0 );
-	// paintTrack( data.track.surrPoints, 1 );
-	// paintTrack( data.track.finishLine, 2 );
-	// paintTrack( data.track.trackPoints, 3 );
+	track_position = (track_position + (data.dir == "right" ? +1 : -1)) % tracks.length;
+	if ( track_position < 0 ) {
+		track_position = tracks.length-1; 
+	}
+	console.log(track_position);
+	console.log(tracks);
+	game.track = tracks[track_position];
+	paintTrack( game.track.trackBorders, 0 );
+	paintTrack( game.track.surrPoints, 1 );
+	paintTrack( game.track.finishLine, 2 );
+	paintTrack( game.track.trackPoints, 3 );
 }
 
 
@@ -485,7 +500,6 @@ function prepareTrack(){
 		break;
 		case PLACE_PLAYERS:
 			paintContainer.removeAllChildren();
-			console.log( game.track );
 			// Determine Locations of players
 			setPlayers();
 		break;
@@ -631,8 +645,8 @@ function paintTrack( array, type ){
 			}	
 		break;
 		case 3: 
-			console.log ( "track" );
-			// container = ???
+			console.log ( "Not implemented: track colorization" );
+			container = trackContainer;
 		break;
 		default: console.log( "SCREW YOU!" ); break;
 	}
@@ -796,6 +810,7 @@ function setPlayers(){
 	for ( var i = 0; i < finishLineContainer.getNumChildren(); i++ ) {
 		var child = finishLineContainer.getChildAt( i );
 		child.uncache();
+		// XXX: do that mouseover stuff on a hitarea...useful?
 		child.cursor = "pointer";
 		child.on( "mouseover", hover, false, null, {color: "red", obj: "circle"} );
 		child.on( "mouseout", hover, false, null, {color: "blue", obj: "circle"} );
@@ -820,12 +835,25 @@ function setPlayers(){
 				}
 				buildStatus++;
 				game.calculateTrackPoints();
+				// XXX: for creating tracks
+				// printArray( game.track.trackBorders, "track.trackBorders" );
+				// printArray( game.track.finishLine, "track.finishLine" );
+				// printArray( game.track.surrPoints, "track.surrPoints" );
+				// printArray( game.track.trackPoints, "track.trackPoints" );
 				prepareTrack();
 				stage.update();
 			}
 		})
 	};
 }
+// XXX: for creating tracks
+// function printArray ( array, name ){
+// 	var string = "";
+// 	for ( var i = 0; i < array.length; i++ ){
+// 		string += name+".push( new Location" + array[i].toString()+");";
+// 	}
+// 	console.log( string );
+// }
 
 
 

@@ -99,12 +99,16 @@ Location.prototype.isNeighbor = function(loc){
 	return false;
 }
 
+Location.prototype.toString = function() {
+	return "("+this.x+","+ this.y+")"
+};
+
 
 /* ################## */
 /* ###### TRACK ##### */
 /* ################## */
 
-var	Track = function(width, height){
+var	Track = function( width, height, name ){
 	this.width = width;
 	this.height = height;
 	this.gamePoints = [height*width];
@@ -120,13 +124,14 @@ var	Track = function(width, height){
 	this.trackBorders = new Array();
 	this.surrPoints = new Array();
 	this.finishLine = new Array();
+	this.name = name;
 }
 
 // XXX: THINK ABOUT A NICER SHORTER SOLUTION
 // XXX: THINK ABOUT A NICER SHORTER SOLUTION
 // XXX: THINK ABOUT A NICER SHORTER SOLUTION
 
-Track.prototype.isGamePoint = function(loc) {
+Track.prototype.isGamePoint = function( loc ) {
 	for (var i = 0; i < this.gamePoints.length; i++) {
 		if (this.gamePoints[i].equals(loc)){
 			return true;
@@ -163,8 +168,8 @@ Track.prototype.isSurrounding = function(loc) {
 };
 
 Track.prototype.isFinishLine = function(loc) {
-	for (var i = 0; i < this.surrPoints.length; i++) {
-		if (this.surrPoints[i].equals(loc)){
+	for (var i = 0; i < this.finishLine.length; i++) {
+		if (this.finishLine[i].equals(loc)){
 			return true;
 		}
 	};
@@ -203,7 +208,7 @@ var Game = function(width, height){
 	// XXX: MAYBE THESE CAN BE SET SOMETIMES (SMALLER SCREENS)...maybe also dependant on the size...
 	this.xBoxes = 55;
 	this.yBoxes = 45;
-	this.track = new Track(this.xBoxes, this.yBoxes);
+	this.track = new Track(this.xBoxes, this.yBoxes, "own");
 	this.xDelta = this.width / this.xBoxes;
 	this.yDelta = this.height / this.yBoxes;
 	this.players = new Array();
