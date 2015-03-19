@@ -215,7 +215,6 @@ var Game = function( width, height ){
 	this.activePlayers = new Array();
 	this.kickedPlayers = new Array();
 	this.currentPlayer = 0;
-	this.MAXPLAYERS = 4;
 	// XXX: MAYBE NOT NECESSARY
 	this.status = this.START;
 }

@@ -47,6 +47,7 @@ manifest = [
 	{ src:"img/play_hover.png", 		id:"play_hover" },
 	{ src:"img/sprite_none.png", 		id:"sprite_none" },
 	{ src:"img/sprite_car_1.png", 		id:"sprite_car_1" },
+	{ src:"img/sprite_car_2.png", 		id:"sprite_car_2" },
 	{ src:"img/trackname_own.png", 		id:"trackname_own" },
 	{ src:"img/trackname_doodoo.png", 	id:"trackname_doodoo" },
 	{ src:"img/trackname_drag.png", 	id:"trackname_drag" },
@@ -187,20 +188,6 @@ function updateScores() {
 
 // XXX: Make sizes and stuff more dependant on the canvas size (See HUD_SIZE as an example)
 function prepareMenu() {
-	// XXX: SomeWhere necessary maybe
-	// color = createjs.Graphics.getHSL( Math.random()*360, 100, 50 );
-
-
-	// XXX: Testing Purposes
-	// XXX: CAR CAN BE DELETED...NOT NECESARRY ANYMORE
-	game.activePlayers.push( new Player( new Car( null, "#FF0066" ), 0 ));
-	game.activePlayers.push( new Player( new Car( null, "#66FF33" ), 1 ));
-	game.activePlayers.push( new Player( new Car( null, "#00CCFF" ), 2 ));
-	game.activePlayers.push( new Player( new Car( null, "#0033CC" ), 3 ));
-	game.players.push( game.activePlayers[0] );
-	game.players.push( game.activePlayers[1] );
-	game.players.push( game.activePlayers[2] );
-	game.players.push( game.activePlayers[3] );
 
 	// helper for displaying objects (graphics and shapes)
 	var obj, g, s;
@@ -396,8 +383,17 @@ function prepareMenu() {
 	s.cursor = "pointer";
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_normal", obj: "pic"} );
-	// XXX: onClick
 	s.on( "click", function( evt ){
+		for (var i = 0; i < menu_car_positions.length; i++){
+			if (menu_car_positions[i] != 0){
+				// XXX: Color muss noch ausgelesen werden.
+				color = createjs.Graphics.getHSL( Math.random()*360, 100, 50 );
+				var player = new Player( new Car( null, color ), i );
+				game.activePlayers.push( player );
+				game.players.push( player );
+			}
+		}
+
 		if ( track_position == 0 ){
 			buildStatus = BUILD_TRACK;
 		} else {
@@ -422,6 +418,12 @@ function prepareMenu() {
 		images: [preload.getResult( "sprite_car_1" )],
 		frames: {width:100, height:77},
 		animations: {move:[0,6], hold:[0]},
+		framerate: 15
+ 	});
+ 	spriteSheets.push({
+		images: [preload.getResult( "sprite_car_2" )],
+		frames: {width:70, height:61},
+		animations: {move:[0,6], hold:[5]},
 		framerate: 15
  	});
 	var spriteSheet = new createjs.SpriteSheet(spriteSheets[0]);
@@ -835,6 +837,8 @@ function setPlayers(){
 			game.activePlayers[no].historyLocs.push( loc );
 			
 			var playercircle = drawColoredCircle( game.activePlayers[no].car.color, loc, CIRCLE_SIZE+5, false );
+			playercircle.name = "car_"+game.activePlayers[no].no;
+			// XXX: HERE THE PIC NEEDS TO BE PLACED (OF CAR)
 			playerContainer.addChild( playercircle );
 			stage.update();
 
@@ -888,10 +892,11 @@ function doMove(){
 
 	var surr = crntTurn.surrounding;
 	for ( var i = 0; i < surr.length; i++ ){
-		var circle = drawColoredCircle( crntTurn.player.car.color, surr[i], CIRCLE_SIZE, true );
+		var circle = drawColoredCircle( crntTurn.player.car.color, surr[i], CIRCLE_SIZE*1.5, true );
 		choiceContainer.addChild( circle );
 		circle.on( "click", function( evt ){
 			var loc = game.toLoc( evt.stageX, evt.stageY );
+			console.log (crntTurn);
 			updateCars( crntTurn.player, loc, crntTurn.player.getSpeed()+1, 1000, 60 );
 			// update addons
 			// view.updateAddOns( loc );
@@ -1034,7 +1039,7 @@ function initCars( visible ) {
 
 function updateCars( player, l, speed, time, fps ) {
 	var loc = new Location( game.toXCoord( l ), game.toYCoord( l ));
-	var car = playerContainer.getChildAt( player.no );
+	var car = playerContainer.getChildByName( "car_"+player.no );
 	createjs.Tween.get( car, {loop: false} )
   	.to( { x: loc.x, y: loc.y }, time, createjs.Ease.getPowInOut( speed ));
   	// XXX: These can be cached!
