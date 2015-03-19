@@ -11,10 +11,15 @@ CIRCLE_SIZE = 5;
 HUD_SIZE = 0.2;
 HUD_OFFSET = 0.1;
 
+SKEW_CARS_MENU = 0.8;
+SKEW_CARS_TRACK = 0.3;
+
 // XXX: CHANGE EVERY VARIABLE TO CAMELCASE EXCEPT FOR CONSTANTS (ALL CAPITAL LETTERS)
 menu_car_positions = [0,0,0,0];
 tracks = [];
 track_position = 0;
+
+
 
 // XXX: maybe put the code that is related to drawing stuff somewhere else
 
@@ -273,7 +278,7 @@ function prepareMenu() {
 	s.cursor = "pointer";
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_0", img: "right_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_0", img: "right_normal", obj: "pic"} );
-	s.on( "click", changeCar, false, null, {target: "sprite_hud0", dir: "right", no:0});
+	s.on( "click", changeCar, false, null, {target: "car_0", dir: "right", no:0});
 	// XXX: ONCLICK
 	menuContainer.addChild( s );
 	// carchoice: left top: left arrow
@@ -287,7 +292,7 @@ function prepareMenu() {
 	s.cursor = "pointer";
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car_0", img: "left_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car_0", img: "left_normal", obj: "pic"} );
-	s.on( "click", changeCar, false, null, {target: "sprite_hud0", dir: "left", no:0});
+	s.on( "click", changeCar, false, null, {target: "car_0", dir: "left", no:0});
 	// XXX: ONCLICK
 	menuContainer.addChild( s );
 	
@@ -302,7 +307,7 @@ function prepareMenu() {
 	s.cursor = "pointer";
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_1", img: "right_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_1", img: "right_normal", obj: "pic"} );
-	s.on( "click", changeCar, false, null, {target: "sprite_hud1", dir: "right", no:1});
+	s.on( "click", changeCar, false, null, {target: "car_1", dir: "right", no:1});
 	// XXX: ONCLICK
 	menuContainer.addChild( s );
 	// carchoice: right top: left arrow
@@ -316,7 +321,7 @@ function prepareMenu() {
 	s.cursor = "pointer";
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car_1", img: "left_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car_1", img: "left_normal", obj: "pic"} );
-	s.on( "click", changeCar, false, null, {target: "sprite_hud1", dir: "left", no:1});
+	s.on( "click", changeCar, false, null, {target: "car_1", dir: "left", no:1});
 	menuContainer.addChild( s );
 	
 	// carchoice: left bottom: right arrow
@@ -330,7 +335,7 @@ function prepareMenu() {
 	s.cursor = "pointer";
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_2", img: "right_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_2", img: "right_normal", obj: "pic"} );
-	s.on( "click", changeCar, false, null, {target: "sprite_hud2", dir: "right", no:2});
+	s.on( "click", changeCar, false, null, {target: "car_2", dir: "right", no:2});
 	menuContainer.addChild( s );
 	// carchoice: left bottom: left arrow
 	obj = drawPicture( "left_normal", new Location(40, h-50-30), 20, 30, "left_normal_car_2", false );
@@ -343,7 +348,7 @@ function prepareMenu() {
 	s.cursor = "pointer";
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car_2", img: "left_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car_2", img: "left_normal", obj: "pic"} );
-	s.on( "click", changeCar, false, null, {target: "sprite_hud2", dir: "left", no:2});
+	s.on( "click", changeCar, false, null, {target: "car_2", dir: "left", no:2});
 	menuContainer.addChild( s );
 
 	// carchoice: right bottom: right arrow
@@ -357,7 +362,7 @@ function prepareMenu() {
 	s.cursor = "pointer";
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_3", img: "right_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_3", img: "right_normal", obj: "pic"} );
-	s.on( "click", changeCar, false, null, {target: "sprite_hud3", dir: "right", no:3});
+	s.on( "click", changeCar, false, null, {target: "car_3", dir: "right", no:3});
 	menuContainer.addChild( s );
 	// carchoice: right bottom: left arrow
 	obj = drawPicture( "left_normal", new Location(w-140, h-50-30), 20, 30, "left_normal_car_3", false );
@@ -370,7 +375,7 @@ function prepareMenu() {
 	s.cursor = "pointer";
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car_3", img: "left_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car_3", img: "left_normal", obj: "pic"} );
-	s.on( "click", changeCar, false, null, {target: "sprite_hud3", dir: "left", no:3});
+	s.on( "click", changeCar, false, null, {target: "car_3", dir: "left", no:3});
 	menuContainer.addChild( s );
 
 	// display Play button with hover
@@ -428,35 +433,35 @@ function prepareMenu() {
  	});
 	var spriteSheet = new createjs.SpriteSheet(spriteSheets[0]);
 	var animation = new createjs.Sprite(spriteSheet, "move" );
-	animation.name = "sprite_hud0";
+	animation.name = "car_0";
 	animation.x = 60;
 	animation.y = 30;
-	animation.scaleX = .8;
-	animation.scaleY = .8;
+	animation.scaleX = SKEW_CARS_MENU;
+	animation.scaleY = SKEW_CARS_MENU;
 	menuContainer.addChild(animation);
 
 	animation = new createjs.Sprite(spriteSheet, "move");
-	animation.name = "sprite_hud1";
-	animation.scaleX = .8;
-	animation.scaleY = .8;
+	animation.name = "car_1";
+	animation.scaleX = SKEW_CARS_MENU;
+	animation.scaleY = SKEW_CARS_MENU;
 	animation.x = w-60-60;
 	animation.y = 30;
 	menuContainer.addChild(animation);
 
 	animation = new createjs.Sprite(spriteSheet, "move");
-	animation.name = "sprite_hud2";
+	animation.name = "car_2";
 	animation.x = 60;
 	animation.y = h-40-50;
-	animation.scaleX = .8;
-	animation.scaleY = .8;
+	animation.scaleX = SKEW_CARS_MENU;
+	animation.scaleY = SKEW_CARS_MENU;
 	menuContainer.addChild(animation);
 
 	animation = new createjs.Sprite(spriteSheet, "move");
-	animation.name = "sprite_hud3";
+	animation.name = "car_3";
 	animation.x = w-60-60;
 	animation.y = h-40-50;
-	animation.scaleX = .8;
-	animation.scaleY = .8;
+	animation.scaleX = SKEW_CARS_MENU;
+	animation.scaleY = SKEW_CARS_MENU;
 	menuContainer.addChild(animation);
 };
 
@@ -825,7 +830,7 @@ function setPlayers(){
 	for ( var i = 0; i < finishLineContainer.getNumChildren(); i++ ) {
 		var child = finishLineContainer.getChildAt( i );
 		child.uncache();
-		// XXX: do that mouseover stuff on a hitarea...useful?
+		
 		child.cursor = "pointer";
 		child.on( "mouseover", hover, false, null, {color: "red", obj: "circle"} );
 		child.on( "mouseout", hover, false, null, {color: "blue", obj: "circle"} );
@@ -835,11 +840,15 @@ function setPlayers(){
 
 			var loc = game.toLoc( evt.stageX, evt.stageY );
 			game.activePlayers[no].historyLocs.push( loc );
-			
-			var playercircle = drawColoredCircle( game.activePlayers[no].car.color, loc, CIRCLE_SIZE+5, false );
-			playercircle.name = "car_"+game.activePlayers[no].no;
-			// XXX: HERE THE PIC NEEDS TO BE PLACED (OF CAR)
-			playerContainer.addChild( playercircle );
+
+			var car = menuContainer.getChildByName("car_"+game.activePlayers[no].no);
+			menuContainer.removeChild(car);
+			car.name = "car_"+game.activePlayers[no].no;
+			car.x = game.toXCoord(loc.x);
+			car.y = game.toYCoord(loc.y);
+			car.scaleX = SKEW_CARS_TRACK;
+			car.scaleY = SKEW_CARS_TRACK;
+			playerContainer.addChild( car );
 			stage.update();
 
 			no++;
@@ -896,7 +905,6 @@ function doMove(){
 		choiceContainer.addChild( circle );
 		circle.on( "click", function( evt ){
 			var loc = game.toLoc( evt.stageX, evt.stageY );
-			console.log (crntTurn);
 			updateCars( crntTurn.player, loc, crntTurn.player.getSpeed()+1, 1000, 60 );
 			// update addons
 			// view.updateAddOns( loc );
@@ -1040,8 +1048,9 @@ function initCars( visible ) {
 function updateCars( player, l, speed, time, fps ) {
 	var loc = new Location( game.toXCoord( l ), game.toYCoord( l ));
 	var car = playerContainer.getChildByName( "car_"+player.no );
+	var bounds = car.spriteSheet.getFrameBounds(0);
 	createjs.Tween.get( car, {loop: false} )
-  	.to( { x: loc.x, y: loc.y }, time, createjs.Ease.getPowInOut( speed ));
+  	.to( { x: loc.x-bounds.width/2*car.scaleX, y: loc.y-bounds.height/2*car.scaleY }, time, createjs.Ease.getPowInOut( speed ));
   	// XXX: These can be cached!
   	var line = drawLine( 1, player.crntLoc(), l, player.car.color );
   	lineContainer.addChild( line );
