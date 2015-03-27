@@ -8,6 +8,8 @@ To start the PreBeta version follow these steps:
 
 2: open autorennen.html in your browser
 
+3: Now you can choose a car and a track. If you chose "own" follow the steps 3.1 to 3.4. If you chose some predefined Track, jump to step 3.4.
+
 3: After hitting Play you can draw on the canvas in the following way:
 
 	3.1 dragging the mouse over the canvas will paint a line and
@@ -21,7 +23,7 @@ To start the PreBeta version follow these steps:
 	little hidden) and then you can paint the finish line. make sure to 
 	paint at least 4 dots.
 
-	3.4 if you are done, you hit done and then you can choose 4 points
+	3.4 if you are done, you hit "done" and then you can choose 4 points
 	of the finishLine to be the starting points.	
 
 4. Now the game starts and you can play AUTORENNEN.
