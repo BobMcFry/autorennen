@@ -396,6 +396,9 @@ function prepareMenu() {
 				var player = new Player( new Car( null, color ), i );
 				game.activePlayers.push( player );
 				game.players.push( player );
+				HUDContainer.getChildByName("hud"+i).visible = true;
+			} else {
+				HUDContainer.getChildByName("hud"+i).visible = false;
 			}
 		}
 
@@ -415,13 +418,13 @@ function prepareMenu() {
 	var animation, spriteSheet;
 	spriteSheets.push({
 		images: [preload.getResult( "sprite_none" )],
-		frames: {width:100, height:78},
+		frames: {width:485/5, height:78},
 		animations: {move:[0,4], hold:[0]},
 		framerate: 7
  	});
 	spriteSheets.push({
 		images: [preload.getResult( "sprite_car_1" )],
-		frames: {width:100, height:77},
+		frames: {width:658/7, height:77},
 		animations: {move:[0,6], hold:[0]},
 		framerate: 15
  	});
@@ -491,7 +494,7 @@ function changeTrack ( evt, data ) {
 	var trackTitle = drawPicture( "trackname_"+game.track.name, new Location(w/2-300/2,h/2-60/2), 300, 60, "trackname", true );
 	menuContainer.addChild(trackTitle);
 	paintTrack( game.track.trackBorders, 0 );
-	paintTrack( game.track.surrPoints, 1 );
+	// paintTrack( game.track.surrPoints, 1 );
 	paintTrack( game.track.finishLine, 2 );
 	paintTrack( game.track.trackPoints, 3 );
 }
@@ -640,7 +643,7 @@ function paintTrack( array, type ){
 			container = trackContainer;
 			for ( var j = 0; j < array.length; j++ ){
 				if ( trackContainer.getChildByName( array[j].x+","+array[j].y ) == null ){
-					var circle = drawColoredCircle( "red", array[j], CIRCLE_SIZE, true );
+					var circle = drawColoredCircle( "DeepSkyBlue", array[j], CIRCLE_SIZE, true );
 					circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2,CIRCLE_SIZE*2 );
 					trackContainer.addChild( circle );	
 				}
@@ -901,7 +904,7 @@ function doMove(){
 
 	var surr = crntTurn.surrounding;
 	for ( var i = 0; i < surr.length; i++ ){
-		var circle = drawColoredCircle( crntTurn.player.car.color, surr[i], CIRCLE_SIZE*1.5, true );
+		var circle = drawColoredCircle( crntTurn.player.car.color, surr[i], CIRCLE_SIZE, true );
 		choiceContainer.addChild( circle );
 		circle.on( "click", function( evt ){
 			var loc = game.toLoc( evt.stageX, evt.stageY );
