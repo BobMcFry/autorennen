@@ -74,7 +74,7 @@ function init() {
 	// XXX: HARD CODED SIZES!!!!!!!!
 	w = stage.canvas.width;//1000;//500;
 	h = stage.canvas.height;//600;//300;
-	game = new Game( w, h );
+	game = new Game();
 	
 	initializeTracks();
 	
