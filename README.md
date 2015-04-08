@@ -2,6 +2,11 @@ Autorennen
 ==========
 This is a javascript based paper game.
 
+If you can play the beta Version right here (it may take a time loading):
+http://bobmcfry.github.io/autorennen/
+after that read from point 3 on.
+
+Elif you want to get the code to run at your machine do the following:
 To start the PreBeta version follow these steps:
 
 1: clone/download everything
