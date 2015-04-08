@@ -202,18 +202,18 @@ function prepareMenu() {
 	backgroundContainer.addChild(obj);
 	
 	// display Background of Header
-	obj = drawPicture( "back_header", new Location(w/2-550/2, 20), 550, -1, "back_header", true );
+	obj = drawPicture( "back_header", new Location(w/2-w*0.55/2, 0.0333), w*0.55, -1, "back_header", true );
 	menuContainer.addChild( obj );
 	// display Title of init Track
-	obj = drawPicture( "trackname_"+game.track.name, new Location(w/2-300/2,h/2-60/2), 300, 60, "trackname", true );
+	obj = drawPicture( "trackname_"+game.track.name, new Location(w/2-w*0.3/2,h/2-60/2), w*0.3, 0.1*h, "trackname", true );
 	menuContainer.addChild( obj );
 
 	// display Header
-	obj = drawPicture( "header", new Location(w/2-350/2, 40), 350, -1, "header", true );
+	obj = drawPicture( "header", new Location(w/2-w*0.35/2, 0.0666*h), w*0.35, -1, "header", true );
 	menuContainer.addChild( obj );
 	
 	// display sound on/off symbol with clickevent
-	obj = drawPicture( "music_on_normal", new Location(3*w/4, h-80), 50, -1, "music_toggle", true );
+	obj = drawPicture( "music_on_normal", new Location(3*w/4, h-0.1333*h), w*0.05, -1, "music_toggle", true );
 	HUDContainer.addChild( obj );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
@@ -227,7 +227,7 @@ function prepareMenu() {
 	HUDContainer.addChild( s );
 	
 	// trackMenu: display right arrow
-	obj = drawPicture( "right_normal", new Location(w-100, h/2-60/2), 50, 60, "right_normal_track", false );
+	obj = drawPicture( "right_normal", new Location(w-w*0.1, h/2-0.1*h/2), w*0.05, 0.1*h, "right_normal_track", false );
 	menuContainer.addChild( obj );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
@@ -239,7 +239,7 @@ function prepareMenu() {
 	s.on( "click" , changeTrack, false, null, {dir: "right"});
 	menuContainer.addChild( s );
 	// trackMenu: display left arrow
-	obj = drawPicture( "left_normal", new Location(100-50, h/2-60/2), 50, 60, "left_normal_track", false );
+	obj = drawPicture( "left_normal", new Location(w*0.1-w*0.05, h/2-0.1*h/2), w*0.05, 0.1*h, "left_normal_track", false );
 	menuContainer.addChild( obj );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
@@ -251,7 +251,7 @@ function prepareMenu() {
 	s.on( "click" , changeTrack, false, null, {dir: "left"});
 	menuContainer.addChild( s );
 	// trackMenu: name box
-	obj = drawPicture( "back_name", new Location(w/2-400/2, h/2-100/2), 400, 100, "back_name", false );
+	obj = drawPicture( "back_name", new Location(w/2-w*0.4/2, h/2-0.1666*h/2), w*0.4, 0.1666*h, "back_name", false );
 	menuContainer.addChild( obj );
 	
 	// HUD: left top
@@ -268,7 +268,7 @@ function prepareMenu() {
 	HUDContainer.addChild( obj );
 	
 	// carchoice: left top: right arrow
-	obj = drawPicture( "right_normal", new Location(140, 40), 20, 30, "right_normal_car_0", false );
+	obj = drawPicture( "right_normal", new Location(w*0.14, 0.0666*h), w*0.02, 0.05*h, "right_normal_car_0", false );
 	menuContainer.addChild( obj );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
@@ -282,7 +282,7 @@ function prepareMenu() {
 	// XXX: ONCLICK
 	menuContainer.addChild( s );
 	// carchoice: left top: left arrow
-	obj = drawPicture( "left_normal", new Location(40, 40), 20, 30, "left_normal_car_0", false );
+	obj = drawPicture( "left_normal", new Location(w*0.04, 0.0666*h), w*0.02, 0.05*h, "left_normal_car_0", false );
 	menuContainer.addChild( obj );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
@@ -297,7 +297,7 @@ function prepareMenu() {
 	menuContainer.addChild( s );
 	
 	// carchoice: right top: right arrow
-	obj = drawPicture( "right_normal", new Location(w-40, 40), 20, 30, "right_normal_car_1", false );
+	obj = drawPicture( "right_normal", new Location(w-w*0.04, 0.0666*h), w*0.02, 0.05*h, "right_normal_car_1", false );
 	menuContainer.addChild( obj );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
@@ -311,7 +311,7 @@ function prepareMenu() {
 	// XXX: ONCLICK
 	menuContainer.addChild( s );
 	// carchoice: right top: left arrow
-	obj = drawPicture( "left_normal", new Location(w-140, 40), 20, 30, "left_normal_car_1", false );
+	obj = drawPicture( "left_normal", new Location(w-w*0.14, 0.0666*h), w*0.02, 0.05*h, "left_normal_car_1", false );
 	menuContainer.addChild( obj );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
@@ -325,7 +325,7 @@ function prepareMenu() {
 	menuContainer.addChild( s );
 	
 	// carchoice: left bottom: right arrow
-	obj = drawPicture( "right_normal", new Location(140, h-50-30), 20, 30, "right_normal_car_2", false );
+	obj = drawPicture( "right_normal", new Location(w*0.14, h-0.08333*h-0.05*h), w*0.02, 0.05*h, "right_normal_car_2", false );
 	menuContainer.addChild( obj );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
@@ -338,7 +338,7 @@ function prepareMenu() {
 	s.on( "click", changeCar, false, null, {target: "car_2", dir: "right", no:2});
 	menuContainer.addChild( s );
 	// carchoice: left bottom: left arrow
-	obj = drawPicture( "left_normal", new Location(40, h-50-30), 20, 30, "left_normal_car_2", false );
+	obj = drawPicture( "left_normal", new Location(w*0.04, h-0.0833*h-0.05*h), w*0.02, 0.05*h, "left_normal_car_2", false );
 	menuContainer.addChild( obj );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
@@ -352,7 +352,7 @@ function prepareMenu() {
 	menuContainer.addChild( s );
 
 	// carchoice: right bottom: right arrow
-	obj = drawPicture( "right_normal", new Location(w-40, h-50-30), 20, 30, "right_normal_car_3", false );
+	obj = drawPicture( "right_normal", new Location(w-w*0.04, h-0.0833*h-0.05*h), w*0.02, 0.05*h, "right_normal_car_3", false );
 	menuContainer.addChild( obj );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
@@ -365,7 +365,7 @@ function prepareMenu() {
 	s.on( "click", changeCar, false, null, {target: "car_3", dir: "right", no:3});
 	menuContainer.addChild( s );
 	// carchoice: right bottom: left arrow
-	obj = drawPicture( "left_normal", new Location(w-140, h-50-30), 20, 30, "left_normal_car_3", false );
+	obj = drawPicture( "left_normal", new Location(w-w*0.14, h-0.0833*h-0.05*h), w*0.02, 0.05*h, "left_normal_car_3", false );
 	menuContainer.addChild( obj );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
@@ -379,7 +379,7 @@ function prepareMenu() {
 	menuContainer.addChild( s );
 
 	// display Play button with hover
-	obj = drawPicture( "play_normal", new Location(w/2-150/2, h-100), 150, -1, "play_normal", true );
+	obj = drawPicture( "play_normal", new Location(w/2-w*0.15/2, h-0.1666*h), w*0.15, -1, "play_normal", true );
 	menuContainer.addChild( obj );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
@@ -434,37 +434,41 @@ function prepareMenu() {
 		animations: {move:[0,6], hold:[5]},
 		framerate: 15
  	});
+
+ 	// Notice on scaling values: Due to the fact that the pictures were created
+ 	// based on a width of 1000 and height of 600, the scaling values need to
+ 	// be adjusted according to the new canvas size.
 	var spriteSheet = new createjs.SpriteSheet(spriteSheets[0]);
 	var animation = new createjs.Sprite(spriteSheet, "move" );
 	animation.name = "car_0";
-	animation.x = 60;
-	animation.y = 30;
-	animation.scaleX = SKEW_CARS_MENU;
-	animation.scaleY = SKEW_CARS_MENU;
+	animation.x = w*0.06;
+	animation.y = 0.05*h;
+	animation.scaleX = SKEW_CARS_MENU*w/1000;
+	animation.scaleY = SKEW_CARS_MENU*h/600;
 	menuContainer.addChild(animation);
 
 	animation = new createjs.Sprite(spriteSheet, "move");
 	animation.name = "car_1";
-	animation.scaleX = SKEW_CARS_MENU;
-	animation.scaleY = SKEW_CARS_MENU;
-	animation.x = w-60-60;
-	animation.y = 30;
+	animation.scaleX = SKEW_CARS_MENU*w/1000;
+	animation.scaleY = SKEW_CARS_MENU*h/600;
+	animation.x = w-w*0.06-w*0.06;
+	animation.y = 0.05*h;
 	menuContainer.addChild(animation);
 
 	animation = new createjs.Sprite(spriteSheet, "move");
 	animation.name = "car_2";
-	animation.x = 60;
-	animation.y = h-40-50;
-	animation.scaleX = SKEW_CARS_MENU;
-	animation.scaleY = SKEW_CARS_MENU;
+	animation.x = w*0.06;
+	animation.y = h-0.0666*h-0.0833*h;
+	animation.scaleX = SKEW_CARS_MENU*w/1000;
+	animation.scaleY = SKEW_CARS_MENU*h/600;
 	menuContainer.addChild(animation);
 
 	animation = new createjs.Sprite(spriteSheet, "move");
 	animation.name = "car_3";
-	animation.x = w-60-60;
-	animation.y = h-40-50;
-	animation.scaleX = SKEW_CARS_MENU;
-	animation.scaleY = SKEW_CARS_MENU;
+	animation.x = w-w*0.06-w*0.06;
+	animation.y = h-0.0666*h-0.0833*h;
+	animation.scaleX = SKEW_CARS_MENU*w/1000;
+	animation.scaleY = SKEW_CARS_MENU*h/600;
 	menuContainer.addChild(animation);
 };
 
@@ -491,7 +495,7 @@ function changeTrack ( evt, data ) {
 	}
 	// XXX: Display the corresponding name in the middle
 	game.track = tracks[track_position];
-	var trackTitle = drawPicture( "trackname_"+game.track.name, new Location(w/2-300/2,h/2-60/2), 300, 60, "trackname", true );
+	var trackTitle = drawPicture( "trackname_"+game.track.name, new Location(w/2-w*0.3/2,h/2-0.1*h/2), w*0.3, h*0.1, "trackname", true );
 	menuContainer.addChild(trackTitle);
 	paintTrack( game.track.trackBorders, 0 );
 	// paintTrack( game.track.surrPoints, 1 );
@@ -544,7 +548,6 @@ function buildTrack(){
 
 	// set up our defaults:
 	var color = "#0FF";
-	var size = 4;
 	var oldX, oldY;
 	var paint = false;
 	var timedown = 0;
@@ -612,7 +615,7 @@ function buildTrack(){
 
 		if ( paint ) {
 			shape.graphics.beginStroke( color )
-						  .setStrokeStyle( size, "round" )
+						  .setStrokeStyle( CIRCLE_SIZE, "round" )
 						  .moveTo( oldX, oldY )
 						  .lineTo( evt.stageX, evt.stageY );
 			stage.update();
@@ -624,7 +627,7 @@ function buildTrack(){
 		oldY = evt.stageY;
 	})
 
-	var text = drawText ( "Done", "doneButton", new Location( w/2 - 80, h-30 ), "20px", "Arial", "DeepSkyBlue", true, "left", "top" );
+	var text = drawText ( "Done", "doneButton", new Location( w/2 - 0.08*w, h-0.05*h ), "20px", "Arial", "DeepSkyBlue", true, "left", "top" );
 	
 	stuffContainer.addChild( text );
 	text.on( "click", function ( evt ){
@@ -800,7 +803,7 @@ function setStartPoints(){
 		oldY = evt.stageY;
 	})
 
-	var text = drawText ( "Done", "doneButton", new Location( w/2 - 80, h-30 ), "20px", "Arial", "DeepSkyBlue", true, "left", "top" );
+	var text = drawText ( "Done", "doneButton", new Location( w/2 - 0.08*w, h-0.05*h ), "20px", "Arial", "DeepSkyBlue", true, "left", "top" );
 	stuffContainer.addChild( text );
 	text.on( "click", function ( evt ){
 		buildStatus++;
@@ -1010,8 +1013,6 @@ function drawText ( content, name, loc, size, font, color, mouseover, textAlign,
 		// XXX: Take care if align and baseline is set, that the rect is not at the spot one would assume
 		s.graphics.beginFill( "#f00").drawRect(0,0,text.getMeasuredWidth(), text.getMeasuredHeight() );
 		text.hitArea = s;
-		
-		// XXX: THESE/THIS ( ?) DO NOT WORK IN FIREFOX???????? (EVENTTYPES )
 		text.on( "mouseover", hover, false, null, {color: "red", obj: "text"} );
 		text.on( "mouseout", hover, false, null, {color: "DeepSkyBlue", obj: "text"} );
 	}
