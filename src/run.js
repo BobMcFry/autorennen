@@ -174,7 +174,7 @@ function initScore() {
 	for ( var i = 0; i < 4; i++ ) {
 		var parent = HUDContainer.getChildByName( "hud"+i );
 		var loc = new Location( parent.x + parent.width*HUD_OFFSET, parent.y + parent.height*HUD_OFFSET );
-		var text = drawText( "", "hud"+i+"_text", loc, "20px", "Arial", "black", false, "left", "top" );
+		var text = drawText( "", "hud"+i+"_text", loc, Math.floor(20*w/1000)+"px", "Arial", "black", false, "left", "top" );
 		HUDContainer.addChild( text );
 	};
 };
@@ -627,7 +627,7 @@ function buildTrack(){
 		oldY = evt.stageY;
 	})
 
-	var text = drawText ( "Done", "doneButton", new Location( w/2 - 0.08*w, h-0.05*h ), "20px", "Arial", "DeepSkyBlue", true, "left", "top" );
+	var text = drawText ( "Done", "doneButton", new Location( w/2 - 0.08*w, h-0.05*h ), Math.floor(20*w/1000)+"px", "Arial", "DeepSkyBlue", true, "left", "top" );
 	
 	stuffContainer.addChild( text );
 	text.on( "click", function ( evt ){
@@ -803,7 +803,7 @@ function setStartPoints(){
 		oldY = evt.stageY;
 	})
 
-	var text = drawText ( "Done", "doneButton", new Location( w/2 - 0.08*w, h-0.05*h ), "20px", "Arial", "DeepSkyBlue", true, "left", "top" );
+	var text = drawText ( "Done", "doneButton", new Location( w/2 - 0.08*w, h-0.05*h ), Math.floor(20*w/1000)+"px", "Arial", "DeepSkyBlue", true, "left", "top" );
 	stuffContainer.addChild( text );
 	text.on( "click", function ( evt ){
 		buildStatus++;

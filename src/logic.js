@@ -128,9 +128,6 @@ var	Track = function( width, height, name ){
 }
 
 // XXX: THINK ABOUT A NICER SHORTER SOLUTION
-// XXX: THINK ABOUT A NICER SHORTER SOLUTION
-// XXX: THINK ABOUT A NICER SHORTER SOLUTION
-
 Track.prototype.isGamePoint = function( loc ) {
 	for ( var i = 0; i < this.gamePoints.length; i++ ) {
 		if ( this.gamePoints[i].equals( loc )){
@@ -209,6 +206,7 @@ var Game = function(){
 	this.track = new Track( this.xBoxes, this.yBoxes, "own" );
 	this.xDelta = this.width / this.xBoxes;
 	this.yDelta = this.height / this.yBoxes;
+	// XXX: Replace Array(); by [];
 	this.players = new Array();
 	this.activePlayers = new Array();
 	this.kickedPlayers = new Array();
