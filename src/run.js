@@ -945,7 +945,7 @@ function doMove(){
 		});
 	}
 	// // XXX: TESTING PURPOSES
-	displayTip("Ziehe nun mit der Maus eine Linie,\nsodass blablabla\nfkdsfhjdklsfjdskfldjsfdksfljssfdsfs\nfdskfjksldjfksdjfls");
+	// displayTip("Ziehe nun mit der Maus eine Linie,\nsodass blablabla\nfkdsfhjdklsfjdskfldjsfdksfljssfdsfs\nfdskfjksldjfksdjfls");
 }
 
 
