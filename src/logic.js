@@ -128,9 +128,6 @@ var	Track = function( width, height, name ){
 }
 
 // XXX: THINK ABOUT A NICER SHORTER SOLUTION
-// XXX: THINK ABOUT A NICER SHORTER SOLUTION
-// XXX: THINK ABOUT A NICER SHORTER SOLUTION
-
 Track.prototype.isGamePoint = function( loc ) {
 	for ( var i = 0; i < this.gamePoints.length; i++ ) {
 		if ( this.gamePoints[i].equals( loc )){
@@ -201,16 +198,15 @@ Track.prototype.getSurrounding = function( loc, track ) {
 /* ################## */
 
 
-var Game = function( width, height ){
-	// XXX: Evtl auch h oder w direkt hier rein?
-	this.width = width;
-	this.height = height;
-	// XXX: MAYBE THESE CAN BE SET SOMETIMES ( SMALLER SCREENS )...maybe also dependant on the size...
-	this.xBoxes = 55;
-	this.yBoxes = 45;
+var Game = function(){
+	this.width = w;
+	this.height = h;
+	this.xBoxes = Math.floor(0.06*w);
+	this.yBoxes = Math.floor(0.06*h);
 	this.track = new Track( this.xBoxes, this.yBoxes, "own" );
 	this.xDelta = this.width / this.xBoxes;
 	this.yDelta = this.height / this.yBoxes;
+	// XXX: Replace Array(); by [];
 	this.players = new Array();
 	this.activePlayers = new Array();
 	this.kickedPlayers = new Array();
