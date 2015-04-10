@@ -19,7 +19,7 @@ menu_car_positions = [0,0,0,0];
 tracks = [];
 track_position = 0;
 
-
+loadingProgress = 0;
 
 // XXX: maybe put the code that is related to drawing stuff somewhere else
 
@@ -121,7 +121,9 @@ function init() {
 	// XXX: false is for local loading ( ? ), true is for the internet stuff
 	preload = new createjs.LoadQueue( false );
 	// // // XXX: PUT NICE BAR WITH GLOBAL PROGRESS VALUE THAT INDICATES LOAD OF ASSET STATUS
-	// // // preload.on( "progress", handleProgress );
+	var text = drawText( Math.floor( loadingProgress/manifest.length )+"%", "progressBar", new Location( w/2, h/2 ), Math.floor(20*w/1000)+"px", "Arial", "black", false, "left", "top" );
+	menuContainer.addChild( text );
+	preload.on( "progress", handleProgress );
 	preload.on( "fileload", handleLoadedStuff );
 	preload.on( "complete", prepareMenu );
 	preload.loadManifest( manifest );
@@ -135,8 +137,13 @@ function init() {
 	
 }
 
-// XXX: HERE A PROGRESSVALUE IS INCREASED ON EVERY LOAD OF AN OBJECT
+function handleProgress( evt ){
+	var text = menuContainer.getChildByName( "progressBar" );
+	text.text = Math.floor( loadingProgress/manifest.length*100 )+"%";
+}
+
 function handleLoadedStuff( evt ){
+	loadingProgress++;
 	switch( evt.item.id ){
 		case "background": 	
 		case "hud0":
@@ -193,6 +200,9 @@ function updateScores() {
 
 // XXX: Make sizes and stuff more dependant on the canvas size (See HUD_SIZE as an example)
 function prepareMenu() {
+
+	// Remove progress bar
+	menuContainer.removeChild( menuContainer.getChildByName( "progressBar" ) );
 
 	// helper for displaying objects (graphics and shapes)
 	var obj, g, s;
@@ -413,7 +423,7 @@ function prepareMenu() {
 	
 	// display HUD
 	initScore();
-
+	
 	// ANIMATIONS
 	var animation, spriteSheet;
 	spriteSheets.push({
@@ -685,8 +695,24 @@ function paintTrack( array, type ){
 
 }
 
+// XXX: TO COMPLETE
 function displayTip( content ){
+	var g = new createjs.Graphics();
+ 	g.beginFill("#FFFFFF");
+ 	g.drawRect(0,0,w,h);
+ 	var shape = new createjs.Shape(g);
+ 	shape.alpha=0.7;
+ 	// XXX: create own container, such that it will always be the top container.
+ 	stuffContainer.addChild(shape);
+ 	// XXX: Here an image of a box needs to be ...
+ 	var g = new createjs.Graphics();
+ 	g.beginFill("#FFFFFF");
+ 	g.drawRect(w/2-w*0.3/2,h/2-h*0.3/2,w*0.3,h*0.3);
+ 	shape = new createjs.Shape(g);
+ 	stuffContainer.addChild(shape);
 
+ 	var text = drawText ( content, "tipText", new Location( w/2-w*0.2/2,h/2-h*0.2/2 ), Math.floor(15*w/1000)+"px", "Arial", "black", false, "left", "top" );
+ 	stuffContainer.addChild(text);
 }
 
 function detectPointsInBetween( srcLoc, destLoc ){
@@ -918,6 +944,8 @@ function doMove(){
 			doMove();
 		});
 	}
+	// // XXX: TESTING PURPOSES
+	displayTip("Ziehe nun mit der Maus eine Linie,\nsodass blablabla\nfkdsfhjdklsfjdskfldjsfdksfljssfdsfs\nfdskfjksldjfksdjfls");
 }
 
 
