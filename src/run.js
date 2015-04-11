@@ -288,8 +288,8 @@ function prepareMenu() {
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_0", img: "right_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_0", img: "right_normal", obj: "pic"} );
 	s.on( "click", changeCar, false, null, {target: "car_0", dir: "right", no:0});
-	// XXX: ONCLICK
 	menuContainer.addChild( s );
+
 	// carchoice: left top: left arrow
 	obj = drawPicture( "left_normal", new Location(w*0.04, 0.0666*h), w*0.02, 0.05*h, "left_normal_car_0", false );
 	menuContainer.addChild( obj );
@@ -302,7 +302,6 @@ function prepareMenu() {
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car_0", img: "left_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car_0", img: "left_normal", obj: "pic"} );
 	s.on( "click", changeCar, false, null, {target: "car_0", dir: "left", no:0});
-	// XXX: ONCLICK
 	menuContainer.addChild( s );
 	
 	// carchoice: right top: right arrow
@@ -317,8 +316,8 @@ function prepareMenu() {
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_1", img: "right_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_1", img: "right_normal", obj: "pic"} );
 	s.on( "click", changeCar, false, null, {target: "car_1", dir: "right", no:1});
-	// XXX: ONCLICK
 	menuContainer.addChild( s );
+
 	// carchoice: right top: left arrow
 	obj = drawPicture( "left_normal", new Location(w-w*0.14, 0.0666*h), w*0.02, 0.05*h, "left_normal_car_1", false );
 	menuContainer.addChild( obj );
@@ -346,6 +345,7 @@ function prepareMenu() {
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_2", img: "right_normal", obj: "pic"} );
 	s.on( "click", changeCar, false, null, {target: "car_2", dir: "right", no:2});
 	menuContainer.addChild( s );
+
 	// carchoice: left bottom: left arrow
 	obj = drawPicture( "left_normal", new Location(w*0.04, h-0.0833*h-0.05*h), w*0.02, 0.05*h, "left_normal_car_2", false );
 	menuContainer.addChild( obj );
@@ -373,6 +373,7 @@ function prepareMenu() {
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_3", img: "right_normal", obj: "pic"} );
 	s.on( "click", changeCar, false, null, {target: "car_3", dir: "right", no:3});
 	menuContainer.addChild( s );
+
 	// carchoice: right bottom: left arrow
 	obj = drawPicture( "left_normal", new Location(w-w*0.14, h-0.0833*h-0.05*h), w*0.02, 0.05*h, "left_normal_car_3", false );
 	menuContainer.addChild( obj );
@@ -400,7 +401,7 @@ function prepareMenu() {
 	s.on( "click", function( evt ){
 		for (var i = 0; i < menu_car_positions.length; i++){
 			if (menu_car_positions[i] != 0){
-				// XXX: Color muss noch ausgelesen werden.
+				// XXX: Color needs to be read from menu...
 				color = createjs.Graphics.getHSL( Math.random()*360, 100, 50 );
 				var player = new Player( new Car( null, color ), i );
 				game.activePlayers.push( player );
@@ -428,25 +429,25 @@ function prepareMenu() {
 	spriteSheets.push({
 		images: [preload.getResult( "sprite_none" )],
 		frames: {width:485/5, height:78},
-		animations: {move:[0,4], hold:[0]},
+		animations: {"move":[0,4], "hold":[0]}, // "move":[0,4,"hold",0.5]
 		framerate: 7
  	});
 	spriteSheets.push({
 		images: [preload.getResult( "sprite_car_1" )],
 		frames: {width:658/7, height:77},
-		animations: {move:[0,6], hold:[0]},
+		animations: {"move":[0,6], "hold":[0]},
 		framerate: 15
  	});
  	spriteSheets.push({
 		images: [preload.getResult( "sprite_car_2" )],
 		frames: {width:70, height:61},
-		animations: {move:[0,6], hold:[5]},
+		animations: {"move":[0,6], "hold":[5]},
 		framerate: 15
  	});
  	spriteSheets.push({
 		images: [preload.getResult( "sprite_car_3" )],
 		frames: {width:292/3, height:88},
-		animations: {move:[0,2], hold:[0]},
+		animations: {"move":[0,2], "hold":[0]},
 		framerate: 7
  	});
 
@@ -881,8 +882,8 @@ function setPlayers(){
 			var car = menuContainer.getChildByName("car_"+game.activePlayers[no].no);
 			menuContainer.removeChild(car);
 			car.name = "car_"+game.activePlayers[no].no;
-			car.x = game.toXCoord(loc.x);
-			car.y = game.toYCoord(loc.y);
+			car.x = game.toXCoord(loc);
+			car.y = game.toYCoord(loc);
 			car.scaleX = SKEW_CARS_TRACK;
 			car.scaleY = SKEW_CARS_TRACK;
 			playerContainer.addChild( car );
@@ -1086,8 +1087,14 @@ function updateCars( player, l, speed, time, fps ) {
 	var loc = new Location( game.toXCoord( l ), game.toYCoord( l ));
 	var car = playerContainer.getChildByName( "car_"+player.no );
 	var bounds = car.spriteSheet.getFrameBounds(0);
+	var newScale = SKEW_CARS_TRACK;
+	// flip right
+	if ( player.crntLoc().x >= l.x ){
+		newScale=-newScale;
+	} 
 	createjs.Tween.get( car, {loop: false} )
-  	.to( { x: loc.x-bounds.width/2*car.scaleX, y: loc.y-bounds.height/2*car.scaleY }, time, createjs.Ease.getPowInOut( speed ));
+  	.to( { x: loc.x-bounds.width/2*newScale, y: loc.y-bounds.height/2*car.scaleY }, time, createjs.Ease.getPowInOut( speed ));
+  	car.scaleX = newScale;
   	// XXX: These can be cached!
   	var line = drawLine( 1, player.crntLoc(), l, player.car.color );
   	lineContainer.addChild( line );
