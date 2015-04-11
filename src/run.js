@@ -53,6 +53,7 @@ manifest = [
 	{ src:"img/sprite_none.png", 		id:"sprite_none" },
 	{ src:"img/sprite_car_1.png", 		id:"sprite_car_1" },
 	{ src:"img/sprite_car_2.png", 		id:"sprite_car_2" },
+	{ src:"img/sprite_car_3.png", 		id:"sprite_car_3" },
 	{ src:"img/trackname_own.png", 		id:"trackname_own" },
 	{ src:"img/trackname_doodoo.png", 	id:"trackname_doodoo" },
 	{ src:"img/trackname_drag.png", 	id:"trackname_drag" },
@@ -144,6 +145,7 @@ function handleProgress( evt ){
 
 function handleLoadedStuff( evt ){
 	loadingProgress++;
+	console.log( evt.item.id + " loaded" );
 	switch( evt.item.id ){
 		case "background": 	
 		case "hud0":
@@ -169,8 +171,6 @@ function handleLoadedStuff( evt ){
 		case "music_off_normal":
 		case "music_off_hover":
 		case "play_hover":
-			console.log( evt.item.id + " loaded" );
-			return;
 		break;
 		default: console.log( "SCREW YOU!" ); break;
 	}
@@ -198,7 +198,6 @@ function updateScores() {
 	}
 };
 
-// XXX: Make sizes and stuff more dependant on the canvas size (See HUD_SIZE as an example)
 function prepareMenu() {
 
 	// Remove progress bar
@@ -443,6 +442,12 @@ function prepareMenu() {
 		frames: {width:70, height:61},
 		animations: {move:[0,6], hold:[5]},
 		framerate: 15
+ 	});
+ 	spriteSheets.push({
+		images: [preload.getResult( "sprite_car_3" )],
+		frames: {width:292/3, height:88},
+		animations: {move:[0,2], hold:[0]},
+		framerate: 7
  	});
 
  	// Notice on scaling values: Due to the fact that the pictures were created
