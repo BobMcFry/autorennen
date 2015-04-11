@@ -882,10 +882,11 @@ function setPlayers(){
 			var car = menuContainer.getChildByName("car_"+game.activePlayers[no].no);
 			menuContainer.removeChild(car);
 			car.name = "car_"+game.activePlayers[no].no;
-			car.x = game.toXCoord(loc);
-			car.y = game.toYCoord(loc);
 			car.scaleX = SKEW_CARS_TRACK;
 			car.scaleY = SKEW_CARS_TRACK;
+			var bounds = car.spriteSheet.getFrameBounds(0);
+			car.x = game.toXCoord(loc)-bounds.width*car.scaleX/2;
+			car.y = game.toYCoord(loc)-bounds.height*car.scaleY/2;
 			playerContainer.addChild( car );
 			stage.update();
 
