@@ -4,8 +4,9 @@ SET_START  = 1;
 PLACE_PLAYERS = 2;
 PREPARE_TURN  = 3;
 
-/* Circle Size used to draw them to the canvas */
+/* Circle and paint size used to draw them to the canvas */
 CIRCLE_SIZE = 6;
+PAINT_SIZE = 6;
 
 /* HUD SIZE (percentage of width and height*/
 HUD_SIZE = 0.2;
@@ -59,6 +60,8 @@ manifest = [
 	{ src:"img/music_off_hover.png", 		id:"music_off_hover" },
 	{ src:"img/play_normal.png", 			id:"play_normal" },
 	{ src:"img/play_hover.png", 			id:"play_hover" },
+	{ src:"img/next_normal.png", 			id:"next_normal" },
+	{ src:"img/next_hover.png", 			id:"next_hover" },
 	{ src:"img/sprite_none.png", 			id:"sprite_none" },
 	{ src:"img/sprite_car_1.png", 			id:"sprite_car_1" },
 	{ src:"img/sprite_car_2.png", 			id:"sprite_car_2" },
@@ -222,8 +225,13 @@ function prepareMenu() {
 	// display Background of Header
 	obj = drawPicture( "back_header", new Location(w/2-w*0.55/2, 0.0333), w*0.55, -1, "back_header", true );
 	menuContainer.addChild( obj );
+	
+	// trackMenu: name box
+	obj = drawPicture( "back_name", new Location(w/2-w*0.4/2, h/2-0.1666*h/2), w*0.4, 0.1666*h, "back_name", false );
+	menuContainer.addChild( obj );
+
 	// display Title of init Track
-	obj = drawPicture( "trackname_"+game.track.name, new Location(w/2-w*0.3/2,h/2-60/2), w*0.3, 0.1*h, "trackname", true );
+	obj = drawPicture( "trackname_"+game.track.name, new Location(w/2-w*0.3/2,h/2-0.1665*h/2), w*0.3, 0.1*h, "trackname", true );
 	menuContainer.addChild( obj );
 
 	// display Header
@@ -268,9 +276,6 @@ function prepareMenu() {
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_track", img: "left_normal", obj: "pic"} );
 	s.on( "click" , changeTrack, false, null, {dir: "left"});
 	menuContainer.addChild( s );
-	// trackMenu: name box
-	obj = drawPicture( "back_name", new Location(w/2-w*0.4/2, h/2-0.1666*h/2), w*0.4, 0.1666*h, "back_name", false );
-	menuContainer.addChild( obj );
 	
 	// HUD: left top
 	obj = drawPicture( "hud0", new Location(0, 0), w*HUD_SIZE, h*HUD_SIZE, "hud0", false );
@@ -535,7 +540,7 @@ function changeTrack ( evt, data ) {
 	}
 	// XXX: Display the corresponding name in the middle
 	game.track = tracks[track_position];
-	var trackTitle = drawPicture( "trackname_"+game.track.name, new Location(w/2-w*0.3/2,h/2-0.1*h/2), w*0.3, h*0.1, "trackname", true );
+	var trackTitle = drawPicture( "trackname_"+game.track.name, new Location(w/2-w*0.3/2,h/2-0.1665*h/2), w*0.3, h*0.1, "trackname", true );
 	menuContainer.addChild(trackTitle);
 	paintTrack( game.track.trackBorders, 0 );
 	paintTrack( game.track.surrPoints, 1 );
@@ -607,7 +612,7 @@ function buildTrack(){
 	stage.on( "stagemousedown", function( evt ) {
 		// XXX: THIS IS A TEMP FIX TO PREVENT THE STAGEEVENT FROM BEING FIRED WHEN THE DONE BUTTON IS CLICKED
 		var obj = stage.getObjectUnderPoint( evt.stageX, evt.stageY );
-		if ( obj != null && (obj.name == "doneButton" )){
+		if ( obj != null && (obj.name == "doneButton_hitarea" )){
 			return;
 		}
 
@@ -627,7 +632,7 @@ function buildTrack(){
 		if ( timeup - timedown < 300 ){
 			// XXX: THIS IS A TEMP FIX TO PREVENT THE STAGEEVENT FROM BEING FIRED WHEN THE DONE BUTTON IS CLICKED
 			var obj = stage.getObjectUnderPoint( evt.stageX, evt.stageY );
-			if ( obj != null && obj.name == "doneButton1" ){
+			if ( obj != null && obj.name == "doneButton_hitarea" ){
 				return;
 			}
 			detectFilling( game.toLoc( evt.stageX, evt.stageY ));
@@ -665,7 +670,7 @@ function buildTrack(){
 
 		if ( paint ) {
 			shape.graphics.beginStroke( COLOR_BORDER )
-						  .setStrokeStyle( CIRCLE_SIZE, "round" )
+						  .setStrokeStyle( PAINT_SIZE, "round" )
 						  .moveTo( oldX, oldY )
 						  .lineTo( evt.stageX, evt.stageY );
 			stage.update();
@@ -677,16 +682,25 @@ function buildTrack(){
 		oldY = evt.stageY;
 	})
 
-	var text = drawText ( "Done", "doneButton", new Location( w/2 - 0.08*w, h-0.05*h ), Math.floor(20*w/1000)+"px", "Arial", "DeepSkyBlue", true, "left", "top" );
-	
+	var text = drawPicture( "next_normal", new Location( 1/8*w, 3/4*h ), 0.15*w, 0.1*h, "doneButton", false );
 	stuffContainer.addChild( text );
-	text.on( "click", function ( evt ){
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( text.x, text.y, text.width, text.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.name = "doneButton_hitarea";
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: stuffContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: stuffContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
+	s.on( "click", function ( evt ){
 		buildStatus++;
 		prepareTrack();
-		var child = stage.getChildByName( "doneButton" );
+		var child = stuffContainer.getChildByName( "doneButton_hitarea" );
 		stuffContainer.removeChild( child );
-		stage.update();
+		var child = stuffContainer.getChildByName( "doneButton" );
+		stuffContainer.removeChild( child );
 	});
+	stuffContainer.addChild( s );
 }
 
 function setStartPoints(){
@@ -706,7 +720,6 @@ function setStartPoints(){
 	paintContainer.addChild( shape );
 
 	// set up our defaults:
-	var size = 10;
 	var oldX, oldY;
 	var paint = false;
 	var timedown = 0;
@@ -751,7 +764,7 @@ function setStartPoints(){
     stage.on( "stagemousemove", function( evt ) {
 		if ( paint ) {
 			shape.graphics.beginStroke( COLOR_FINISHLINE )
-						  .setStrokeStyle( size, "round" )
+						  .setStrokeStyle( PAINT_SIZE, "round" )
 						  .moveTo( oldX, oldY )
 						  .lineTo( evt.stageX, evt.stageY );
 			stage.update();
@@ -761,16 +774,30 @@ function setStartPoints(){
 		oldY = evt.stageY;
 	})
 
-	var text = drawText ( "Done", "doneButton", new Location( w/2 - 0.08*w, h-0.05*h ), Math.floor(20*w/1000)+"px", "Arial", "DeepSkyBlue", true, "left", "top" );
+	var text = drawPicture( "next_normal", new Location( 1/8*w, 3/4*h ), 0.15*w, 0.1*h, "doneButton", false );
 	stuffContainer.addChild( text );
-	text.on( "click", function ( evt ){
-		// XXX: Check wether finishline points are enough for all players!!!!!!!!!
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( text.x, text.y, text.width, text.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.name = "doneButton_hitarea";
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: stuffContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: stuffContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
+	s.on( "click", function ( evt ){
+		if ( game.track.finishLine.length < game.activePlayers.length ){
+			alert( "Please draw more finish-line points." );
+			return;
+		}
 		buildStatus++;
 		prepareTrack();
-		var c = evt.currentTarget;
-		stuffContainer.removeChild( c );
-		stage.update();
+		var child = stuffContainer.getChildByName( "doneButton_hitarea" );
+		stuffContainer.removeChild( child );
+		var child = stuffContainer.getChildByName( "doneButton" );
+		stuffContainer.removeChild( child );
+		
 	});
+	stuffContainer.addChild( s );
 	
 }
 
@@ -811,7 +838,6 @@ function setPlayers(){
 			car.x = game.toXCoord(loc)-bounds.width*car.scaleX/2;
 			car.y = game.toYCoord(loc)-bounds.height*car.scaleY/2;
 			playerContainer.addChild( car );
-			stage.update();
 
 			no++;
 			if ( no == max ){
@@ -832,7 +858,6 @@ function setPlayers(){
 				// printArray( game.track.surrPoints, "track.surrPoints" );
 				// printArray( game.track.trackPoints, "track.trackPoints" );
 				prepareTrack();
-				stage.update();
 			}
 		})
 	};
@@ -971,6 +996,8 @@ function hover ( evt, data ){
 		case "text": c.color = data.color; break;
 		case "pic":
 			var target = data.container.getChildByName( data.target );
+			if ( target == null )
+				return;
 			target.image = preload.getResult( data.img );
 		break;
 		default: console.log( "Missing case in hover." ); break;
