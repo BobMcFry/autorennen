@@ -78,6 +78,7 @@ Location.prototype.getRawSurrounding = function() {
 	if ( this.addOn == this.ELEGANT ){
 		// TODO
 	}
+	surr.push( new Location( this.x  , this.y   ));
 	surr.push( new Location( this.x-1, this.y   ));
 	surr.push( new Location( this.x-1, this.y+1 ));
 	surr.push( new Location( this.x  , this.y+1 ));
@@ -201,8 +202,8 @@ Track.prototype.getSurrounding = function( loc, track ) {
 var Game = function(){
 	this.width = w;
 	this.height = h;
-	this.xBoxes = Math.floor(0.06*w);
-	this.yBoxes = Math.floor(0.06*h);
+	this.xBoxes = Math.floor(0.054*w);
+	this.yBoxes = Math.floor(0.054*h);
 	this.track = new Track( this.xBoxes, this.yBoxes, "own" );
 	this.xDelta = this.width / this.xBoxes;
 	this.yDelta = this.height / this.yBoxes;
