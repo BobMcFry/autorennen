@@ -36,3 +36,10 @@ To start the PreBeta version follow these steps:
 The goal ist to reach the finishLine at first. You can only click on regions that are not borders and surrounding.
 Good Luck!
 
+---
+
+Credits:
+Thanks to everyone who helped me making this game!
+Especially to the following people:
+Adrian Barfuss - First Chiefmaster of Idea Providing & Car Designer
+Wolfgang Stammer - Contemporary Music Director
