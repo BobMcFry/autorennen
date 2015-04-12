@@ -78,6 +78,7 @@ Location.prototype.getRawSurrounding = function() {
 	if ( this.addOn == this.ELEGANT ){
 		// TODO
 	}
+	surr.push( new Location( this.x  , this.y   ));
 	surr.push( new Location( this.x-1, this.y   ));
 	surr.push( new Location( this.x-1, this.y+1 ));
 	surr.push( new Location( this.x  , this.y+1 ));

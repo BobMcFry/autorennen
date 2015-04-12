@@ -12,7 +12,13 @@ HUD_SIZE = 0.2;
 HUD_OFFSET = 0.1;
 
 SKEW_CARS_MENU = 0.8;
-SKEW_CARS_TRACK = 0.3;
+SKEW_CARS_TRACK = 0.5;
+
+COLOR_HOVER = "#8B2A18";
+COLOR_TRACK = "#A6A6A6";
+COLOR_BORDER = "#8BACBB";
+COLOR_FINISHLINE = "#1C63A0";
+COLOR_SURR = "#575757";
 
 // XXX: CHANGE EVERY VARIABLE TO CAMELCASE EXCEPT FOR CONSTANTS (ALL CAPITAL LETTERS)
 menu_car_positions = [0,0,0,0];
@@ -26,39 +32,42 @@ loadingProgress = 0;
 // XXX: make pics to global vars to make editing afterwards easier
 /* Images and Sounds used in the game. This manifest is loaded with preload. */
 manifest = [
-	{ src:"img/background.png", 		id:"background" },
-	{ src:"img/hud_le_to.png", 			id:"hud0" },
-	{ src:"img/hud_ri_to.png", 			id:"hud1" },
-	{ src:"img/hud_le_bo.png", 			id:"hud2" },
-	{ src:"img/hud_ri_bo.png", 			id:"hud3" },
-	{ src:"img/back_header.png", 		id:"back_header" },
-	{ src:"img/back_name.png", 			id:"back_name" },
-	{ src:"img/autorennen_header.png", 	id:"header" },
-	{ src:"img/circle_normal_1.png", 	id:"circle_normal_1" },
-	{ src:"img/circle_normal_2.png", 	id:"circle_normal_2" },
-	{ src:"img/circle_normal_3.png", 	id:"circle_normal_3" },
-	{ src:"img/circle_normal_4.png", 	id:"circle_normal_4" },
-	{ src:"img/circle_finish_1.png", 	id:"circle_finish_1" },
-	{ src:"img/circle_finish_2.png", 	id:"circle_finish_2" },
-	{ src:"img/left_hover.png", 		id:"left_hover" },
-	{ src:"img/left_normal.png", 		id:"left_normal" },
-	{ src:"img/right_hover.png", 		id:"right_hover" },
-	{ src:"img/right_normal.png", 		id:"right_normal" },
-	{ src:"img/music_on_normal.png", 	id:"music_on_normal" },
-	{ src:"img/music_off_normal.png", 	id:"music_off_normal" },
-	{ src:"img/music_on_hover.png", 	id:"music_on_hover" },
-	{ src:"img/music_off_hover.png", 	id:"music_off_hover" },
-	{ src:"img/play_normal.png", 		id:"play_normal" },
-	{ src:"img/play_hover.png", 		id:"play_hover" },
-	{ src:"img/sprite_none.png", 		id:"sprite_none" },
-	{ src:"img/sprite_car_1.png", 		id:"sprite_car_1" },
-	{ src:"img/sprite_car_2.png", 		id:"sprite_car_2" },
-	{ src:"img/sprite_car_3.png", 		id:"sprite_car_3" },
-	{ src:"img/trackname_own.png", 		id:"trackname_own" },
-	{ src:"img/trackname_doodoo.png", 	id:"trackname_doodoo" },
-	{ src:"img/trackname_drag.png", 	id:"trackname_drag" },
-	{ src:"img/trackname_lummerland.png", id:"trackname_lummerland" },
-	{ src:"img/trackname_spaceship.png", id:"trackname_spaceship" }
+	{ src:"img/background.png", 			id:"background" },
+	{ src:"img/instruction_building_1.png",	id:"instruction_building_1" },
+	{ src:"img/instruction_building_2.png",	id:"instruction_building_2" },
+	{ src:"img/instruction_building_3.png",	id:"instruction_building_3" },
+	{ src:"img/hud_le_to.png", 				id:"hud0" },
+	{ src:"img/hud_ri_to.png", 				id:"hud1" },
+	{ src:"img/hud_le_bo.png", 				id:"hud2" },
+	{ src:"img/hud_ri_bo.png", 				id:"hud3" },
+	{ src:"img/back_header.png", 			id:"back_header" },
+	{ src:"img/back_name.png", 				id:"back_name" },
+	{ src:"img/autorennen_header.png", 		id:"header" },
+	{ src:"img/circle_normal_1.png", 		id:"circle_normal_1" },
+	{ src:"img/circle_normal_2.png", 		id:"circle_normal_2" },
+	{ src:"img/circle_normal_3.png", 		id:"circle_normal_3" },
+	{ src:"img/circle_normal_4.png", 		id:"circle_normal_4" },
+	{ src:"img/circle_finish_1.png", 		id:"circle_finish_1" },
+	{ src:"img/circle_finish_2.png", 		id:"circle_finish_2" },
+	{ src:"img/left_hover.png", 			id:"left_hover" },
+	{ src:"img/left_normal.png", 			id:"left_normal" },
+	{ src:"img/right_hover.png", 			id:"right_hover" },
+	{ src:"img/right_normal.png", 			id:"right_normal" },
+	{ src:"img/music_on_normal.png", 		id:"music_on_normal" },
+	{ src:"img/music_off_normal.png", 		id:"music_off_normal" },
+	{ src:"img/music_on_hover.png", 		id:"music_on_hover" },
+	{ src:"img/music_off_hover.png", 		id:"music_off_hover" },
+	{ src:"img/play_normal.png", 			id:"play_normal" },
+	{ src:"img/play_hover.png", 			id:"play_hover" },
+	{ src:"img/sprite_none.png", 			id:"sprite_none" },
+	{ src:"img/sprite_car_1.png", 			id:"sprite_car_1" },
+	{ src:"img/sprite_car_2.png", 			id:"sprite_car_2" },
+	{ src:"img/sprite_car_3.png", 			id:"sprite_car_3" },
+	{ src:"img/trackname_own.png", 			id:"trackname_own" },
+	{ src:"img/trackname_doodoo.png", 		id:"trackname_doodoo" },
+	{ src:"img/trackname_drag.png", 		id:"trackname_drag" },
+	{ src:"img/trackname_lummerland.png", 	id:"trackname_lummerland" },
+	{ src:"img/trackname_spaceship.png", 	id:"trackname_spaceship" }
 ];
 
 spriteSheets = [];
@@ -399,6 +408,20 @@ function prepareMenu() {
 	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_normal", obj: "pic"} );
 	s.on( "click", function( evt ){
+		
+		// if less than 2 cars are chosen
+		var carcounter = 0;
+		for( var i = 0; i < menu_car_positions.length; i++ ){
+			if ( menu_car_positions[i] != 0 ){
+				carcounter++;
+			}
+		}
+		if ( carcounter < 2 ){
+			alert( "Please choose at least 2 cars." );
+			return;
+		}
+
+		// prepare everything
 		for (var i = 0; i < menu_car_positions.length; i++){
 			if (menu_car_positions[i] != 0){
 				// XXX: Color needs to be read from menu...
@@ -412,6 +435,7 @@ function prepareMenu() {
 			}
 		}
 
+		// if own is chosen set trackstatus to building, else to placing.
 		if ( track_position == 0 ){
 			buildStatus = BUILD_TRACK;
 		} else {
@@ -514,7 +538,7 @@ function changeTrack ( evt, data ) {
 	var trackTitle = drawPicture( "trackname_"+game.track.name, new Location(w/2-w*0.3/2,h/2-0.1*h/2), w*0.3, h*0.1, "trackname", true );
 	menuContainer.addChild(trackTitle);
 	paintTrack( game.track.trackBorders, 0 );
-	// paintTrack( game.track.surrPoints, 1 );
+	paintTrack( game.track.surrPoints, 1 );
 	paintTrack( game.track.finishLine, 2 );
 	paintTrack( game.track.trackPoints, 3 );
 }
@@ -526,6 +550,12 @@ function changeTrack ( evt, data ) {
 /* = ************* = */
 /* =  BUILD STUFF  = */
 /* = ************* = */
+/*
+#A6A6A6 strasse
+#8BACBB border
+#00273D finishline
+#575757 surrounding
+*/
 
 function prepareTrack(){
 	menuContainer.visible = false;
@@ -556,6 +586,11 @@ function prepareTrack(){
 
 function buildTrack(){
 	
+	// set instruction background
+	var instr = drawPicture( "instruction_building_1", new Location(0, 0), w, h, "instruction_building_1", false );
+	instr.alpha = 0.4;
+	backgroundContainer.addChild( instr );
+
 	var outerTrackBorders = new Array();
 	var start = true;
 	var shape = new createjs.Shape();
@@ -563,7 +598,6 @@ function buildTrack(){
 	paintContainer.addChild( shape );
 
 	// set up our defaults:
-	var color = "#0FF";
 	var oldX, oldY;
 	var paint = false;
 	var timedown = 0;
@@ -630,7 +664,7 @@ function buildTrack(){
     stage.on( "stagemousemove", function( evt ) {
 
 		if ( paint ) {
-			shape.graphics.beginStroke( color )
+			shape.graphics.beginStroke( COLOR_BORDER )
 						  .setStrokeStyle( CIRCLE_SIZE, "round" )
 						  .moveTo( oldX, oldY )
 						  .lineTo( evt.stageX, evt.stageY );
@@ -655,6 +689,163 @@ function buildTrack(){
 	});
 }
 
+function setStartPoints(){
+	// remove old instruction background
+	var oldInstr = backgroundContainer.getChildByName( "instruction_building_1" );
+	backgroundContainer.removeChild( oldInstr );
+	// set new instruction background
+	var instr = drawPicture( "instruction_building_2", new Location(0, 0), w, h, "instruction_building_2", false );
+	instr.alpha = 0.4;
+	backgroundContainer.addChild( instr );
+
+	
+	var finishLine = new Array();
+
+	var shape = new createjs.Shape();
+	shape.name = "buildPainting2";
+	paintContainer.addChild( shape );
+
+	// set up our defaults:
+	var size = 10;
+	var oldX, oldY;
+	var paint = false;
+	var timedown = 0;
+	var timeup = Date.now();
+
+	// add handler for stage mouse events:
+	stage.on( "stagemousedown", function( evt ) {
+		// capture press time
+		timedown = Date.now();
+		paint = true;
+	})                
+	
+	stage.on( "stagemouseup", function( evt ) {
+		paint = false;
+		// capture press time
+		timeup = Date.now();
+		// add missing points between pushed points
+		var newFinishLine = new Array();
+		for ( var i = 0; i < finishLine.length-1; i++ ){
+			var srcLoc = finishLine[i];
+			var destLoc = finishLine[i+1];
+			var between = detectPointsInBetween( srcLoc, destLoc );
+			
+			newFinishLine.push( srcLoc );
+			newFinishLine = newFinishLine.concat( between );
+			newFinishLine.push( destLoc );
+		}
+
+		for ( var i = 0; i < newFinishLine.length; i++ ){	
+			if ( !game.track.isFinishLine( newFinishLine[i] ) 
+					&& !game.track.isBorder( newFinishLine[i] ) 
+					&& !game.track.isSurrounding( newFinishLine[i] )){
+				game.track.finishLine.push( newFinishLine[i] );
+			}
+		}
+		paintTrack( game.track.finishLine, 2 );
+		// clear finishLine
+		finishLine.length = 0;
+		
+	})
+	
+    stage.on( "stagemousemove", function( evt ) {
+		if ( paint ) {
+			shape.graphics.beginStroke( COLOR_FINISHLINE )
+						  .setStrokeStyle( size, "round" )
+						  .moveTo( oldX, oldY )
+						  .lineTo( evt.stageX, evt.stageY );
+			stage.update();
+			finishLine.push( game.toLoc( evt.stageX, evt.stageY ));
+		}
+		oldX = evt.stageX;
+		oldY = evt.stageY;
+	})
+
+	var text = drawText ( "Done", "doneButton", new Location( w/2 - 0.08*w, h-0.05*h ), Math.floor(20*w/1000)+"px", "Arial", "DeepSkyBlue", true, "left", "top" );
+	stuffContainer.addChild( text );
+	text.on( "click", function ( evt ){
+		// XXX: Check wether finishline points are enough for all players!!!!!!!!!
+		buildStatus++;
+		prepareTrack();
+		var c = evt.currentTarget;
+		stuffContainer.removeChild( c );
+		stage.update();
+	});
+	
+}
+
+function setPlayers(){
+
+	// remove old instruction background
+	var oldInstr = backgroundContainer.getChildByName( "instruction_building_2" );
+	backgroundContainer.removeChild( oldInstr );
+	// set new instruction background
+	var instr = drawPicture( "instruction_building_3", new Location(0, 0), w, h, "instruction_building_3", false );
+	instr.alpha = 0.4;
+	backgroundContainer.addChild( instr );
+
+	finishLineContainer.uncache();
+	var max = game.activePlayers.length;
+	var no = 0;
+	
+	for ( var i = 0; i < finishLineContainer.getNumChildren(); i++ ) {
+		var child = finishLineContainer.getChildAt( i );
+		child.uncache();
+		
+		child.cursor = "pointer";
+		child.on( "mouseover", hover, false, null, {color: COLOR_HOVER, obj: "circle"} );
+		child.on( "mouseout", hover, false, null, {color: COLOR_FINISHLINE, obj: "circle"} );
+		child.on( "click", function( evt ){
+			var c = evt.currentTarget;
+			c.removeAllEventListeners();
+
+			var loc = game.toLoc( evt.stageX, evt.stageY );
+			game.activePlayers[no].historyLocs.push( loc );
+
+			var car = menuContainer.getChildByName("car_"+game.activePlayers[no].no);
+			menuContainer.removeChild(car);
+			car.name = "car_"+game.activePlayers[no].no;
+			car.scaleX = SKEW_CARS_TRACK;
+			car.scaleY = SKEW_CARS_TRACK;
+			var bounds = car.spriteSheet.getFrameBounds(0);
+			car.x = game.toXCoord(loc)-bounds.width*car.scaleX/2;
+			car.y = game.toYCoord(loc)-bounds.height*car.scaleY/2;
+			playerContainer.addChild( car );
+			stage.update();
+
+			no++;
+			if ( no == max ){
+				for ( var j = 0; j < finishLineContainer.getNumChildren(); j++ ) {
+					var ch = finishLineContainer.getChildAt( j );
+					ch.removeAllEventListeners();
+					// restore Look of FinishLine Point
+					ch.graphics.beginFill( COLOR_FINISHLINE ).drawCircle( 0, 0, CIRCLE_SIZE ).endFill();
+				}
+				// remove old instruction background
+				var oldInstr = backgroundContainer.getChildByName( "instruction_building_3" );
+				backgroundContainer.removeChild( oldInstr );
+				buildStatus++;
+				game.calculateTrackPoints();
+				// XXX: for creating tracks
+				// printArray( game.track.trackBorders, "track.trackBorders" );
+				// printArray( game.track.finishLine, "track.finishLine" );
+				// printArray( game.track.surrPoints, "track.surrPoints" );
+				// printArray( game.track.trackPoints, "track.trackPoints" );
+				prepareTrack();
+				stage.update();
+			}
+		})
+	};
+}
+// XXX: for creating tracks
+// function printArray ( array, name ){
+// 	var string = "";
+// 	for ( var i = 0; i < array.length; i++ ){
+// 		string += name+".push( new Location" + array[i].toString()+");";
+// 	}
+// 	console.log( string );
+// }
+
 function paintTrack( array, type ){
 	var container;
 	switch( type ) {
@@ -662,7 +853,7 @@ function paintTrack( array, type ){
 			container = trackContainer;
 			for ( var j = 0; j < array.length; j++ ){
 				if ( trackContainer.getChildByName( array[j].x+","+array[j].y ) == null ){
-					var circle = drawColoredCircle( "DeepSkyBlue", array[j], CIRCLE_SIZE, true );
+					var circle = drawColoredCircle( COLOR_BORDER, array[j], CIRCLE_SIZE, true );
 					circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2,CIRCLE_SIZE*2 );
 					trackContainer.addChild( circle );	
 				}
@@ -671,7 +862,8 @@ function paintTrack( array, type ){
 		case 1: 
 			container = trackContainer;
 			for ( var j = 0; j < array.length; j++ ){
-				var circle = drawColoredCircle( "green", array[j], CIRCLE_SIZE, true );
+				var circle = drawColoredCircle( COLOR_SURR, array[j], CIRCLE_SIZE, true );
+				circle.alpha = 0.15;
 				circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2, CIRCLE_SIZE*2 );
 				trackContainer.addChild( circle );
 			}	
@@ -680,7 +872,7 @@ function paintTrack( array, type ){
 			container = finishLineContainer;
 			for ( var j = 0; j < array.length; j++ ){
 				if ( finishLineContainer.getChildByName( array[j].x+","+array[j].y ) == null ){
-					var circle = drawColoredCircle( "blue", array[j], CIRCLE_SIZE, true );
+					var circle = drawColoredCircle( COLOR_FINISHLINE, array[j], CIRCLE_SIZE, true );
 					circle.cache( -CIRCLE_SIZE, -CIRCLE_SIZE, CIRCLE_SIZE*2,CIRCLE_SIZE*2 );
 					finishLineContainer.addChild( circle );	
 				}
@@ -770,82 +962,7 @@ function detectFilling( loc ){
 }
 
 
-function setStartPoints(){
-	
-	var finishLine = new Array();
 
-	var shape = new createjs.Shape();
-	shape.name = "buildPainting2";
-	paintContainer.addChild( shape );
-
-	// set up our defaults:
-	var color = "#00F";
-	var size = 10;
-	var oldX, oldY;
-	var paint = false;
-	var timedown = 0;
-	var timeup = Date.now();
-
-	// add handler for stage mouse events:
-	stage.on( "stagemousedown", function( evt ) {
-		// capture press time
-		timedown = Date.now();
-		paint = true;
-	})                
-	
-	stage.on( "stagemouseup", function( evt ) {
-		paint = false;
-		// capture press time
-		timeup = Date.now();
-		// add missing points between pushed points
-		var newFinishLine = new Array();
-		for ( var i = 0; i < finishLine.length-1; i++ ){
-			var srcLoc = finishLine[i];
-			var destLoc = finishLine[i+1];
-			var between = detectPointsInBetween( srcLoc, destLoc );
-			
-			newFinishLine.push( srcLoc );
-			newFinishLine = newFinishLine.concat( between );
-			newFinishLine.push( destLoc );
-		}
-
-		for ( var i = 0; i < newFinishLine.length; i++ ){	
-			if ( !game.track.isFinishLine( newFinishLine[i] ) 
-					&& !game.track.isBorder( newFinishLine[i] ) 
-					&& !game.track.isSurrounding( newFinishLine[i] )){
-				game.track.finishLine.push( newFinishLine[i] );
-			}
-		}
-		paintTrack( game.track.finishLine, 2 );
-		// clear finishLine
-		finishLine.length = 0;
-		
-	})
-	
-    stage.on( "stagemousemove", function( evt ) {
-		if ( paint ) {
-			shape.graphics.beginStroke( color )
-						  .setStrokeStyle( size, "round" )
-						  .moveTo( oldX, oldY )
-						  .lineTo( evt.stageX, evt.stageY );
-			stage.update();
-			finishLine.push( game.toLoc( evt.stageX, evt.stageY ));
-		}
-		oldX = evt.stageX;
-		oldY = evt.stageY;
-	})
-
-	var text = drawText ( "Done", "doneButton", new Location( w/2 - 0.08*w, h-0.05*h ), Math.floor(20*w/1000)+"px", "Arial", "DeepSkyBlue", true, "left", "top" );
-	stuffContainer.addChild( text );
-	text.on( "click", function ( evt ){
-		buildStatus++;
-		prepareTrack();
-		var c = evt.currentTarget;
-		stuffContainer.removeChild( c );
-		stage.update();
-	});
-	
-}
 
 function hover ( evt, data ){
 	var c = evt.currentTarget;
@@ -860,89 +977,34 @@ function hover ( evt, data ){
 	}
 }
 
-function setPlayers(){
-	finishLineContainer.uncache();
-	var max = game.activePlayers.length;
-	var no = 0;
-	
-	for ( var i = 0; i < finishLineContainer.getNumChildren(); i++ ) {
-		var child = finishLineContainer.getChildAt( i );
-		child.uncache();
-		
-		child.cursor = "pointer";
-		child.on( "mouseover", hover, false, null, {color: "red", obj: "circle"} );
-		child.on( "mouseout", hover, false, null, {color: "blue", obj: "circle"} );
-		child.on( "click", function( evt ){
-			var c = evt.currentTarget;
-			c.removeAllEventListeners();
 
-			var loc = game.toLoc( evt.stageX, evt.stageY );
-			game.activePlayers[no].historyLocs.push( loc );
-
-			var car = menuContainer.getChildByName("car_"+game.activePlayers[no].no);
-			menuContainer.removeChild(car);
-			car.name = "car_"+game.activePlayers[no].no;
-			car.scaleX = SKEW_CARS_TRACK;
-			car.scaleY = SKEW_CARS_TRACK;
-			var bounds = car.spriteSheet.getFrameBounds(0);
-			car.x = game.toXCoord(loc)-bounds.width*car.scaleX/2;
-			car.y = game.toYCoord(loc)-bounds.height*car.scaleY/2;
-			playerContainer.addChild( car );
-			stage.update();
-
-			no++;
-			if ( no == max ){
-				for ( var j = 0; j < finishLineContainer.getNumChildren(); j++ ) {
-					var ch = finishLineContainer.getChildAt( j );
-					ch.removeAllEventListeners();
-					// restore Look of FinishLine Point
-					ch.graphics.beginFill( "blue" ).drawCircle( 0, 0, CIRCLE_SIZE ).endFill();
-				}
-				buildStatus++;
-				game.calculateTrackPoints();
-				// XXX: for creating tracks
-				// printArray( game.track.trackBorders, "track.trackBorders" );
-				// printArray( game.track.finishLine, "track.finishLine" );
-				// printArray( game.track.surrPoints, "track.surrPoints" );
-				// printArray( game.track.trackPoints, "track.trackPoints" );
-				prepareTrack();
-				stage.update();
-			}
-		})
-	};
-}
-// XXX: for creating tracks
-// function printArray ( array, name ){
-// 	var string = "";
-// 	for ( var i = 0; i < array.length; i++ ){
-// 		string += name+".push( new Location" + array[i].toString()+");";
-// 	}
-// 	console.log( string );
-// }
 
 
 
 function doMove(){
-	choiceContainer.removeAllChildren();
 
 	var crntTurn = game.getTurn();
 
 	updateScores();
 
 	if ( crntTurn.win ){
-		alert( crntTurn.player.name + "  hat gewonnen." );
+		alert( crntTurn.player.name + "  has won." );
+		// XXX: Here the possibility of repeating the match should be given.
 		return;
 	}
 	if ( crntTurn.draw ){
-		alert( "Es ist unentschieden ausgegangen." );
+		alert( "Draw!" );
 		return;
 	}
 
 	var surr = crntTurn.surrounding;
+	// XXX: TODO. Needs to remove temporarily objects that block the choices.
+	removeBlockingObjects( surr );
 	for ( var i = 0; i < surr.length; i++ ){
 		var circle = drawColoredCircle( crntTurn.player.car.color, surr[i], CIRCLE_SIZE, true );
 		choiceContainer.addChild( circle );
 		circle.on( "click", function( evt ){
+			choiceContainer.removeAllChildren();
 			var loc = game.toLoc( evt.stageX, evt.stageY );
 			updateCars( crntTurn.player, loc, crntTurn.player.getSpeed()+1, 1000, 60 );
 			// update addons
@@ -953,6 +1015,10 @@ function doMove(){
 	}
 	// // XXX: TESTING PURPOSES
 	// displayTip("Ziehe nun mit der Maus eine Linie,\nsodass blablabla\nfkdsfhjdklsfjdskfldjsfdksfljssfdsfs\nfdskfjksldjfksdjfls");
+}
+
+function removeBlockingObjects( surr ){
+
 }
 
 
