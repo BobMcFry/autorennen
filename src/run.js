@@ -26,7 +26,7 @@ loadingProgress = 0;
 // XXX: make pics to global vars to make editing afterwards easier
 /* Images and Sounds used in the game. This manifest is loaded with preload. */
 manifest = [
-	{ src:"img/background.jpg", 		id:"background" },
+	{ src:"img/background.png", 		id:"background" },
 	{ src:"img/hud_le_to.png", 			id:"hud0" },
 	{ src:"img/hud_ri_to.png", 			id:"hud1" },
 	{ src:"img/hud_le_bo.png", 			id:"hud2" },
@@ -207,7 +207,7 @@ function prepareMenu() {
 	var obj, g, s;
 	
 	// display Background
-	obj = drawPicture( "background", new Location(0, 0), w, h, "background", false );
+	obj = drawPicture( "background", new Location(0, 0), w*1.01, h*1.02, "background", false );
 	backgroundContainer.addChild(obj);
 	
 	// display Background of Header
