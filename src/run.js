@@ -5,7 +5,7 @@ PLACE_PLAYERS = 2;
 PREPARE_TURN  = 3;
 
 /* Circle Size used to draw them to the canvas */
-CIRCLE_SIZE = 5;
+CIRCLE_SIZE = 6;
 
 /* HUD SIZE (percentage of width and height*/
 HUD_SIZE = 0.2;
@@ -128,9 +128,9 @@ function init() {
 	/* PRELOAD IMAGES */
 	/* ************** */
 
-	// XXX: false is for local loading ( ? ), true is for the internet stuff
+	// XXX: false is for local loading ( ? ), true is for the internet stuff??? works still...
 	preload = new createjs.LoadQueue( false );
-	// // // XXX: PUT NICE BAR WITH GLOBAL PROGRESS VALUE THAT INDICATES LOAD OF ASSET STATUS
+	// XXX: Change font
 	var text = drawText( Math.floor( loadingProgress/manifest.length )+"%", "progressBar", new Location( w/2, h/2 ), Math.floor(20*w/1000)+"px", "Arial", "black", false, "left", "top" );
 	menuContainer.addChild( text );
 	preload.on( "progress", handleProgress );
