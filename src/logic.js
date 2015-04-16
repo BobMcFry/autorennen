@@ -130,48 +130,32 @@ var	Track = function( width, height, name ){
 
 // XXX: THINK ABOUT A NICER SHORTER SOLUTION
 Track.prototype.isGamePoint = function( loc ) {
-	for ( var i = 0; i < this.gamePoints.length; i++ ) {
-		if ( this.gamePoints[i].equals( loc )){
-			return true;
-		}
-	};
-	return false;
+	return this.isIn( loc, this.gamePoints );
 };
 
 Track.prototype.isOnTrack = function( loc ) {
-	for ( var i = 0; i < this.trackPoints.length; i++ ) {
-		if ( this.trackPoints[i].equals( loc )){
-			return true;
-		}
-	};
-	return false;
+	return this.isIn( loc, this.trackPoints );
 };
 
 Track.prototype.isBorder = function( loc ) {
-	for ( var i = 0; i < this.trackBorders.length; i++ ) {
-		if ( this.trackBorders[i].equals( loc )){
-			return true;
-		}
-	};
-	return false;	
+	return this.isIn( loc, this.trackBorders );
 };
 
 Track.prototype.isSurrounding = function( loc ) {
-	for ( var i = 0; i < this.surrPoints.length; i++ ) {
-		if ( this.surrPoints[i].equals( loc )){
-			return true;
-		}
-	};
-	return false;	
+	return this.isIn( loc, this.surrPoints );
 };
 
 Track.prototype.isFinishLine = function( loc ) {
-	for ( var i = 0; i < this.finishLine.length; i++ ) {
-		if ( this.finishLine[i].equals( loc )){
+	return this.isIn( loc, this.finishLine );
+};
+
+Track.prototype.isIn = function( loc, arr ) {
+	for ( var i = 0; i < arr.length; i++ ) {
+		if ( arr[i].equals( loc )){
 			return true;
 		}
 	};
-	return false;	
+	return false;		
 };
 
 Track.prototype.getSurrounding = function( loc, track ) {

@@ -1,39 +1,65 @@
-/* Status of Track Preparation used in prepareTrack() */
+      //      /     //
+     //            //
+    //      /     //
+   // AUTORENNEN //
+  //      /     //
+ //            //
+//      /     //
+
+
+
+// Status of Track Preparation used in prepareTrack()
 BUILD_TRACK  = 0;
 SET_START  = 1;
 PLACE_PLAYERS = 2;
 PREPARE_TURN  = 3;
 
-/* Circle and paint size used to draw them to the canvas */
+// Circle and paint size used to draw them to the canvas
 CIRCLE_SIZE = 6;
 PAINT_SIZE = 6;
 
-/* HUD SIZE (percentage of width and height*/
+// HUD SIZE (percentage of width and height
 HUD_SIZE = 0.2;
-HUD_OFFSET = 0.1;
+HUD_OFFSET = 0.25;
 
+// Scale factor for cars
 SKEW_CARS_MENU = 0.8;
 SKEW_CARS_TRACK = 0.5;
 
+// Color design
 COLOR_HOVER = "#8B2A18";
 COLOR_TRACK = "#A6A6A6";
 COLOR_BORDER = "#8BACBB";
 COLOR_FINISHLINE = "#1C63A0";
 COLOR_SURR = "#575757";
 
-// XXX: CHANGE EVERY VARIABLE TO CAMELCASE EXCEPT FOR CONSTANTS (ALL CAPITAL LETTERS)
-menu_car_positions = [0,0,0,0];
+// menu related variables
+menuCarPositions = [0,0,0,0];
 tracks = [];
-track_position = 0;
+trackPosition = 0;
 
+// counter for loading screen 
 loadingProgress = 0;
+loadingPics = [];
 
-// XXX: maybe put the code that is related to drawing stuff somewhere else
-
-// XXX: make pics to global vars to make editing afterwards easier
-/* Images and Sounds used in the game. This manifest is loaded with preload. */
+// Images and Sounds used in the game. This manifest is loaded with preload.
 manifest = [
+	{ src:"img/loading_01.png", 			id:"loading_01" },
+	{ src:"img/loading_02.png", 			id:"loading_02" },
+	{ src:"img/loading_03.png", 			id:"loading_03" },
+	{ src:"img/loading_04.png", 			id:"loading_04" },
+	{ src:"img/loading_05.png", 			id:"loading_05" },
+	{ src:"img/loading_06.png", 			id:"loading_06" },
+	{ src:"img/loading_07.png", 			id:"loading_07" },
+	{ src:"img/loading_08.png", 			id:"loading_08" },
+	{ src:"img/loading_09.png", 			id:"loading_09" },
+	{ src:"img/loading_10.png", 			id:"loading_10" },
+	{ src:"img/loading_11.png", 			id:"loading_11" },
+	{ src:"img/loading_12.png", 			id:"loading_12" },
 	{ src:"img/background.png", 			id:"background" },
+	{ src:"img/numbers.png", 				id:"numbers" },
+	{ src:"img/meter.png", 					id:"meter" },
+	{ src:"img/kilometer.png", 				id:"kilometer" },
 	{ src:"img/instruction_building_1.png",	id:"instruction_building_1" },
 	{ src:"img/instruction_building_2.png",	id:"instruction_building_2" },
 	{ src:"img/instruction_building_3.png",	id:"instruction_building_3" },
@@ -73,7 +99,8 @@ manifest = [
 	{ src:"img/trackname_spaceship.png", 	id:"trackname_spaceship" }
 ];
 
-spriteSheets = [];
+spriteSheetsCar = [];
+spriteSheetNumbers = [];
 
 /* This functin is called on pageload */
 function init() {
@@ -131,28 +158,30 @@ function init() {
 	/* PRELOAD IMAGES */
 	/* ************** */
 
-	// XXX: false is for local loading ( ? ), true is for the internet stuff??? works still...
 	preload = new createjs.LoadQueue( false );
-	// XXX: Change font
+	// XXX: USe spritesheetnumbers
 	var text = drawText( Math.floor( loadingProgress/manifest.length )+"%", "progressBar", new Location( w/2, h/2 ), Math.floor(20*w/1000)+"px", "Arial", "black", false, "left", "top" );
 	menuContainer.addChild( text );
 	preload.on( "progress", handleProgress );
 	preload.on( "fileload", handleLoadedStuff );
 	preload.on( "complete", prepareMenu );
 	preload.loadManifest( manifest );
-	
 	/* ****** */
 	/* TICKER */
 	/* ****** */
 	
 	// XXX: MAYBE OK WITHOUT TICKER???
-	createjs.Ticker.addEventListener( "tick", stage );
-	
+	createjs.Ticker.addEventListener( "tick", stage );	
 }
 
 function handleProgress( evt ){
+	var progress = loadingProgress/manifest.length*100
 	var text = menuContainer.getChildByName( "progressBar" );
-	text.text = Math.floor( loadingProgress/manifest.length*100 )+"%";
+	text.text = Math.floor( progress )+"%";
+
+	// XXX: To be completed (loading pic)
+	// var pic = drawPicture( evt.item.id, new Location(0, 0), w*0.8, h*0.8, evt.item.id, false );	
+	// stuffContainer.addChild( pic );
 }
 
 function handleLoadedStuff( evt ){
@@ -160,6 +189,22 @@ function handleLoadedStuff( evt ){
 	console.log( evt.item.id + " loaded" );
 	switch( evt.item.id ){
 		case "background": 	
+		break;
+		case "loading_01":
+		case "loading_02":
+		case "loading_03":
+		case "loading_04":
+		case "loading_05":
+		case "loading_06":
+		case "loading_07":
+		case "loading_08":
+		case "loading_09":
+		case "loading_10":
+		case "loading_11":
+		case "loading_12":
+			// XXX: To be completed (loading pic)
+			// loadingPics.push( evt.item.id );
+		break;
 		case "hud0":
 		case "hud1":
 		case "hud2":
@@ -188,32 +233,11 @@ function handleLoadedStuff( evt ){
 	}
 }
 
-function initScore() {
-	// XXX: FONT AENDERN....
-	for ( var i = 0; i < 4; i++ ) {
-		var parent = HUDContainer.getChildByName( "hud"+i );
-		var loc = new Location( parent.x + parent.width*HUD_OFFSET, parent.y + parent.height*HUD_OFFSET );
-		var text = drawText( "", "hud"+i+"_text", loc, Math.floor(20*w/1000)+"px", "Arial", "black", false, "left", "top" );
-		HUDContainer.addChild( text );
-	};
-};
-
-function updateScores() {
-	for ( var i = 0; i < game.players.length; i++ ){
-		var player = game.players[i];
-		var displayedText = ( game.isKicked(player) ? "KICKED\n": "" ) + 
- 					 + player.getSpeed().toFixed( 1 ) + " (\u00D8 " + player.avgSpeed.toFixed(1) + " )kmh\n"
- 					 + player.distance.toFixed( 1 ) +"m";
-	 	var t = HUDContainer.getChildByName( "hud"+player.no+"_text" );
-	 	t.text = displayedText;
-	 	t.color = player.car.color;	
-	}
-};
-
 function prepareMenu() {
 
 	// Remove progress bar
 	menuContainer.removeChild( menuContainer.getChildByName( "progressBar" ) );
+	stuffContainer.removeAllChildren();
 
 	// helper for displaying objects (graphics and shapes)
 	var obj, g, s;
@@ -416,8 +440,8 @@ function prepareMenu() {
 		
 		// if less than 2 cars are chosen
 		var carcounter = 0;
-		for( var i = 0; i < menu_car_positions.length; i++ ){
-			if ( menu_car_positions[i] != 0 ){
+		for( var i = 0; i < menuCarPositions.length; i++ ){
+			if ( menuCarPositions[i] != 0 ){
 				carcounter++;
 			}
 		}
@@ -427,21 +451,32 @@ function prepareMenu() {
 		}
 
 		// prepare everything
-		for (var i = 0; i < menu_car_positions.length; i++){
-			if (menu_car_positions[i] != 0){
+		var visibility;
+		for (var i = 0; i < menuCarPositions.length; i++){
+			
+			if (menuCarPositions[i] != 0){
 				// XXX: Color needs to be read from menu...
 				color = createjs.Graphics.getHSL( Math.random()*360, 100, 50 );
 				var player = new Player( new Car( null, color ), i );
 				game.activePlayers.push( player );
 				game.players.push( player );
-				HUDContainer.getChildByName("hud"+i).visible = true;
+				visibility = true;
 			} else {
-				HUDContainer.getChildByName("hud"+i).visible = false;
+				visibility = false;
 			}
+
+			HUDContainer.getChildByName("hud"+i).visible = visibility;
+			HUDContainer.getChildByName("hud_speed_1_"+i).visible = visibility;
+			HUDContainer.getChildByName("hud_speed_2_"+i).visible = visibility;
+			HUDContainer.getChildByName("hud_distance_1_"+i).visible = visibility;
+			HUDContainer.getChildByName("hud_distance_2_"+i).visible = visibility;
+			HUDContainer.getChildByName("hud_distance_3_"+i).visible = visibility;
+			HUDContainer.getChildByName("hud_meter_"+i).visible = visibility;
+			HUDContainer.getChildByName("hud_kilometer_"+i).visible = visibility;
 		}
 
 		// if own is chosen set trackstatus to building, else to placing.
-		if ( track_position == 0 ){
+		if ( trackPosition == 0 ){
 			buildStatus = BUILD_TRACK;
 		} else {
 			buildStatus = PLACE_PLAYERS;
@@ -450,40 +485,45 @@ function prepareMenu() {
 	});
 	menuContainer.addChild( s );
 	
-	// display HUD
-	initScore();
-	
 	// ANIMATIONS
 	var animation, spriteSheet;
-	spriteSheets.push({
+	spriteSheetsCar.push({
 		images: [preload.getResult( "sprite_none" )],
 		frames: {width:485/5, height:78},
 		animations: {"move":[0,4], "hold":[0]}, // "move":[0,4,"hold",0.5]
 		framerate: 7
  	});
-	spriteSheets.push({
+	spriteSheetsCar.push({
 		images: [preload.getResult( "sprite_car_1" )],
 		frames: {width:658/7, height:77},
 		animations: {"move":[0,6], "hold":[0]},
 		framerate: 15
  	});
- 	spriteSheets.push({
+ 	spriteSheetsCar.push({
 		images: [preload.getResult( "sprite_car_2" )],
 		frames: {width:70, height:61},
 		animations: {"move":[0,6], "hold":[5]},
 		framerate: 15
  	});
- 	spriteSheets.push({
+ 	spriteSheetsCar.push({
 		images: [preload.getResult( "sprite_car_3" )],
 		frames: {width:292/3, height:88},
 		animations: {"move":[0,2], "hold":[0]},
 		framerate: 7
  	});
 
+ 	// numbers
+	spriteSheetNumbers = {
+		images: [preload.getResult( "numbers" )],
+		frames: {width:250/10, height:26},
+		animations: {zero:0, one:1, two:2, three:3, four:4, five:5, six:6, seven:7, eight:8, nine:9},
+ 	};
+
+ 	
  	// Notice on scaling values: Due to the fact that the pictures were created
  	// based on a width of 1000 and height of 600, the scaling values need to
  	// be adjusted according to the new canvas size.
-	var spriteSheet = new createjs.SpriteSheet(spriteSheets[0]);
+	var spriteSheet = new createjs.SpriteSheet(spriteSheetsCar[0]);
 	var animation = new createjs.Sprite(spriteSheet, "move" );
 	animation.name = "car_0";
 	animation.x = w*0.06;
@@ -515,32 +555,176 @@ function prepareMenu() {
 	animation.scaleX = SKEW_CARS_MENU*w/1000;
 	animation.scaleY = SKEW_CARS_MENU*h/600;
 	menuContainer.addChild(animation);
+
+	// display HUD
+	initScore();
 };
 
-function changeCar( evt, data ){
-	var inc = (data.dir == "right" ? +1 : -1);
-	menu_car_positions[data.no] = (menu_car_positions[data.no] + inc) % spriteSheets.length; 
-	if ( menu_car_positions[data.no] < 0 ) {
-		menu_car_positions[data.no] = spriteSheets.length-1; 
+
+function initScore() {
+
+	for ( var i = 0; i < 4; i++ ) {
+		var parent = HUDContainer.getChildByName( "hud"+i );
+		var loc = new Location( parent.x + parent.width*HUD_OFFSET, parent.y + parent.height*HUD_OFFSET );
+
+		// XXX: Add average speed
+		
+		var obj, pic;
+		var spriteSheet = new createjs.SpriteSheet( spriteSheetNumbers );
+		// speed 1:
+	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
+	 	obj.name = "hud_speed_1_"+i;
+		obj.x = loc.x;
+		obj.y = loc.y;
+		obj.visible = false;
+		HUDContainer.addChild( obj );
+		// speed 2:
+	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
+	 	obj.name = "hud_speed_2_"+i;
+		obj.x = loc.x + obj.spriteSheet._frameWidth*4/5;
+		obj.y = loc.y;
+		obj.visible = false;
+		HUDContainer.addChild( obj );
+		// Kilometer
+		loc.x += obj.spriteSheet._frameWidth*2;
+		pic = drawPicture( "kilometer", loc, w*0.05, -1, "hud_kilometer_"+i, true );
+		pic.visible = false;
+		HUDContainer.addChild( pic );
+		loc.x -= obj.spriteSheet._frameWidth*2;
+
+		// distance 1:
+	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
+	 	obj.name = "hud_distance_1_"+i;
+		obj.x = loc.x - obj.spriteSheet._frameWidth * 4/5;
+		obj.y = loc.y + obj.spriteSheet._frameHeight;
+		obj.visible = false;
+		HUDContainer.addChild( obj );
+		// distance 2:
+	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
+	 	obj.name = "hud_distance_2_"+i;
+		obj.x = loc.x;
+		obj.y = loc.y + obj.spriteSheet._frameHeight;
+		obj.visible = false;
+		HUDContainer.addChild( obj );
+		// distance 3:
+	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
+	 	obj.name = "hud_distance_3_"+i;
+		obj.x = loc.x + obj.spriteSheet._frameWidth * 4/5;
+		obj.y = loc.y + obj.spriteSheet._frameHeight;
+		obj.visible = false;
+		HUDContainer.addChild( obj );
+		// Meter
+		loc.x += obj.spriteSheet._frameWidth*2;
+		loc.y += obj.spriteSheet._frameHeight;
+		pic = drawPicture( "meter", loc, w*0.025, -1, "hud_meter_"+i, true );
+		pic.visible = false;
+		HUDContainer.addChild( pic );
+		loc.x -= obj.spriteSheet._frameWidth*2;
+		loc.y -= obj.spriteSheet._frameHeight;
+	};
+};
+
+function getNumberString( number ){
+	switch ( number ){
+		case 0: return "zero"; 
+		case 1: return "one"; 
+		case 2: return "two"; 
+		case 3: return "three";
+		case 4: return "four"; 
+		case 5: return "five"; 
+		case 6: return "six"; 
+		case 7: return "seven";
+		case 8: return "eight";
+		case 9: return "nine"; 
+		default: return null;
 	}
-	var c = menuContainer.getChildByName(data.target);
-	c.spriteSheet = new createjs.SpriteSheet(spriteSheets[menu_car_positions[data.no]]);
+	return "";
+}
+
+function updateScores() {
+
+	for ( var i = 0; i < game.activePlayers.length; i++ ){
+		// XXX: Add Color Or CarPic
+		var player = game.activePlayers[i];
+		var no = player.no;
+		var slicedSpeed = sliceNumberIntoPieces( Math.ceil( player.getSpeed() ) );
+		var slicedDistance = sliceNumberIntoPieces( Math.ceil( player.distance ) );
+		var obj;
+		
+		// change speed
+		obj = HUDContainer.getChildByName( "hud_speed_1_" + no );
+		if ( slicedSpeed[1] == null ){
+			obj.visible = false;
+		} else {
+			obj.visible = true;
+			obj.gotoAndPlay( getNumberString( slicedSpeed[1] ));	
+		}
+		obj = HUDContainer.getChildByName( "hud_speed_2_" + no );
+		if ( slicedSpeed[0] == null ){
+			obj.visible = false;
+		} else {
+			obj.visible = true;
+			obj.gotoAndPlay( getNumberString( slicedSpeed[0] ));
+		}
+		// change distance
+		obj = HUDContainer.getChildByName( "hud_distance_1_" + no );
+		if ( slicedDistance[2] == null ){
+			obj.visible = false;
+		} else {
+			obj.visible = true;
+			obj.gotoAndPlay( getNumberString( slicedDistance[2] ));	
+		}
+		obj = HUDContainer.getChildByName( "hud_distance_2_" + no );
+		if ( slicedDistance[1] == null ){
+			obj.visible = false;
+		} else {
+			obj.visible = true;
+			obj.gotoAndPlay( getNumberString( slicedDistance[1] ));	
+		}
+		obj = HUDContainer.getChildByName( "hud_distance_3_" + no );
+		if ( slicedDistance[0] == null ){
+			obj.visible = false;
+		} else {
+			obj.visible = true;
+			obj.gotoAndPlay( getNumberString( slicedDistance[0] ));	
+		}
+	}
+};
+
+function sliceNumberIntoPieces( number ){
+	var pieces = [];
+	while( number != 0 ){
+		pieces.push( number%10 );
+		number /= 10;
+		number = Math.floor( number );
+	}
+	return pieces;
+}
+
+function changeCar( evt, data ){
+	var inc = ( data.dir == "right" ? +1 : -1 );
+	menuCarPositions[data.no] = ( menuCarPositions[data.no] + inc ) % spriteSheetsCar.length; 
+	if ( menuCarPositions[data.no] < 0 ) {
+		menuCarPositions[data.no] = spriteSheetsCar.length-1; 
+	}
+	var c = menuContainer.getChildByName( data.target );
+	c.spriteSheet = new createjs.SpriteSheet( spriteSheetsCar[menuCarPositions[data.no]] );
 }
 
 function changeTrack ( evt, data ) {
 	finishLineContainer.removeAllChildren();
 	trackContainer.removeAllChildren();
 	// XXX: Remove child by name???
-	menuContainer.removeChild(menuContainer.getChildByName("trackname"));
+	menuContainer.removeChild( menuContainer.getChildByName("trackname") );
 
 	// sets a position of the current chosen track
-	track_position = (track_position + (data.dir == "right" ? +1 : -1)) % tracks.length;
-	if ( track_position < 0 ) {
-		track_position = tracks.length-1; 
+	trackPosition = (trackPosition + (data.dir == "right" ? +1 : -1)) % tracks.length;
+	if ( trackPosition < 0 ) {
+		trackPosition = tracks.length-1; 
 	}
 	// XXX: Display the corresponding name in the middle
-	game.track = tracks[track_position];
-	var trackTitle = drawPicture( "trackname_"+game.track.name, new Location(w/2-w*0.3/2,h/2-0.1665*h/2), w*0.3, h*0.1, "trackname", true );
+	game.track = tracks[trackPosition];
+	var trackTitle = drawPicture( "trackname_"+game.track.name, new Location( w/2-w*0.3/2,h/2-0.1665*h/2 ), w*0.3, h*0.1, "trackname", true );
 	menuContainer.addChild(trackTitle);
 	paintTrack( game.track.trackBorders, 0 );
 	paintTrack( game.track.surrPoints, 1 );
@@ -1151,7 +1335,6 @@ function drawText ( content, name, loc, size, font, color, mouseover, textAlign,
 function drawPicture( pic, loc, width, height, name, keepRatio ) {
 	var img = preload.getResult( pic );
 	var bg = new createjs.Bitmap( img );
-	// console.log(bg);
     bg.name = name;
     bg.x = loc.x;
     bg.y = loc.y;
