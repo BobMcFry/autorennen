@@ -14,6 +14,12 @@ SET_START  = 1;
 PLACE_PLAYERS = 2;
 PREPARE_TURN  = 3;
 
+// Types of Hints
+HINT_WIN = 0;
+HINT_DRAW = 1;
+HINT_MENU = 2;
+HINT_ALERT = 3;
+
 // Circle and paint size used to draw them to the canvas
 CIRCLE_SIZE = 6;
 PAINT_SIZE = 6;
@@ -76,6 +82,9 @@ manifest = [
 	{ src:"img/circle_normal_4.png", 		id:"circle_normal_4" },
 	{ src:"img/circle_finish_1.png", 		id:"circle_finish_1" },
 	{ src:"img/circle_finish_2.png", 		id:"circle_finish_2" },
+	{ src:"img/hintBox.png", 				id:"hintBox" },
+	{ src:"img/cross_normal.png", 			id:"cross_normal" },
+	{ src:"img/cross_hover.png", 			id:"cross_hover" },
 	{ src:"img/left_hover.png", 			id:"left_hover" },
 	{ src:"img/left_normal.png", 			id:"left_normal" },
 	{ src:"img/right_hover.png", 			id:"right_hover" },
@@ -88,6 +97,12 @@ manifest = [
 	{ src:"img/play_hover.png", 			id:"play_hover" },
 	{ src:"img/next_normal.png", 			id:"next_normal" },
 	{ src:"img/next_hover.png", 			id:"next_hover" },
+	{ src:"img/reload_normal.png", 			id:"reload_normal" },
+	{ src:"img/reload_hover.png", 			id:"reload_hover" },
+	{ src:"img/return_normal.png", 			id:"return_normal" },
+	{ src:"img/return_hover.png", 			id:"return_hover" },
+	{ src:"img/continue_normal.png", 		id:"continue_normal" },
+	{ src:"img/continue_hover.png", 		id:"continue_hover" },
 	{ src:"img/sprite_none.png", 			id:"sprite_none" },
 	{ src:"img/sprite_car_1.png", 			id:"sprite_car_1" },
 	{ src:"img/sprite_car_2.png", 			id:"sprite_car_2" },
@@ -102,7 +117,9 @@ manifest = [
 spriteSheetsCar = [];
 spriteSheetNumbers = [];
 
-/* This functin is called on pageload */
+isHintDisplayed = false;
+
+/* Method that is called initially on pageload */
 function init() {
 
 	/* **************** */
@@ -112,8 +129,8 @@ function init() {
 	stage = new createjs.Stage( "board" );
 	stage.enableMouseOver();
 	// XXX: HARD CODED SIZES!!!!!!!!
-	w = stage.canvas.width;//1000;//500;
-	h = stage.canvas.height;//600;//300;
+	w = stage.canvas.width;
+	h = stage.canvas.height;
 	game = new Game();
 	
 	initializeTracks();
@@ -149,10 +166,12 @@ function init() {
 	// MenuObjects
 	menuContainer = new createjs.Container();
 	stage.addChildAt( menuContainer, 9 );
-	// XXX: STUFF TEMPPPPP
-	stuffContainer = new createjs.Container();
-	stage.addChildAt( stuffContainer, 10 );
-
+	// contains button for painting
+	buildingContainer = new createjs.Container();
+	stage.addChildAt( buildingContainer, 10 );
+	// contains objects for displaying an error or menu
+	hintContainer = new createjs.Container();
+	stage.addChildAt( hintContainer, 11 );
 
 	/* ************** */
 	/* PRELOAD IMAGES */
@@ -170,10 +189,10 @@ function init() {
 	/* TICKER */
 	/* ****** */
 	
-	// XXX: MAYBE OK WITHOUT TICKER???
 	createjs.Ticker.addEventListener( "tick", stage );	
-}
+};
 
+/* Handler for loaded objects */
 function handleProgress( evt ){
 	var progress = loadingProgress/manifest.length*100
 	var text = menuContainer.getChildByName( "progressBar" );
@@ -181,9 +200,10 @@ function handleProgress( evt ){
 
 	// XXX: To be completed (loading pic)
 	// var pic = drawPicture( evt.item.id, new Location(0, 0), w*0.8, h*0.8, evt.item.id, false );	
-	// stuffContainer.addChild( pic );
-}
+	// hintContainer.addChild( pic );
+};
 
+/* Handler for loaded objects */
 function handleLoadedStuff( evt ){
 	loadingProgress++;
 	console.log( evt.item.id + " loaded" );
@@ -231,13 +251,14 @@ function handleLoadedStuff( evt ){
 		break;
 		default: console.log( "SCREW YOU!" ); break;
 	}
-}
+};
 
+/* Initializes the objects for the menu */
 function prepareMenu() {
 
 	// Remove progress bar
 	menuContainer.removeChild( menuContainer.getChildByName( "progressBar" ) );
-	stuffContainer.removeAllChildren();
+	hintContainer.removeAllChildren();
 
 	// helper for displaying objects (graphics and shapes)
 	var obj, g, s;
@@ -438,6 +459,9 @@ function prepareMenu() {
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_normal", obj: "pic"} );
 	s.on( "click", function( evt ){
 		
+		if ( isHintDisplayed ) 
+			return;
+
 		// if less than 2 cars are chosen
 		var carcounter = 0;
 		for( var i = 0; i < menuCarPositions.length; i++ ){
@@ -446,7 +470,7 @@ function prepareMenu() {
 			}
 		}
 		if ( carcounter < 2 ){
-			alert( "Please choose at least 2 cars." );
+			displayHint( "Please choose at least 2 cars.", HINT_ALERT );
 			return;
 		}
 
@@ -560,7 +584,7 @@ function prepareMenu() {
 	initScore();
 };
 
-
+/* Initializes the objects for the HUD */
 function initScore() {
 
 	for ( var i = 0; i < 4; i++ ) {
@@ -568,7 +592,7 @@ function initScore() {
 		var loc = new Location( parent.x + parent.width*HUD_OFFSET, parent.y + parent.height*HUD_OFFSET );
 
 		// XXX: Add average speed
-		
+		// XXX: Create/change number methoden schreiben um auszulagern...
 		var obj, pic;
 		var spriteSheet = new createjs.SpriteSheet( spriteSheetNumbers );
 		// speed 1:
@@ -624,6 +648,7 @@ function initScore() {
 	};
 };
 
+/* Returns the english name of a number (0-9) */
 function getNumberString( number ){
 	switch ( number ){
 		case 0: return "zero"; 
@@ -639,8 +664,9 @@ function getNumberString( number ){
 		default: return null;
 	}
 	return "";
-}
+};
 
+/* Updates the scores for every player */
 function updateScores() {
 
 	for ( var i = 0; i < game.activePlayers.length; i++ ){
@@ -691,6 +717,7 @@ function updateScores() {
 	}
 };
 
+/* Puts the single digits of a number into an array */
 function sliceNumberIntoPieces( number ){
 	var pieces = [];
 	while( number != 0 ){
@@ -699,9 +726,14 @@ function sliceNumberIntoPieces( number ){
 		number = Math.floor( number );
 	}
 	return pieces;
-}
+};
 
+/* Changes the car in the menu */
 function changeCar( evt, data ){
+
+	if ( isHintDisplayed ) 
+		return;
+
 	var inc = ( data.dir == "right" ? +1 : -1 );
 	menuCarPositions[data.no] = ( menuCarPositions[data.no] + inc ) % spriteSheetsCar.length; 
 	if ( menuCarPositions[data.no] < 0 ) {
@@ -709,9 +741,14 @@ function changeCar( evt, data ){
 	}
 	var c = menuContainer.getChildByName( data.target );
 	c.spriteSheet = new createjs.SpriteSheet( spriteSheetsCar[menuCarPositions[data.no]] );
-}
+};
 
+/* Changes the Track in the Menu */
 function changeTrack ( evt, data ) {
+	
+	if ( isHintDisplayed ) 
+		return;
+
 	finishLineContainer.removeAllChildren();
 	trackContainer.removeAllChildren();
 	// XXX: Remove child by name???
@@ -730,22 +767,9 @@ function changeTrack ( evt, data ) {
 	paintTrack( game.track.surrPoints, 1 );
 	paintTrack( game.track.finishLine, 2 );
 	paintTrack( game.track.trackPoints, 3 );
-}
+};
 
-
-
-
-
-/* = ************* = */
-/* =  BUILD STUFF  = */
-/* = ************* = */
-/*
-#A6A6A6 strasse
-#8BACBB border
-#00273D finishline
-#575757 surrounding
-*/
-
+/* Control method for track building */
 function prepareTrack(){
 	menuContainer.visible = false;
 	stage.removeAllEventListeners();
@@ -767,12 +791,14 @@ function prepareTrack(){
 		break;
 		case PREPARE_TURN:
 			HUDContainer.visible = true;
+			// XXX: Display ingame MenuButton
 			doMove();
 		break;
 		default: console.log( "Well OK?" );
 	}
-}
+};
 
+/* Building Engine for painting an own track */
 function buildTrack(){
 	
 	// set instruction background
@@ -794,6 +820,10 @@ function buildTrack(){
 
 	// add handler for stage mouse events:
 	stage.on( "stagemousedown", function( evt ) {
+		
+		if ( isHintDisplayed ) 
+			return;
+
 		// XXX: THIS IS A TEMP FIX TO PREVENT THE STAGEEVENT FROM BEING FIRED WHEN THE DONE BUTTON IS CLICKED
 		var obj = stage.getObjectUnderPoint( evt.stageX, evt.stageY );
 		if ( obj != null && (obj.name == "doneButton_hitarea" )){
@@ -809,6 +839,10 @@ function buildTrack(){
 	})                
 	
 	stage.on( "stagemouseup", function( evt ) {
+
+		if ( isHintDisplayed ) 
+			return;
+		
 		paint = false;
 		// capture press time
 		timeup = Date.now();
@@ -852,6 +886,9 @@ function buildTrack(){
 	
     stage.on( "stagemousemove", function( evt ) {
 
+    	if ( isHintDisplayed ) 
+			return;
+
 		if ( paint ) {
 			shape.graphics.beginStroke( COLOR_BORDER )
 						  .setStrokeStyle( PAINT_SIZE, "round" )
@@ -867,26 +904,31 @@ function buildTrack(){
 	})
 
 	var text = drawPicture( "next_normal", new Location( 1/8*w, 3/4*h ), 0.15*w, 0.1*h, "doneButton", false );
-	stuffContainer.addChild( text );
+	buildingContainer.addChild( text );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( text.x, text.y, text.width, text.height ).endFill();
 	s = new createjs.Shape( g );
 	s.alpha = 0.01;
 	s.name = "doneButton_hitarea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: stuffContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: stuffContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
 	s.on( "click", function ( evt ){
+
+		if ( isHintDisplayed ) 
+			return;
+
 		buildStatus++;
 		prepareTrack();
-		var child = stuffContainer.getChildByName( "doneButton_hitarea" );
-		stuffContainer.removeChild( child );
-		var child = stuffContainer.getChildByName( "doneButton" );
-		stuffContainer.removeChild( child );
+		var child = buildingContainer.getChildByName( "doneButton_hitarea" );
+		buildingContainer.removeChild( child );
+		var child = buildingContainer.getChildByName( "doneButton" );
+		buildingContainer.removeChild( child );
 	});
-	stuffContainer.addChild( s );
-}
+	buildingContainer.addChild( s );
+};
 
+/* Sets the startPoints for the game */
 function setStartPoints(){
 	// remove old instruction background
 	var oldInstr = backgroundContainer.getChildByName( "instruction_building_1" );
@@ -911,12 +953,20 @@ function setStartPoints(){
 
 	// add handler for stage mouse events:
 	stage.on( "stagemousedown", function( evt ) {
+
+		if ( isHintDisplayed ) 
+			return;
+
 		// capture press time
 		timedown = Date.now();
 		paint = true;
 	})                
 	
 	stage.on( "stagemouseup", function( evt ) {
+
+		if ( isHintDisplayed ) 
+			return;
+
 		paint = false;
 		// capture press time
 		timeup = Date.now();
@@ -946,6 +996,10 @@ function setStartPoints(){
 	})
 	
     stage.on( "stagemousemove", function( evt ) {
+
+    	if ( isHintDisplayed ) 
+			return;
+
 		if ( paint ) {
 			shape.graphics.beginStroke( COLOR_FINISHLINE )
 						  .setStrokeStyle( PAINT_SIZE, "round" )
@@ -959,32 +1013,39 @@ function setStartPoints(){
 	})
 
 	var text = drawPicture( "next_normal", new Location( 1/8*w, 3/4*h ), 0.15*w, 0.1*h, "doneButton", false );
-	stuffContainer.addChild( text );
+	buildingContainer.addChild( text );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( text.x, text.y, text.width, text.height ).endFill();
 	s = new createjs.Shape( g );
 	s.alpha = 0.01;
 	s.name = "doneButton_hitarea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: stuffContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: stuffContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
 	s.on( "click", function ( evt ){
+		
+		if ( isHintDisplayed ) 
+			return;
+
 		if ( game.track.finishLine.length < game.activePlayers.length ){
-			alert( "Please draw more finish-line points." );
+			displayHint( "Please draw more finish-line points.",HINT_ALERT );
 			return;
 		}
 		buildStatus++;
+		
+		// XXX: Save track after Building
+
 		prepareTrack();
-		var child = stuffContainer.getChildByName( "doneButton_hitarea" );
-		stuffContainer.removeChild( child );
-		var child = stuffContainer.getChildByName( "doneButton" );
-		stuffContainer.removeChild( child );
+		var child = buildingContainer.getChildByName( "doneButton_hitarea" );
+		buildingContainer.removeChild( child );
+		var child = buildingContainer.getChildByName( "doneButton" );
+		buildingContainer.removeChild( child );
 		
 	});
-	stuffContainer.addChild( s );
-	
-}
+	buildingContainer.addChild( s );
+};
 
+/* Sets the player for the game */
 function setPlayers(){
 
 	// remove old instruction background
@@ -1007,6 +1068,10 @@ function setPlayers(){
 		child.on( "mouseover", hover, false, null, {color: COLOR_HOVER, obj: "circle"} );
 		child.on( "mouseout", hover, false, null, {color: COLOR_FINISHLINE, obj: "circle"} );
 		child.on( "click", function( evt ){
+
+			if ( isHintDisplayed ) 
+			return;
+
 			var c = evt.currentTarget;
 			c.removeAllEventListeners();
 
@@ -1045,7 +1110,7 @@ function setPlayers(){
 			}
 		})
 	};
-}
+};
 // XXX: for creating tracks
 // function printArray ( array, name ){
 // 	var string = "";
@@ -1055,6 +1120,7 @@ function setPlayers(){
 // 	console.log( string );
 // }
 
+/* Colorizes/Displays certain type of the track */
 function paintTrack( array, type ){
 	var container;
 	switch( type ) {
@@ -1099,29 +1165,84 @@ function paintTrack( array, type ){
 	} catch( err ){
 		container.cache( 0, 0, w, h );
 	}
+};
 
-}
+/* Displays a hint or menu */
+function displayHint( content, type ){
 
-// XXX: TO COMPLETE
-function displayTip( content ){
+	if ( isHintDisplayed ) 
+		return;
+
+	isHintDisplayed = true;
 	var g = new createjs.Graphics();
- 	g.beginFill("#FFFFFF");
+ 	g.beginFill("#000000");
  	g.drawRect(0,0,w,h);
  	var shape = new createjs.Shape(g);
+ 	shape.name = "hintBoxBackground";
  	shape.alpha=0.7;
- 	// XXX: create own container, such that it will always be the top container.
- 	stuffContainer.addChild(shape);
- 	// XXX: Here an image of a box needs to be ...
- 	var g = new createjs.Graphics();
- 	g.beginFill("#FFFFFF");
- 	g.drawRect(w/2-w*0.3/2,h/2-h*0.3/2,w*0.3,h*0.3);
- 	shape = new createjs.Shape(g);
- 	stuffContainer.addChild(shape);
+ 	hintContainer.addChild(shape);
+ 	
+ 	var hintBox = drawPicture( "hintBox", new Location(w/2-w*0.4/2, h/2-h*0.4/2), w*0.4, h*0.4, "hintBox", false );
+ 	hintContainer.addChild( hintBox );
 
- 	var text = drawText ( content, "tipText", new Location( w/2-w*0.2/2,h/2-h*0.2/2 ), Math.floor(15*w/1000)+"px", "Arial", "black", false, "left", "top" );
- 	stuffContainer.addChild(text);
-}
+ 	var hintBoxCloseButton = drawPicture( "cross_normal", new Location(hintBox.x+hintBox.width-w*0.06/2, hintBox.y-h*0.1/2), w*0.06, h*0.1, "hintBoxCloseButton", false );
+ 	hintContainer.addChild( hintBoxCloseButton );
+ 	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( hintBoxCloseButton.x, hintBoxCloseButton.y, hintBoxCloseButton.width, hintBoxCloseButton.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.name = "hintBoxCloseButton_hitarea";
+	s.cursor = "pointer";
+ 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxCloseButton", img: "cross_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxCloseButton", img: "cross_normal", obj: "pic"} );
+	s.on( "click", function ( evt ){
+		isHintDisplayed = false;
+		hintContainer.removeAllChildren();
+	});
+	hintContainer.addChild( s );
 
+	var text = drawText ( content, "hintBoxText", new Location( w/2-w*0.2/2,h/2-h*0.2/2 ), Math.floor(15*w/1000)+"px", "Arial", "black", false, "left", "top" );
+ 	hintContainer.addChild(text);
+
+	// Add content dependent on type of hint
+	if ( type == HINT_MENU || type == HINT_WIN || type == HINT_DRAW){
+		var reload = drawPicture( "reload_normal", new Location( hintBox.x+0.333*hintBox.width-w*0.06/2, hintBox.y+0.666*hintBox.height-h*0.1/2 ), w*0.06, h*0.1, "hintBoxReloadButton", false );
+		 	hintContainer.addChild( reload );
+		 	g = new createjs.Graphics();
+			g.beginFill("#f00").drawRect( reload.x, reload.y, reload.width, reload.height ).endFill();
+			s = new createjs.Shape( g );
+			s.alpha = 0.01;
+			s.name = "hintBoxReloadButton_hitarea";
+			s.cursor = "pointer";
+		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_hover", obj: "pic"} );
+			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_normal", obj: "pic"} );
+			s.on( "click", function ( evt ){
+				// XXX: TODO what to do if reload is wanted
+				isHintDisplayed = false;
+				hintContainer.removeAllChildren();
+			});
+			hintContainer.addChild( s );
+			
+			var returnMenu = drawPicture( "return_normal", new Location( hintBox.x+0.666*hintBox.width-w*0.06/2, hintBox.y+0.666*hintBox.height-h*0.1/2 ), w*0.06, h*0.1, "hintBoxReturnButton", false );
+		 	hintContainer.addChild( returnMenu );
+		 	g = new createjs.Graphics();
+			g.beginFill("#f00").drawRect( returnMenu.x, returnMenu.y, returnMenu.width, returnMenu.height ).endFill();
+			s = new createjs.Shape( g );
+			s.alpha = 0.01;
+			s.name = "hintBoxReturnButton_hitarea";
+			s.cursor = "pointer";
+		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_hover", obj: "pic"} );
+			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_normal", obj: "pic"} );
+			s.on( "click", function ( evt ){
+				// XXX: TODO what to do if return is wanted
+				isHintDisplayed = false;
+				hintContainer.removeAllChildren();
+			});
+			hintContainer.addChild( s );
+	}
+};
+
+/* Detects points that lie on a line between srs and dest */
 function detectPointsInBetween( srcLoc, destLoc ){
 
 	var xDiff = srcLoc.x - destLoc.x;
@@ -1158,8 +1279,9 @@ function detectPointsInBetween( srcLoc, destLoc ){
 	}
 
 	return between;
-}
+};
 
+/* Caculates the gamepoints in a closed point area */
 function detectFilling( loc ){
 	game.track.surrPoints.push( loc );
 	var radialPoints = game.track.getSurrounding( loc, false );
@@ -1168,12 +1290,14 @@ function detectFilling( loc ){
 			detectFilling( radialPoints[i] );
 		}
 	}
-}
+};
 
-
-
-
+/* Progresses hover effects */
 function hover ( evt, data ){
+
+	if ( isHintDisplayed && !data.target.startsWith("hintBox") ) 
+			return;
+
 	var c = evt.currentTarget;
 	switch( data.obj ){
 		case "circle": c.graphics.beginFill( data.color ).drawCircle( 0, 0, CIRCLE_SIZE ).endFill(); break;
@@ -1186,25 +1310,42 @@ function hover ( evt, data ){
 		break;
 		default: console.log( "Missing case in hover." ); break;
 	}
-}
+};
 
-
-
-
-
+/* Performs a Move of a player */
 function doMove(){
 
 	var crntTurn = game.getTurn();
 
 	updateScores();
-
+	
 	if ( crntTurn.win ){
-		alert( crntTurn.player.name + "  has won." );
-		// XXX: Here the possibility of repeating the match should be given.
-		return;
-	}
-	if ( crntTurn.draw ){
-		alert( "Draw!" );
+		if ( crntTurn.win.length == 0 ){
+			displayHint( "Draw Situation", HINT_DRAW );
+			return;
+		}
+		var winningString = "Player" + (crntTurn.win.length > 1 ? "s " : " ");
+		for (var i = 0; i < crntTurn.win.length; i++){
+			winningString += crntTurn.win[i].no;
+			if ( i < crntTurn.win.length-1 ){
+				winningString += " and "
+			}
+		}
+		if ( crntTurn.win.length > 1 ){
+			winningString += " have ";
+		}
+		else {
+			winningString += " has ";
+		}
+		winningString += "won.";
+
+		displayHint( winningString, HINT_WIN );
+		// XXX: Maybe detection was wrong and therefore game shall continue from here on (so no return statement)
+		// XXX: think about consequences and difficulties to implement that...
+		// 		XXX: detection from then on on/off?
+		// 		XXX: ...?
+		// XXX: should only happen IF there are more than one player left
+		// XXX: AND if there are choices left (the same as the IF before???)
 		return;
 	}
 
@@ -1224,16 +1365,19 @@ function doMove(){
 			doMove();
 		});
 	}
-	// // XXX: TESTING PURPOSES
-	// displayTip("Ziehe nun mit der Maus eine Linie,\nsodass blablabla\nfkdsfhjdklsfjdskfldjsfdksfljssfdsfs\nfdskfjksldjfksdjfls");
-}
+};
 
+// XXX: TODO
+/* Removes objects of menu or HUD that blocks the gameplay */
 function removeBlockingObjects( surr ){
-
-}
-
-
+};
+//XXX: TODO
+/* Toggles Sound on of */
 function toggleSound( evt, data ) {
+	// XXX: Maybe not useful...turning of music during hint, why not?
+	if ( isHintDisplayed ) 
+		return;
+
 	var hitArea = HUDContainer.getChildByName( "music_toggle_hitArea" );
 	var pic = HUDContainer.getChildByName( "music_toggle" );
 	hitArea.removeAllEventListeners();
@@ -1251,8 +1395,8 @@ function toggleSound( evt, data ) {
 		// XXX: Toggle sound
 	}
 };
-
-
+//XXX: TODO
+/* Updates status of AddOns */
 function updateAddOns( l ) {
 	var loc = new Location( game.toXCoord(l), game.toYCoord(l), l.addOn );
 	// search for addonchild by name of its location
@@ -1276,6 +1420,7 @@ function updateAddOns( l ) {
 	}
 };
 
+/* Draws a line */
 function drawLine( size, srcL, destL, color ) {
 	var srcLoc = new Location( game.toXCoord( srcL ), game.toYCoord( srcL ));
 	var destLoc = new Location( game.toXCoord( destL ), game.toYCoord( destL ));
@@ -1287,6 +1432,7 @@ function drawLine( size, srcL, destL, color ) {
  	return new createjs.Shape( g );
 };
 
+/* Creates a colored circle. */
 function drawColoredCircle( color, l, radius, fill ) {
 	var loc = new Location( game.toXCoord( l ), game.toYCoord( l ), l.addOn );
 
@@ -1305,7 +1451,7 @@ function drawColoredCircle( color, l, radius, fill ) {
 	return circle;
 };
 
-/* Creates a Text Object. */
+/* Creates a text object. */
 function drawText ( content, name, loc, size, font, color, mouseover, textAlign, textBaseline ) {
 	
 	// display Play Button with clickevent and nice haptic mouseover
@@ -1330,7 +1476,7 @@ function drawText ( content, name, loc, size, font, color, mouseover, textAlign,
 	}
 	
 	return text;
-}
+};
 
 function drawPicture( pic, loc, width, height, name, keepRatio ) {
 	var img = preload.getResult( pic );
@@ -1354,7 +1500,7 @@ function getNewScaleY( newWidth, oldWidth, oldHeight ){
 	var ratio = oldWidth/oldHeight;
 	var scaleX = newWidth/oldWidth;
 	return oldWidth * scaleX * (1/(ratio*oldHeight));
-}
+};
 
 function initCars( visible ) {
 
@@ -1376,14 +1522,23 @@ function updateCars( player, l, speed, time, fps ) {
   	var line = drawLine( 1, player.crntLoc(), l, player.car.color );
   	lineContainer.addChild( line );
 };
+//XXX: TODO
+function restartGame (){
+	// move players from kickedPlayers to activePlayers (mind the order)
+	// game.restoreplayers....
+	// clear all Players
+	// player.initialiizePlayer....
+	
+	// remove lines
 
+	// start by setplayers.
 
+};
+//XXX: TODO
+function returnToMenu(){
 
+};
+//XXX: TODO
+function showTutorial(){
 
-
-
-
-
-
-
-
+}
