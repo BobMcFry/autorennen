@@ -14,6 +14,12 @@ SET_START  = 1;
 PLACE_PLAYERS = 2;
 PREPARE_TURN  = 3;
 
+// Types of Hints
+HINT_WIN = 0;
+HINT_DRAW = 1;
+HINT_MENU = 2;
+HINT_ALERT = 3;
+
 // Circle and paint size used to draw them to the canvas
 CIRCLE_SIZE = 6;
 PAINT_SIZE = 6;
@@ -76,6 +82,9 @@ manifest = [
 	{ src:"img/circle_normal_4.png", 		id:"circle_normal_4" },
 	{ src:"img/circle_finish_1.png", 		id:"circle_finish_1" },
 	{ src:"img/circle_finish_2.png", 		id:"circle_finish_2" },
+	{ src:"img/hintBox.png", 				id:"hintBox" },
+	{ src:"img/cross_normal.png", 			id:"cross_normal" },
+	{ src:"img/cross_hover.png", 			id:"cross_hover" },
 	{ src:"img/left_hover.png", 			id:"left_hover" },
 	{ src:"img/left_normal.png", 			id:"left_normal" },
 	{ src:"img/right_hover.png", 			id:"right_hover" },
@@ -88,6 +97,12 @@ manifest = [
 	{ src:"img/play_hover.png", 			id:"play_hover" },
 	{ src:"img/next_normal.png", 			id:"next_normal" },
 	{ src:"img/next_hover.png", 			id:"next_hover" },
+	{ src:"img/reload_normal.png", 			id:"reload_normal" },
+	{ src:"img/reload_hover.png", 			id:"reload_hover" },
+	{ src:"img/return_normal.png", 			id:"return_normal" },
+	{ src:"img/return_hover.png", 			id:"return_hover" },
+	{ src:"img/continue_normal.png", 		id:"continue_normal" },
+	{ src:"img/continue_hover.png", 		id:"continue_hover" },
 	{ src:"img/sprite_none.png", 			id:"sprite_none" },
 	{ src:"img/sprite_car_1.png", 			id:"sprite_car_1" },
 	{ src:"img/sprite_car_2.png", 			id:"sprite_car_2" },
@@ -102,6 +117,8 @@ manifest = [
 spriteSheetsCar = [];
 spriteSheetNumbers = [];
 
+isHintDisplayed = false;
+
 /* Method that is called initially on pageload */
 function init() {
 
@@ -112,8 +129,8 @@ function init() {
 	stage = new createjs.Stage( "board" );
 	stage.enableMouseOver();
 	// XXX: HARD CODED SIZES!!!!!!!!
-	w = stage.canvas.width;//1000;//500;
-	h = stage.canvas.height;//600;//300;
+	w = stage.canvas.width;
+	h = stage.canvas.height;
 	game = new Game();
 	
 	initializeTracks();
@@ -156,7 +173,6 @@ function init() {
 	hintContainer = new createjs.Container();
 	stage.addChildAt( hintContainer, 11 );
 
-
 	/* ************** */
 	/* PRELOAD IMAGES */
 	/* ************** */
@@ -173,7 +189,6 @@ function init() {
 	/* TICKER */
 	/* ****** */
 	
-	// XXX: MAYBE OK WITHOUT TICKER???
 	createjs.Ticker.addEventListener( "tick", stage );	
 };
 
@@ -243,7 +258,7 @@ function prepareMenu() {
 
 	// Remove progress bar
 	menuContainer.removeChild( menuContainer.getChildByName( "progressBar" ) );
-	buildingContainer.removeAllChildren();
+	hintContainer.removeAllChildren();
 
 	// helper for displaying objects (graphics and shapes)
 	var obj, g, s;
@@ -444,6 +459,9 @@ function prepareMenu() {
 	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_normal", obj: "pic"} );
 	s.on( "click", function( evt ){
 		
+		if ( isHintDisplayed ) 
+			return;
+
 		// if less than 2 cars are chosen
 		var carcounter = 0;
 		for( var i = 0; i < menuCarPositions.length; i++ ){
@@ -452,7 +470,7 @@ function prepareMenu() {
 			}
 		}
 		if ( carcounter < 2 ){
-			alert( "Please choose at least 2 cars." );
+			displayHint( "Please choose at least 2 cars.", HINT_ALERT );
 			return;
 		}
 
@@ -712,6 +730,10 @@ function sliceNumberIntoPieces( number ){
 
 /* Changes the car in the menu */
 function changeCar( evt, data ){
+
+	if ( isHintDisplayed ) 
+		return;
+
 	var inc = ( data.dir == "right" ? +1 : -1 );
 	menuCarPositions[data.no] = ( menuCarPositions[data.no] + inc ) % spriteSheetsCar.length; 
 	if ( menuCarPositions[data.no] < 0 ) {
@@ -723,6 +745,10 @@ function changeCar( evt, data ){
 
 /* Changes the Track in the Menu */
 function changeTrack ( evt, data ) {
+	
+	if ( isHintDisplayed ) 
+		return;
+
 	finishLineContainer.removeAllChildren();
 	trackContainer.removeAllChildren();
 	// XXX: Remove child by name???
@@ -765,6 +791,7 @@ function prepareTrack(){
 		break;
 		case PREPARE_TURN:
 			HUDContainer.visible = true;
+			// XXX: Display ingame MenuButton
 			doMove();
 		break;
 		default: console.log( "Well OK?" );
@@ -793,6 +820,10 @@ function buildTrack(){
 
 	// add handler for stage mouse events:
 	stage.on( "stagemousedown", function( evt ) {
+		
+		if ( isHintDisplayed ) 
+			return;
+
 		// XXX: THIS IS A TEMP FIX TO PREVENT THE STAGEEVENT FROM BEING FIRED WHEN THE DONE BUTTON IS CLICKED
 		var obj = stage.getObjectUnderPoint( evt.stageX, evt.stageY );
 		if ( obj != null && (obj.name == "doneButton_hitarea" )){
@@ -808,6 +839,10 @@ function buildTrack(){
 	})                
 	
 	stage.on( "stagemouseup", function( evt ) {
+
+		if ( isHintDisplayed ) 
+			return;
+		
 		paint = false;
 		// capture press time
 		timeup = Date.now();
@@ -851,6 +886,9 @@ function buildTrack(){
 	
     stage.on( "stagemousemove", function( evt ) {
 
+    	if ( isHintDisplayed ) 
+			return;
+
 		if ( paint ) {
 			shape.graphics.beginStroke( COLOR_BORDER )
 						  .setStrokeStyle( PAINT_SIZE, "round" )
@@ -876,6 +914,10 @@ function buildTrack(){
 	s.on( "mouseover", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
 	s.on( "click", function ( evt ){
+
+		if ( isHintDisplayed ) 
+			return;
+
 		buildStatus++;
 		prepareTrack();
 		var child = buildingContainer.getChildByName( "doneButton_hitarea" );
@@ -911,12 +953,20 @@ function setStartPoints(){
 
 	// add handler for stage mouse events:
 	stage.on( "stagemousedown", function( evt ) {
+
+		if ( isHintDisplayed ) 
+			return;
+
 		// capture press time
 		timedown = Date.now();
 		paint = true;
 	})                
 	
 	stage.on( "stagemouseup", function( evt ) {
+
+		if ( isHintDisplayed ) 
+			return;
+
 		paint = false;
 		// capture press time
 		timeup = Date.now();
@@ -946,6 +996,10 @@ function setStartPoints(){
 	})
 	
     stage.on( "stagemousemove", function( evt ) {
+
+    	if ( isHintDisplayed ) 
+			return;
+
 		if ( paint ) {
 			shape.graphics.beginStroke( COLOR_FINISHLINE )
 						  .setStrokeStyle( PAINT_SIZE, "round" )
@@ -969,8 +1023,12 @@ function setStartPoints(){
 	s.on( "mouseover", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
 	s.on( "click", function ( evt ){
+		
+		if ( isHintDisplayed ) 
+			return;
+
 		if ( game.track.finishLine.length < game.activePlayers.length ){
-			alert( "Please draw more finish-line points." );
+			displayHint( "Please draw more finish-line points.",HINT_ALERT );
 			return;
 		}
 		buildStatus++;
@@ -1007,6 +1065,10 @@ function setPlayers(){
 		child.on( "mouseover", hover, false, null, {color: COLOR_HOVER, obj: "circle"} );
 		child.on( "mouseout", hover, false, null, {color: COLOR_FINISHLINE, obj: "circle"} );
 		child.on( "click", function( evt ){
+
+			if ( isHintDisplayed ) 
+			return;
+
 			var c = evt.currentTarget;
 			c.removeAllEventListeners();
 
@@ -1102,29 +1164,97 @@ function paintTrack( array, type ){
 	}
 };
 
-// XXX: TO COMPLETE
-// XXX: changes a flag, which every listener IFs to avoid actionhandling during tip
-// XXX: if Won: goto menu, repeat race, continue playing (problem?), close dialog
-// XXX: if menu: goto menu, repeat race, close dialog
-// XXX: If note/tip/...: close dialog
 /* Displays a hint or menu */
-function displayHint( content ){
+function displayHint( content, type ){
+
+	if ( isHintDisplayed ) 
+		return;
+
+	isHintDisplayed = true;
 	var g = new createjs.Graphics();
- 	g.beginFill("#FFFFFF");
+ 	g.beginFill("#000000");
  	g.drawRect(0,0,w,h);
  	var shape = new createjs.Shape(g);
+ 	shape.name = "hintBoxBackground";
  	shape.alpha=0.7;
- 	// XXX: create own container, such that it will always be the top container.
  	hintContainer.addChild(shape);
- 	// XXX: Here an image of a box needs to be ...
- 	var g = new createjs.Graphics();
- 	g.beginFill("#FFFFFF");
- 	g.drawRect( w/2-w*0.3/2, h/2-h*0.3/2, w*0.3, h*0.3 );
- 	shape = new createjs.Shape(g);
- 	hintContainer.addChild(shape);
+ 	
+ 	var hintBox = drawPicture( "hintBox", new Location(w/2-w*0.4/2, h/2-h*0.4/2), w*0.4, h*0.4, "hintBox", false );
+ 	hintContainer.addChild( hintBox );
 
- 	var text = drawText ( content, "tipText", new Location( w/2-w*0.2/2,h/2-h*0.2/2 ), Math.floor(15*w/1000)+"px", "Arial", "black", false, "left", "top" );
+ 	var hintBoxCloseButton = drawPicture( "cross_normal", new Location(hintBox.x+hintBox.width-w*0.06/2, hintBox.y-h*0.1/2), w*0.06, h*0.1, "hintBoxCloseButton", false );
+ 	hintContainer.addChild( hintBoxCloseButton );
+ 	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( hintBoxCloseButton.x, hintBoxCloseButton.y, hintBoxCloseButton.width, hintBoxCloseButton.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.name = "hintBoxCloseButton_hitarea";
+	s.cursor = "pointer";
+ 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxCloseButton", img: "cross_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxCloseButton", img: "cross_normal", obj: "pic"} );
+	s.on( "click", function ( evt ){
+		isHintDisplayed = false;
+		hintContainer.removeAllChildren();
+	});
+	hintContainer.addChild( s );
+
+	var text = drawText ( content, "hintBoxText", new Location( w/2-w*0.2/2,h/2-h*0.2/2 ), Math.floor(15*w/1000)+"px", "Arial", "black", false, "left", "top" );
  	hintContainer.addChild(text);
+
+	// Add content dependent on type of hint
+	if ( type == HINT_MENU || type == HINT_WIN || type == HINT_DRAW){
+		var reload = drawPicture( "reload_normal", new Location( hintBox.x+0.333*hintBox.width-w*0.06/2, hintBox.y+0.666*hintBox.height-h*0.1/2 ), w*0.06, h*0.1, "hintBoxReloadButton", false );
+		 	hintContainer.addChild( reload );
+		 	g = new createjs.Graphics();
+			g.beginFill("#f00").drawRect( reload.x, reload.y, reload.width, reload.height ).endFill();
+			s = new createjs.Shape( g );
+			s.alpha = 0.01;
+			s.name = "hintBoxReloadButton_hitarea";
+			s.cursor = "pointer";
+		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_hover", obj: "pic"} );
+			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_normal", obj: "pic"} );
+			s.on( "click", function ( evt ){
+				// XXX: TODO what to do if reload is wanted
+				isHintDisplayed = false;
+				hintContainer.removeAllChildren();
+			});
+			hintContainer.addChild( s );
+			
+			var returnMenu = drawPicture( "return_normal", new Location( hintBox.x+0.666*hintBox.width-w*0.06/2, hintBox.y+0.666*hintBox.height-h*0.1/2 ), w*0.06, h*0.1, "hintBoxReturnButton", false );
+		 	hintContainer.addChild( returnMenu );
+		 	g = new createjs.Graphics();
+			g.beginFill("#f00").drawRect( returnMenu.x, returnMenu.y, returnMenu.width, returnMenu.height ).endFill();
+			s = new createjs.Shape( g );
+			s.alpha = 0.01;
+			s.name = "hintBoxReturnButton_hitarea";
+			s.cursor = "pointer";
+		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_hover", obj: "pic"} );
+			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_normal", obj: "pic"} );
+			s.on( "click", function ( evt ){
+				// XXX: TODO what to do if return is wanted
+				isHintDisplayed = false;
+				hintContainer.removeAllChildren();
+			});
+			hintContainer.addChild( s );
+
+			// XXX: Not necessary since the close button does this job
+			// var continueRace = drawPicture( "continue_normal", new Location( hintBox.x+0.2*hintBox.width*3, hintBox.y+0.5*hintBox.height ), hintBox.width*0.18, hintBox.height*0.3, "hintBoxContinueButton", false );
+		 // 	hintContainer.addChild( continueRace );
+		 // 	g = new createjs.Graphics();
+			// g.beginFill("#f00").drawRect( continueRace.x, continueRace.y, continueRace.width, continueRace.height ).endFill();
+			// s = new createjs.Shape( g );
+			// s.alpha = 0.01;
+			// s.name = "hintBoxContinueButton_hitarea";
+			// s.cursor = "pointer";
+		 // 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxContinueButton", img: "continue_hover", obj: "pic"} );
+			// s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxContinueButton", img: "continue_normal", obj: "pic"} );
+			// s.on( "click", function ( evt ){
+			// 	// XXX: TODO what to do if return is wanted
+			// 	isHintDisplayed = false;
+			// 	hintContainer.removeAllChildren();
+			// });
+			// hintContainer.addChild( s );
+	}
 };
 
 /* Detects points that lie on a line between srs and dest */
@@ -1179,6 +1309,10 @@ function detectFilling( loc ){
 
 /* Progresses hover effects */
 function hover ( evt, data ){
+
+	if ( isHintDisplayed && !data.target.startsWith("hintBox") ) 
+			return;
+
 	var c = evt.currentTarget;
 	switch( data.obj ){
 		case "circle": c.graphics.beginFill( data.color ).drawCircle( 0, 0, CIRCLE_SIZE ).endFill(); break;
@@ -1202,11 +1336,14 @@ function doMove(){
 
 	if ( crntTurn.win ){
 		alert( crntTurn.player.name + "  has won." );
-		// XXX: Here the possibility of repeating the match should be given.
+		// XXX: Needs to be tested! Need detection of winning.
+		// display( crntTurn.player.name + "  has won.", HINT_WIN );
 		return;
 	}
 	if ( crntTurn.draw ){
 		alert( "Draw!" );
+		// XXX: Needs to be tested! Need detection of draw.
+		// display( "DRAW!", HINT_DRAW );
 		return;
 	}
 
@@ -1226,16 +1363,19 @@ function doMove(){
 			doMove();
 		});
 	}
-	// // XXX: TESTING PURPOSES
-	// displayHint("Ziehe nun mit der Maus eine Linie,\nsodass blablabla\nfkdsfhjdklsfjdskfldjsfdksfljssfdsfs\nfdskfjksldjfksdjfls");
 };
 
+// XXX: TODO
 /* Removes objects of menu or HUD that blocks the gameplay */
 function removeBlockingObjects( surr ){
 };
 
 /* Toggles Sound on of */
 function toggleSound( evt, data ) {
+	// XXX: Maybe not useful...turning of music during hint, why not?
+	if ( isHintDisplayed ) 
+		return;
+
 	var hitArea = HUDContainer.getChildByName( "music_toggle_hitArea" );
 	var pic = HUDContainer.getChildByName( "music_toggle" );
 	hitArea.removeAllEventListeners();
@@ -1359,6 +1499,17 @@ function getNewScaleY( newWidth, oldWidth, oldHeight ){
 	var scaleX = newWidth/oldWidth;
 	return oldWidth * scaleX * (1/(ratio*oldHeight));
 };
+
+function determineWinner(){
+	// Only check if whole round is done (after last in a row made a move)
+
+	// check wether it is one of the first 2 or 3 moves
+
+	// check for every player wether in the points between their last move contained the finishLine
+
+	// if there is finishLine in it display Winning Hint
+
+}
 
 function initCars( visible ) {
 
