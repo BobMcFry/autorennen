@@ -1236,24 +1236,6 @@ function displayHint( content, type ){
 				hintContainer.removeAllChildren();
 			});
 			hintContainer.addChild( s );
-
-			// XXX: Not necessary since the close button does this job
-			// var continueRace = drawPicture( "continue_normal", new Location( hintBox.x+0.2*hintBox.width*3, hintBox.y+0.5*hintBox.height ), hintBox.width*0.18, hintBox.height*0.3, "hintBoxContinueButton", false );
-		 // 	hintContainer.addChild( continueRace );
-		 // 	g = new createjs.Graphics();
-			// g.beginFill("#f00").drawRect( continueRace.x, continueRace.y, continueRace.width, continueRace.height ).endFill();
-			// s = new createjs.Shape( g );
-			// s.alpha = 0.01;
-			// s.name = "hintBoxContinueButton_hitarea";
-			// s.cursor = "pointer";
-		 // 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxContinueButton", img: "continue_hover", obj: "pic"} );
-			// s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxContinueButton", img: "continue_normal", obj: "pic"} );
-			// s.on( "click", function ( evt ){
-			// 	// XXX: TODO what to do if return is wanted
-			// 	isHintDisplayed = false;
-			// 	hintContainer.removeAllChildren();
-			// });
-			// hintContainer.addChild( s );
 	}
 };
 
@@ -1333,17 +1315,28 @@ function doMove(){
 	var crntTurn = game.getTurn();
 
 	updateScores();
-
+	console.log(crntTurn);
 	if ( crntTurn.win ){
-		alert( crntTurn.player.name + "  has won." );
-		// XXX: Needs to be tested! Need detection of winning.
-		// display( crntTurn.player.name + "  has won.", HINT_WIN );
-		return;
-	}
-	if ( crntTurn.draw ){
-		alert( "Draw!" );
-		// XXX: Needs to be tested! Need detection of draw.
-		// display( "DRAW!", HINT_DRAW );
+		if ( crntTurn.win.length == 0 ){
+			displayHint( "Draw Situation", HINT_DRAW );
+			return;
+		}
+		var winningString = "Player" + (crntTurn.win.length > 1 ? "s " : " ");
+		for (var i = 0; i < crntTurn.win.length; i++){
+			winningString += crntTurn.win[i].no;
+			if ( i < crntTurn.win.length-1 ){
+				winningString += " and "
+			}
+		}
+		if ( crntTurn.win.length > 1 ){
+			winningString += " have ";
+		}
+		else {
+			winningString += " has ";
+		}
+		winningString += "won.";
+
+		displayHint( winningString, HINT_WIN );
 		return;
 	}
 
@@ -1499,17 +1492,6 @@ function getNewScaleY( newWidth, oldWidth, oldHeight ){
 	var scaleX = newWidth/oldWidth;
 	return oldWidth * scaleX * (1/(ratio*oldHeight));
 };
-
-function determineWinner(){
-	// Only check if whole round is done (after last in a row made a move)
-
-	// check wether it is one of the first 2 or 3 moves
-
-	// check for every player wether in the points between their last move contained the finishLine
-
-	// if there is finishLine in it display Winning Hint
-
-}
 
 function initCars( visible ) {
 

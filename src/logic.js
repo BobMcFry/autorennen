@@ -197,6 +197,7 @@ var Game = function(){
 	this.currentPlayer = 0;
 	// XXX: MAYBE NOT NECESSARY
 	this.status = this.START;
+	this.round = 0;
 }
 // XXX: MAYBE NOT NECESSARY
 Game.prototype.START = 0;
@@ -237,11 +238,18 @@ Game.prototype.getTurn = function() {
 	var ret = {};
 	var noValidPlayer = true;
 	while( noValidPlayer ){
+		
+		ret.win = this.determineWinner();
+		if ( ret.win ){
+			return ret;
+		}
+
 		ret.player = this.getCurrentPlayer();
 		ret.surrounding = this.getSurrounding( ret.player.getNextLocation(), true );
-		ret.win = this.activePlayers.length == 1;
-		ret.draw = this.activePlayers.length == 0;
-		if ( ret.surrounding.length == 0 && (!ret.win || !ret.draw) ){
+		
+
+		// If player has no more choices kick him/her
+		if ( ret.surrounding.length == 0 && ( !ret.win || !ret.draw ) ){
 			var index = this.activePlayers.indexOf( ret.player );
 			this.activePlayers.splice( index, 1 );
 			this.kickedPlayers.push( ret.player );
@@ -255,11 +263,25 @@ Game.prototype.getTurn = function() {
 };
 
 Game.prototype.turn = function( loc ) {
+	
 	var crntPlayer = this.getCurrentPlayer();
+	crntPlayer.winner = false;
 	crntPlayer.setNextLocation( loc );
+	
+	// checks wether there is finishLine in last move. Then the player wins
+	var between = detectPointsInBetween( crntPlayer.lastLoc(),loc );
+	for ( var i = 0; i < between.length; i++ ){
+		if ( this.track.isFinishLine( between[i] )){
+			crntPlayer.winner = true;
+			break;
+		}
+	}
+
 	this.currentPlayer++;
 	this.currentPlayer = this.currentPlayer % this.activePlayers.length;
-
+	if ( this.currentPlayer == 0 ){
+		this.round++;
+	}
 	// Put AddOns on Track with certain probability
 	// TEMP INACTIVE FOR TESTING PURPOSES
 	// if ( Math.random() > 0.85 ){
@@ -267,6 +289,42 @@ Game.prototype.turn = function( loc ) {
 	// 	this.track.gamePoints[pos].assignRandomItem();
 	// }
 	
+};
+// returns null, if still playing
+// returns empty array for draw
+// returns array with players for winners
+Game.prototype.determineWinner = function() {
+
+	var winners = [];
+
+	// If no player is left, it is a draw situation
+	if( this.activePlayers.length == 0 ){
+		return winners;
+	}
+
+
+
+	// check wether it is one of the first 2 or 3 moves
+	if ( this.round < 3 ){
+		return null;
+	}
+
+	// Only check if whole round is done (after last in a row made a move)
+	if ( this.currentPlayer != 0 ){
+		return null;
+	}
+
+	// check for every player wether in the points between their last move contained the finishLine
+	var winners = [];
+	for ( var i = 0; i < this.activePlayers.length; i++ ){
+		var player = this.activePlayers[i];
+		// if there is finishLine in it display Winning Hint
+		if ( player.winner ){
+			winners.push( player );
+		}
+	}
+
+	return winners.length == 0 ? null : winners;
 };
 
 Game.prototype.calculateTrackPoints = function() {
@@ -317,6 +375,7 @@ var	Player = function( car, no ){
 	this.distance = 0;
 	this.historyLocs = new Array();
 	this.no = no;
+	this.winner = false;
 }
 
 Player.prototype.crntLoc = function() {
