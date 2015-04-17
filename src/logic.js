@@ -194,15 +194,24 @@ var Game = function(){
 	this.players = new Array();
 	this.activePlayers = new Array();
 	this.kickedPlayers = new Array();
-	this.currentPlayer = 0;
-	// XXX: MAYBE NOT NECESSARY
-	this.status = this.START;
-	this.round = 0;
+	this.initializeGame();
 }
 // XXX: MAYBE NOT NECESSARY
 Game.prototype.START = 0;
 // XXX: MAYBE NOT NECESSARY
 Game.prototype.TURN = 1;
+
+Game.prototype.initializeGame = function() {
+	this.currentPlayer = 0;
+	this.round = 0;
+	// XXX: MAYBE NOT NECESSARY
+	this.status = this.START;
+};
+
+// XXX: TODO
+Game.prototype.restoreKickedPlayers = function() {
+
+}
 
 /* Checks surrounding for Occupation by other Players */
 Game.prototype.getSurrounding = function( loc, track ) {
@@ -238,7 +247,7 @@ Game.prototype.getTurn = function() {
 	var ret = {};
 	var noValidPlayer = true;
 	while( noValidPlayer ){
-		
+
 		ret.win = this.determineWinner();
 		if ( ret.win ){
 			return ret;
@@ -370,13 +379,18 @@ Game.prototype.getCurrentPlayer = function() {
 
 // XXX: remove car
 var	Player = function( car, no ){
+	this.initializePlayer()
 	this.car = car;
+	this.no = no;
+	
+}
+
+Player.prototype.initializePlayer = function() {
 	this.avgSpeed = 0;
 	this.distance = 0;
 	this.historyLocs = new Array();
-	this.no = no;
 	this.winner = false;
-}
+};
 
 Player.prototype.crntLoc = function() {
 	return this.historyLocs[this.historyLocs.length-1];

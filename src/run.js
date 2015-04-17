@@ -1032,6 +1032,9 @@ function setStartPoints(){
 			return;
 		}
 		buildStatus++;
+		
+		// XXX: Save track after Building
+
 		prepareTrack();
 		var child = buildingContainer.getChildByName( "doneButton_hitarea" );
 		buildingContainer.removeChild( child );
@@ -1315,7 +1318,7 @@ function doMove(){
 	var crntTurn = game.getTurn();
 
 	updateScores();
-	console.log(crntTurn);
+	
 	if ( crntTurn.win ){
 		if ( crntTurn.win.length == 0 ){
 			displayHint( "Draw Situation", HINT_DRAW );
@@ -1337,6 +1340,12 @@ function doMove(){
 		winningString += "won.";
 
 		displayHint( winningString, HINT_WIN );
+		// XXX: Maybe detection was wrong and therefore game shall continue from here on (so no return statement)
+		// XXX: think about consequences and difficulties to implement that...
+		// 		XXX: detection from then on on/off?
+		// 		XXX: ...?
+		// XXX: should only happen IF there are more than one player left
+		// XXX: AND if there are choices left (the same as the IF before???)
 		return;
 	}
 
@@ -1362,7 +1371,7 @@ function doMove(){
 /* Removes objects of menu or HUD that blocks the gameplay */
 function removeBlockingObjects( surr ){
 };
-
+//XXX: TODO
 /* Toggles Sound on of */
 function toggleSound( evt, data ) {
 	// XXX: Maybe not useful...turning of music during hint, why not?
@@ -1386,7 +1395,7 @@ function toggleSound( evt, data ) {
 		// XXX: Toggle sound
 	}
 };
-
+//XXX: TODO
 /* Updates status of AddOns */
 function updateAddOns( l ) {
 	var loc = new Location( game.toXCoord(l), game.toYCoord(l), l.addOn );
@@ -1513,3 +1522,23 @@ function updateCars( player, l, speed, time, fps ) {
   	var line = drawLine( 1, player.crntLoc(), l, player.car.color );
   	lineContainer.addChild( line );
 };
+//XXX: TODO
+function restartGame (){
+	// move players from kickedPlayers to activePlayers (mind the order)
+	// game.restoreplayers....
+	// clear all Players
+	// player.initialiizePlayer....
+	
+	// remove lines
+
+	// start by setplayers.
+
+};
+//XXX: TODO
+function returnToMenu(){
+
+};
+//XXX: TODO
+function showTutorial(){
+
+}
