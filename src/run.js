@@ -102,7 +102,7 @@ manifest = [
 spriteSheetsCar = [];
 spriteSheetNumbers = [];
 
-/* This functin is called on pageload */
+/* Method that is called initially on pageload */
 function init() {
 
 	/* **************** */
@@ -149,9 +149,12 @@ function init() {
 	// MenuObjects
 	menuContainer = new createjs.Container();
 	stage.addChildAt( menuContainer, 9 );
-	// XXX: STUFF TEMPPPPP
-	stuffContainer = new createjs.Container();
-	stage.addChildAt( stuffContainer, 10 );
+	// contains button for painting
+	buildingContainer = new createjs.Container();
+	stage.addChildAt( buildingContainer, 10 );
+	// contains objects for displaying an error or menu
+	hintContainer = new createjs.Container();
+	stage.addChildAt( hintContainer, 11 );
 
 
 	/* ************** */
@@ -172,8 +175,9 @@ function init() {
 	
 	// XXX: MAYBE OK WITHOUT TICKER???
 	createjs.Ticker.addEventListener( "tick", stage );	
-}
+};
 
+/* Handler for loaded objects */
 function handleProgress( evt ){
 	var progress = loadingProgress/manifest.length*100
 	var text = menuContainer.getChildByName( "progressBar" );
@@ -181,9 +185,10 @@ function handleProgress( evt ){
 
 	// XXX: To be completed (loading pic)
 	// var pic = drawPicture( evt.item.id, new Location(0, 0), w*0.8, h*0.8, evt.item.id, false );	
-	// stuffContainer.addChild( pic );
-}
+	// hintContainer.addChild( pic );
+};
 
+/* Handler for loaded objects */
 function handleLoadedStuff( evt ){
 	loadingProgress++;
 	console.log( evt.item.id + " loaded" );
@@ -231,13 +236,14 @@ function handleLoadedStuff( evt ){
 		break;
 		default: console.log( "SCREW YOU!" ); break;
 	}
-}
+};
 
+/* Initializes the objects for the menu */
 function prepareMenu() {
 
 	// Remove progress bar
 	menuContainer.removeChild( menuContainer.getChildByName( "progressBar" ) );
-	stuffContainer.removeAllChildren();
+	buildingContainer.removeAllChildren();
 
 	// helper for displaying objects (graphics and shapes)
 	var obj, g, s;
@@ -560,7 +566,7 @@ function prepareMenu() {
 	initScore();
 };
 
-
+/* Initializes the objects for the HUD */
 function initScore() {
 
 	for ( var i = 0; i < 4; i++ ) {
@@ -568,7 +574,7 @@ function initScore() {
 		var loc = new Location( parent.x + parent.width*HUD_OFFSET, parent.y + parent.height*HUD_OFFSET );
 
 		// XXX: Add average speed
-		
+		// XXX: Create/change number methoden schreiben um auszulagern...
 		var obj, pic;
 		var spriteSheet = new createjs.SpriteSheet( spriteSheetNumbers );
 		// speed 1:
@@ -624,6 +630,7 @@ function initScore() {
 	};
 };
 
+/* Returns the english name of a number (0-9) */
 function getNumberString( number ){
 	switch ( number ){
 		case 0: return "zero"; 
@@ -639,8 +646,9 @@ function getNumberString( number ){
 		default: return null;
 	}
 	return "";
-}
+};
 
+/* Updates the scores for every player */
 function updateScores() {
 
 	for ( var i = 0; i < game.activePlayers.length; i++ ){
@@ -691,6 +699,7 @@ function updateScores() {
 	}
 };
 
+/* Puts the single digits of a number into an array */
 function sliceNumberIntoPieces( number ){
 	var pieces = [];
 	while( number != 0 ){
@@ -699,8 +708,9 @@ function sliceNumberIntoPieces( number ){
 		number = Math.floor( number );
 	}
 	return pieces;
-}
+};
 
+/* Changes the car in the menu */
 function changeCar( evt, data ){
 	var inc = ( data.dir == "right" ? +1 : -1 );
 	menuCarPositions[data.no] = ( menuCarPositions[data.no] + inc ) % spriteSheetsCar.length; 
@@ -709,8 +719,9 @@ function changeCar( evt, data ){
 	}
 	var c = menuContainer.getChildByName( data.target );
 	c.spriteSheet = new createjs.SpriteSheet( spriteSheetsCar[menuCarPositions[data.no]] );
-}
+};
 
+/* Changes the Track in the Menu */
 function changeTrack ( evt, data ) {
 	finishLineContainer.removeAllChildren();
 	trackContainer.removeAllChildren();
@@ -730,22 +741,9 @@ function changeTrack ( evt, data ) {
 	paintTrack( game.track.surrPoints, 1 );
 	paintTrack( game.track.finishLine, 2 );
 	paintTrack( game.track.trackPoints, 3 );
-}
+};
 
-
-
-
-
-/* = ************* = */
-/* =  BUILD STUFF  = */
-/* = ************* = */
-/*
-#A6A6A6 strasse
-#8BACBB border
-#00273D finishline
-#575757 surrounding
-*/
-
+/* Control method for track building */
 function prepareTrack(){
 	menuContainer.visible = false;
 	stage.removeAllEventListeners();
@@ -771,8 +769,9 @@ function prepareTrack(){
 		break;
 		default: console.log( "Well OK?" );
 	}
-}
+};
 
+/* Building Engine for painting an own track */
 function buildTrack(){
 	
 	// set instruction background
@@ -867,26 +866,27 @@ function buildTrack(){
 	})
 
 	var text = drawPicture( "next_normal", new Location( 1/8*w, 3/4*h ), 0.15*w, 0.1*h, "doneButton", false );
-	stuffContainer.addChild( text );
+	buildingContainer.addChild( text );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( text.x, text.y, text.width, text.height ).endFill();
 	s = new createjs.Shape( g );
 	s.alpha = 0.01;
 	s.name = "doneButton_hitarea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: stuffContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: stuffContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
 	s.on( "click", function ( evt ){
 		buildStatus++;
 		prepareTrack();
-		var child = stuffContainer.getChildByName( "doneButton_hitarea" );
-		stuffContainer.removeChild( child );
-		var child = stuffContainer.getChildByName( "doneButton" );
-		stuffContainer.removeChild( child );
+		var child = buildingContainer.getChildByName( "doneButton_hitarea" );
+		buildingContainer.removeChild( child );
+		var child = buildingContainer.getChildByName( "doneButton" );
+		buildingContainer.removeChild( child );
 	});
-	stuffContainer.addChild( s );
-}
+	buildingContainer.addChild( s );
+};
 
+/* Sets the startPoints for the game */
 function setStartPoints(){
 	// remove old instruction background
 	var oldInstr = backgroundContainer.getChildByName( "instruction_building_1" );
@@ -959,15 +959,15 @@ function setStartPoints(){
 	})
 
 	var text = drawPicture( "next_normal", new Location( 1/8*w, 3/4*h ), 0.15*w, 0.1*h, "doneButton", false );
-	stuffContainer.addChild( text );
+	buildingContainer.addChild( text );
 	g = new createjs.Graphics();
 	g.beginFill("#f00").drawRect( text.x, text.y, text.width, text.height ).endFill();
 	s = new createjs.Shape( g );
 	s.alpha = 0.01;
 	s.name = "doneButton_hitarea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: stuffContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: stuffContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
 	s.on( "click", function ( evt ){
 		if ( game.track.finishLine.length < game.activePlayers.length ){
 			alert( "Please draw more finish-line points." );
@@ -975,16 +975,16 @@ function setStartPoints(){
 		}
 		buildStatus++;
 		prepareTrack();
-		var child = stuffContainer.getChildByName( "doneButton_hitarea" );
-		stuffContainer.removeChild( child );
-		var child = stuffContainer.getChildByName( "doneButton" );
-		stuffContainer.removeChild( child );
+		var child = buildingContainer.getChildByName( "doneButton_hitarea" );
+		buildingContainer.removeChild( child );
+		var child = buildingContainer.getChildByName( "doneButton" );
+		buildingContainer.removeChild( child );
 		
 	});
-	stuffContainer.addChild( s );
-	
-}
+	buildingContainer.addChild( s );
+};
 
+/* Sets the player for the game */
 function setPlayers(){
 
 	// remove old instruction background
@@ -1045,7 +1045,7 @@ function setPlayers(){
 			}
 		})
 	};
-}
+};
 // XXX: for creating tracks
 // function printArray ( array, name ){
 // 	var string = "";
@@ -1055,6 +1055,7 @@ function setPlayers(){
 // 	console.log( string );
 // }
 
+/* Colorizes/Displays certain type of the track */
 function paintTrack( array, type ){
 	var container;
 	switch( type ) {
@@ -1099,29 +1100,34 @@ function paintTrack( array, type ){
 	} catch( err ){
 		container.cache( 0, 0, w, h );
 	}
-
-}
+};
 
 // XXX: TO COMPLETE
-function displayTip( content ){
+// XXX: changes a flag, which every listener IFs to avoid actionhandling during tip
+// XXX: if Won: goto menu, repeat race, continue playing (problem?), close dialog
+// XXX: if menu: goto menu, repeat race, close dialog
+// XXX: If note/tip/...: close dialog
+/* Displays a hint or menu */
+function displayHint( content ){
 	var g = new createjs.Graphics();
  	g.beginFill("#FFFFFF");
  	g.drawRect(0,0,w,h);
  	var shape = new createjs.Shape(g);
  	shape.alpha=0.7;
  	// XXX: create own container, such that it will always be the top container.
- 	stuffContainer.addChild(shape);
+ 	hintContainer.addChild(shape);
  	// XXX: Here an image of a box needs to be ...
  	var g = new createjs.Graphics();
  	g.beginFill("#FFFFFF");
- 	g.drawRect(w/2-w*0.3/2,h/2-h*0.3/2,w*0.3,h*0.3);
+ 	g.drawRect( w/2-w*0.3/2, h/2-h*0.3/2, w*0.3, h*0.3 );
  	shape = new createjs.Shape(g);
- 	stuffContainer.addChild(shape);
+ 	hintContainer.addChild(shape);
 
  	var text = drawText ( content, "tipText", new Location( w/2-w*0.2/2,h/2-h*0.2/2 ), Math.floor(15*w/1000)+"px", "Arial", "black", false, "left", "top" );
- 	stuffContainer.addChild(text);
-}
+ 	hintContainer.addChild(text);
+};
 
+/* Detects points that lie on a line between srs and dest */
 function detectPointsInBetween( srcLoc, destLoc ){
 
 	var xDiff = srcLoc.x - destLoc.x;
@@ -1158,8 +1164,9 @@ function detectPointsInBetween( srcLoc, destLoc ){
 	}
 
 	return between;
-}
+};
 
+/* Caculates the gamepoints in a closed point area */
 function detectFilling( loc ){
 	game.track.surrPoints.push( loc );
 	var radialPoints = game.track.getSurrounding( loc, false );
@@ -1168,11 +1175,9 @@ function detectFilling( loc ){
 			detectFilling( radialPoints[i] );
 		}
 	}
-}
+};
 
-
-
-
+/* Progresses hover effects */
 function hover ( evt, data ){
 	var c = evt.currentTarget;
 	switch( data.obj ){
@@ -1186,12 +1191,9 @@ function hover ( evt, data ){
 		break;
 		default: console.log( "Missing case in hover." ); break;
 	}
-}
+};
 
-
-
-
-
+/* Performs a Move of a player */
 function doMove(){
 
 	var crntTurn = game.getTurn();
@@ -1225,14 +1227,14 @@ function doMove(){
 		});
 	}
 	// // XXX: TESTING PURPOSES
-	// displayTip("Ziehe nun mit der Maus eine Linie,\nsodass blablabla\nfkdsfhjdklsfjdskfldjsfdksfljssfdsfs\nfdskfjksldjfksdjfls");
-}
+	// displayHint("Ziehe nun mit der Maus eine Linie,\nsodass blablabla\nfkdsfhjdklsfjdskfldjsfdksfljssfdsfs\nfdskfjksldjfksdjfls");
+};
 
+/* Removes objects of menu or HUD that blocks the gameplay */
 function removeBlockingObjects( surr ){
+};
 
-}
-
-
+/* Toggles Sound on of */
 function toggleSound( evt, data ) {
 	var hitArea = HUDContainer.getChildByName( "music_toggle_hitArea" );
 	var pic = HUDContainer.getChildByName( "music_toggle" );
@@ -1252,7 +1254,7 @@ function toggleSound( evt, data ) {
 	}
 };
 
-
+/* Updates status of AddOns */
 function updateAddOns( l ) {
 	var loc = new Location( game.toXCoord(l), game.toYCoord(l), l.addOn );
 	// search for addonchild by name of its location
@@ -1276,6 +1278,7 @@ function updateAddOns( l ) {
 	}
 };
 
+/* Draws a line */
 function drawLine( size, srcL, destL, color ) {
 	var srcLoc = new Location( game.toXCoord( srcL ), game.toYCoord( srcL ));
 	var destLoc = new Location( game.toXCoord( destL ), game.toYCoord( destL ));
@@ -1287,6 +1290,7 @@ function drawLine( size, srcL, destL, color ) {
  	return new createjs.Shape( g );
 };
 
+/* Creates a colored circle. */
 function drawColoredCircle( color, l, radius, fill ) {
 	var loc = new Location( game.toXCoord( l ), game.toYCoord( l ), l.addOn );
 
@@ -1305,7 +1309,7 @@ function drawColoredCircle( color, l, radius, fill ) {
 	return circle;
 };
 
-/* Creates a Text Object. */
+/* Creates a text object. */
 function drawText ( content, name, loc, size, font, color, mouseover, textAlign, textBaseline ) {
 	
 	// display Play Button with clickevent and nice haptic mouseover
@@ -1330,7 +1334,7 @@ function drawText ( content, name, loc, size, font, color, mouseover, textAlign,
 	}
 	
 	return text;
-}
+};
 
 function drawPicture( pic, loc, width, height, name, keepRatio ) {
 	var img = preload.getResult( pic );
@@ -1354,7 +1358,7 @@ function getNewScaleY( newWidth, oldWidth, oldHeight ){
 	var ratio = oldWidth/oldHeight;
 	var scaleX = newWidth/oldWidth;
 	return oldWidth * scaleX * (1/(ratio*oldHeight));
-}
+};
 
 function initCars( visible ) {
 
@@ -1376,14 +1380,3 @@ function updateCars( player, l, speed, time, fps ) {
   	var line = drawLine( 1, player.crntLoc(), l, player.car.color );
   	lineContainer.addChild( line );
 };
-
-
-
-
-
-
-
-
-
-
-

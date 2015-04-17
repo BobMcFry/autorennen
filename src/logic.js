@@ -128,7 +128,6 @@ var	Track = function( width, height, name ){
 	this.name = name;
 }
 
-// XXX: THINK ABOUT A NICER SHORTER SOLUTION
 Track.prototype.isGamePoint = function( loc ) {
 	return this.isIn( loc, this.gamePoints );
 };
