@@ -244,18 +244,18 @@ function prepareMenu() {
 	
 	// display sound on/off symbol with clickevent
 	// XXX: No music here right now...
-	// obj = drawPicture( "music_on_normal", new Location(3*w/4, h-0.1333*h), w*0.05, -1, "music_toggle", true );
-	// HUDContainer.addChild( obj );
-	// g = new createjs.Graphics();
-	// g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
-	// s = new createjs.Shape( g );
-	// s.alpha = 0.01;
-	// s.name = "music_toggle_hitArea";
-	// s.cursor = "pointer";
-	// s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
-	// s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
-	// s.on( "click" , toggleSound, false, null, {img: "music_off_normal"});
-	// HUDContainer.addChild( s );
+	obj = drawPicture( "music_on_normal", new Location(w-w*0.07, h*HUD_SIZE), w*0.07, -1, "music_toggle", true );
+	HUDContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.name = "music_toggle_hitArea";
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
+	s.on( "click" , toggleSound, false, null, {img: "music_off_normal"});
+	HUDContainer.addChild( s );
 	
 	// trackMenu: display right arrow
 	obj = drawPicture( "right_normal", new Location(w-w*0.1, h/2-0.1*h/2), w*0.05, 0.1*h, "right_normal_track", false );
@@ -548,7 +548,7 @@ function prepareMenu() {
 function initScore() {
 
 	HUDScoreContainer.visible = false;
-	
+
 	for ( var i = 0; i < 4; i++ ) {
 		var parent = HUDContainer.getChildByName( "hud"+i );
 		var loc = new Location( parent.x + parent.width*HUD_OFFSET, parent.y + parent.height*HUD_OFFSET );
@@ -603,7 +603,7 @@ function initScore() {
 	};
 
 	// add menu button
-	var menuButton = drawPicture( "menu_normal", new Location(3*w/4+w*0.05, h-0.1333*h), w*0.05, -1, "menuButton", true );
+	var menuButton = drawPicture( "menu_normal", new Location(w-2*w*0.07, h*HUD_SIZE), w*0.07, -1, "menuButton", true );
 	HUDScoreContainer.addChild( menuButton );
 
 	g = new createjs.Graphics();
@@ -670,12 +670,8 @@ function updateScores() {
 			obj.gotoAndPlay( getNumberString( slicedSpeed[1] ));	
 		}
 		obj = HUDScoreContainer.getChildByName( "hud_speed_2_" + no );
-		if ( slicedSpeed[0] == null ){
-			obj.visible = false;
-		} else {
-			obj.visible = true;
-			obj.gotoAndPlay( getNumberString( slicedSpeed[0] ));
-		}
+		obj.gotoAndPlay( getNumberString( slicedSpeed[0] == null ? 0: slicedSpeed[0] ));
+		
 		// change distance
 		obj = HUDScoreContainer.getChildByName( "hud_distance_1_" + no );
 		if ( slicedDistance[2] == null ){
@@ -692,12 +688,7 @@ function updateScores() {
 			obj.gotoAndPlay( getNumberString( slicedDistance[1] ));	
 		}
 		obj = HUDScoreContainer.getChildByName( "hud_distance_3_" + no );
-		if ( slicedDistance[0] == null ){
-			obj.visible = false;
-		} else {
-			obj.visible = true;
-			obj.gotoAndPlay( getNumberString( slicedDistance[0] ));	
-		}
+		obj.gotoAndPlay( getNumberString( slicedSpeed[0] == null ? 0: slicedSpeed[0] ));
 	}
 };
 
