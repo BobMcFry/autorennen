@@ -208,9 +208,25 @@ Game.prototype.initializeGame = function() {
 	this.status = this.START;
 };
 
-// XXX: TODO
 Game.prototype.restoreKickedPlayers = function() {
+	
+	this.activePlayers = this.players;
 
+	// // add kicked players to active players
+	// for ( var i = 0; i < this.kickedPlayers.length; i++ ){
+	// 	this.activePlayers.push( this.kickedPlayers[i] );
+	// }
+
+	// // clear kickedPlayers array
+	// this.kickedPlayers.length = 0;
+
+	// // restore order of active players
+	// var newActivePlayers = [];
+	// for ( var i = 0; i < this.activePlayers.length; i++ ){
+	// 	newActivePlayers[this.activePlayers[i].no] = this.activePlayers[i];
+	// }
+
+	// this.activePlayers = newActivePlayers;
 }
 
 /* Checks surrounding for Occupation by other Players */

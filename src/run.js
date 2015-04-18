@@ -9,10 +9,10 @@
 
 
 // Status of Track Preparation used in prepareTrack()
-BUILD_TRACK  = 0;
-SET_START  = 1;
-PLACE_PLAYERS = 2;
-PREPARE_TURN  = 3;
+BUILD_BUILD_TRACK  = 0;
+BUILD_SET_START  = 1;
+BUILD_PLACE_PLAYERS = 2;
+BUILD_PREPARE_TURN  = 3;
 
 // Types of Hints
 HINT_WIN = 0;
@@ -181,6 +181,7 @@ function init() {
 	preload.on( "fileload", handleLoadedStuff );
 	preload.on( "complete", prepareMenu );
 	preload.loadManifest( manifest );
+
 	/* ****** */
 	/* TICKER */
 	/* ****** */
@@ -452,9 +453,9 @@ function prepareMenu() {
 
 		// if own is chosen set trackstatus to building, else to placing.
 		if ( trackPosition == 0 ){
-			buildStatus = BUILD_TRACK;
+			buildStatus = BUILD_BUILD_TRACK;
 		} else {
-			buildStatus = PLACE_PLAYERS;
+			buildStatus = BUILD_PLACE_PLAYERS;
 		}
 		prepareTrack();
 	});
@@ -624,8 +625,19 @@ function updateScores() {
 		// XXX: Add Color Or CarPic
 		var player = game.activePlayers[i];
 		var no = player.no;
-		var slicedSpeed = sliceNumberIntoPieces( Math.ceil( player.getSpeed() ) );
-		var slicedDistance = sliceNumberIntoPieces( Math.ceil( player.distance ) );
+		var speed, distance;
+		try{
+			speed = player.getSpeed();
+		} catch( err ){
+			speed = 0;
+		}
+		try{
+			distance = player.distance;
+		} catch( err ){
+			distance = 0;
+		}
+		var slicedSpeed = sliceNumberIntoPieces( Math.ceil( speed ) );
+		var slicedDistance = sliceNumberIntoPieces( Math.ceil( distance ) );
 		var obj;
 		
 		// change speed
@@ -729,18 +741,18 @@ function prepareTrack(){
 	HUDContainer.visible = false;
 
 	switch( buildStatus ){
-		case BUILD_TRACK:
+		case BUILD_BUILD_TRACK:
 			buildTrack();
 		break;
-		case SET_START:
+		case BUILD_SET_START:
 			setStartPoints();
 		break;
-		case PLACE_PLAYERS:
+		case BUILD_PLACE_PLAYERS:
 			paintContainer.removeAllChildren();
 			// Determine Locations of players
 			setPlayers();
 		break;
-		case PREPARE_TURN:
+		case BUILD_PREPARE_TURN:
 			HUDContainer.visible = true;
 			// XXX: Display ingame MenuButton
 			doMove();
@@ -1029,11 +1041,18 @@ function setPlayers(){
 			var loc = game.toLoc( evt.stageX, evt.stageY );
 			game.activePlayers[no].historyLocs.push( loc );
 
-			var car = menuContainer.getChildByName("car_"+game.activePlayers[no].no);
-			menuContainer.removeChild(car);
+			// XXX: Does that work???
+			var car = menuContainer.getChildByName( "car_"+game.activePlayers[no].no );
+			if ( !car ){
+				car = playerContainer.getChildByName( "car_"+game.activePlayers[no].no );
+			} else{
+				menuContainer.removeChild(car);
+			}
+			
 			car.name = "car_"+game.activePlayers[no].no;
 			car.scaleX = SKEW_CARS_TRACK;
 			car.scaleY = SKEW_CARS_TRACK;
+			car.visible = true;
 			var bounds = car.spriteSheet.getFrameBounds(0);
 			car.x = game.toXCoord(loc)-bounds.width*car.scaleX/2;
 			car.y = game.toYCoord(loc)-bounds.height*car.scaleY/2;
@@ -1168,9 +1187,9 @@ function displayHint( content, type ){
 		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_hover", obj: "pic"} );
 			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_normal", obj: "pic"} );
 			s.on( "click", function ( evt ){
-				// XXX: TODO what to do if reload is wanted
 				isHintDisplayed = false;
 				hintContainer.removeAllChildren();
+				restartGame();
 			});
 			hintContainer.addChild( s );
 			
@@ -1473,16 +1492,33 @@ function updateCars( player, l, speed, time, fps ) {
   	var line = drawLine( 1, player.crntLoc(), l, player.car.color );
   	lineContainer.addChild( line );
 };
-//XXX: TODO
+
 function restartGame (){
+
 	// move players from kickedPlayers to activePlayers (mind the order)
-	// game.restoreplayers....
+	game.restoreKickedPlayers();
+	
 	// clear all Players
-	// player.initialiizePlayer....
+	for ( var i = 0; i < game.activePlayers.length; i++ ){
+		game.activePlayers[i].initializePlayer();
+	}
 	
 	// remove lines
+	lineContainer.removeAllChildren();
+	
+	// // remove cars
+	for ( var i = 0; i < game.activePlayers.length; i++ ){
+		var no = game.activePlayers[i].no;
+		var car = playerContainer.getChildByName( "car_"+no );
+		car.visible = false;
+	}
 
-	// start by setplayers.
+	// restore HUD
+	updateScores();
+
+	// start at setplayers
+	buildStatus = BUILD_PLACE_PLAYERS;
+	prepareTrack();
 
 };
 //XXX: TODO
