@@ -39,6 +39,10 @@ COLOR_BORDER = "#8BACBB";
 COLOR_FINISHLINE = "#1C63A0";
 COLOR_SURR = "#575757";
 
+// Modes
+MODE_LOC_HINT = 0;
+MODE_NO_LOC_HINT = 1;
+
 // menu related variables
 menuCarPositions = [0,0,0,0];
 tracks = [];
@@ -123,6 +127,8 @@ spriteSheetNumbers = [];
 hidingObjects = [];
 
 isHintDisplayed = false;
+
+mode = MODE_NO_LOC_HINT;
 
 /* Method that is called initially on pageload */
 function init() {
@@ -1287,6 +1293,25 @@ function hover ( evt, data ){
 
 	var c = evt.currentTarget;
 	switch( data.obj ){
+		case "choiceCircle": 
+			if ( data.type == "add" && !choiceContainer.getChildByName( "choiceLine" ) && data.srcL ){
+				
+				if ( mode = MODE_LOC_HINT ){
+					var nextLoc = data.destL.getMove( data.srcL );	
+				}else{
+					var nextLoc = data.destL
+				}
+
+				var line = drawLine( 2, data.srcL, nextLoc, data.color );
+				line.name = "choiceLine";
+				choiceContainer.addChild( line );
+			}
+			if (data.type == "removal" ){
+				var child = choiceContainer.getChildByName( "choiceLine" );
+				choiceContainer.removeChild( child );
+			}
+			
+
 		case "circle": c.graphics.beginFill( data.color ).drawCircle( 0, 0, CIRCLE_SIZE ).endFill(); break;
 		case "text": c.color = data.color; break;
 		case "pic":
@@ -1331,10 +1356,15 @@ function doMove(){
 	}
 
 	var surr = crntTurn.surrounding;
-	// XXX: TESTING!
+	
 	removeBlockingObjects( surr );
 	for ( var i = 0; i < surr.length; i++ ){
-		var circle = drawColoredCircle( crntTurn.player.car.color, surr[i], CIRCLE_SIZE, true );
+		var player = crntTurn.player;
+		var circle = drawColoredCircle( player.car.color, surr[i], CIRCLE_SIZE, true );
+		circle.cursor = "pointer";
+		circle.on( "mouseover", hover, false, null, {color: crntTurn.player.car.color, obj: "choiceCircle", type: "add", srcL:player.crntLoc(), destL: surr[i]} );
+		circle.on( "mouseout", hover, false, null, {color: crntTurn.player.car.color, obj: "choiceCircle", type: "removal"} );
+
 		choiceContainer.addChild( circle );
 		circle.on( "click", function( evt ){
 			choiceContainer.removeAllChildren();
