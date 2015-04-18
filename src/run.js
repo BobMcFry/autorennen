@@ -39,6 +39,11 @@ COLOR_BORDER = "#8BACBB";
 COLOR_FINISHLINE = "#1C63A0";
 COLOR_SURR = "#575757";
 
+// Modes
+// XXX: Implement this feature (only a checkbox somewhere)
+MODE_LOC_HINT = 0;
+MODE_NO_LOC_HINT = 1;
+
 // menu related variables
 menuCarPositions = [0,0,0,0];
 tracks = [];
@@ -120,7 +125,11 @@ manifest = [
 spriteSheetsCar = [];
 spriteSheetNumbers = [];
 
+hidingObjects = [];
+
 isHintDisplayed = false;
+
+mode = MODE_NO_LOC_HINT;
 
 /* Method that is called initially on pageload */
 function init() {
@@ -131,7 +140,7 @@ function init() {
 
 	stage = new createjs.Stage( "board" );
 	stage.enableMouseOver();
-	// XXX: HARD CODED SIZES!!!!!!!!
+	
 	w = stage.canvas.width;
 	h = stage.canvas.height;
 	game = new Game();
@@ -244,7 +253,7 @@ function prepareMenu() {
 	
 	// display sound on/off symbol with clickevent
 	// XXX: No music here right now...
-	// obj = drawPicture( "music_on_normal", new Location(3*w/4, h-0.1333*h), w*0.05, -1, "music_toggle", true );
+	// obj = drawPicture( "music_on_normal", new Location(w-w*0.07, h*HUD_SIZE), w*0.07, -1, "music_toggle", true );
 	// HUDContainer.addChild( obj );
 	// g = new createjs.Graphics();
 	// g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
@@ -441,7 +450,7 @@ function prepareMenu() {
 			if (menuCarPositions[i] != 0){
 				// XXX: Color needs to be read from menu...
 				color = createjs.Graphics.getHSL( Math.random()*360, 100, 50 );
-				var player = new Player( new Car( null, color ), i );
+				var player = new Player( color, i );
 				game.activePlayers.push( player );
 				game.players.push( player );
 				visibility = true;
@@ -548,7 +557,7 @@ function prepareMenu() {
 function initScore() {
 
 	HUDScoreContainer.visible = false;
-	
+
 	for ( var i = 0; i < 4; i++ ) {
 		var parent = HUDContainer.getChildByName( "hud"+i );
 		var loc = new Location( parent.x + parent.width*HUD_OFFSET, parent.y + parent.height*HUD_OFFSET );
@@ -603,7 +612,7 @@ function initScore() {
 	};
 
 	// add menu button
-	var menuButton = drawPicture( "menu_normal", new Location(3*w/4+w*0.05, h-0.1333*h), w*0.05, -1, "menuButton", true );
+	var menuButton = drawPicture( "menu_normal", new Location(w-2*w*0.07, h*HUD_SIZE), w*0.07, -1, "menuButton", true );
 	HUDScoreContainer.addChild( menuButton );
 
 	g = new createjs.Graphics();
@@ -661,7 +670,6 @@ function updateScores() {
 		var obj;
 		
 		// change speed
-		// XXX: let first zero be shown!
 		obj = HUDScoreContainer.getChildByName( "hud_speed_1_" + no );
 		if ( slicedSpeed[1] == null ){
 			obj.visible = false;
@@ -670,12 +678,8 @@ function updateScores() {
 			obj.gotoAndPlay( getNumberString( slicedSpeed[1] ));	
 		}
 		obj = HUDScoreContainer.getChildByName( "hud_speed_2_" + no );
-		if ( slicedSpeed[0] == null ){
-			obj.visible = false;
-		} else {
-			obj.visible = true;
-			obj.gotoAndPlay( getNumberString( slicedSpeed[0] ));
-		}
+		obj.gotoAndPlay( getNumberString( slicedSpeed[0] == null ? 0: slicedSpeed[0] ));
+		
 		// change distance
 		obj = HUDScoreContainer.getChildByName( "hud_distance_1_" + no );
 		if ( slicedDistance[2] == null ){
@@ -692,12 +696,7 @@ function updateScores() {
 			obj.gotoAndPlay( getNumberString( slicedDistance[1] ));	
 		}
 		obj = HUDScoreContainer.getChildByName( "hud_distance_3_" + no );
-		if ( slicedDistance[0] == null ){
-			obj.visible = false;
-		} else {
-			obj.visible = true;
-			obj.gotoAndPlay( getNumberString( slicedDistance[0] ));	
-		}
+		obj.gotoAndPlay( getNumberString( slicedSpeed[0] == null ? 0: slicedSpeed[0] ));
 	}
 };
 
@@ -735,7 +734,7 @@ function changeTrack ( evt, data ) {
 
 	finishLineContainer.removeAllChildren();
 	trackContainer.removeAllChildren();
-	// XXX: Remove child by name???
+	
 	menuContainer.removeChild( menuContainer.getChildByName("trackname") );
 
 	// sets a position of the current chosen track
@@ -743,7 +742,7 @@ function changeTrack ( evt, data ) {
 	if ( trackPosition < 0 ) {
 		trackPosition = tracks.length-1; 
 	}
-	// XXX: Display the corresponding name in the middle
+	
 	game.track = tracks[trackPosition];
 	var trackTitle = drawPicture( "trackname_"+game.track.name, new Location( w/2-w*0.3/2,h/2-0.1665*h/2 ), w*0.3, h*0.1, "trackname", true );
 	menuContainer.addChild(trackTitle);
@@ -777,7 +776,6 @@ function prepareTrack(){
 		case BUILD_PREPARE_TURN:
 			HUDContainer.visible = true;
 			HUDScoreContainer.visible = true;
-			// XXX: Display ingame MenuButton
 			doMove();
 		break;
 		default: console.log( "Well OK?" );
@@ -810,7 +808,6 @@ function buildTrack(){
 		if ( isHintDisplayed ) 
 			return;
 
-		// XXX: THIS IS A TEMP FIX TO PREVENT THE STAGEEVENT FROM BEING FIRED WHEN THE DONE BUTTON IS CLICKED
 		var obj = stage.getObjectUnderPoint( evt.stageX, evt.stageY );
 		if ( obj != null && (obj.name == "doneButton_hitarea" )){
 			return;
@@ -834,7 +831,6 @@ function buildTrack(){
 		timeup = Date.now();
 		// compare times and determine wether the user wants to fill a circle
 		if ( timeup - timedown < 300 ){
-			// XXX: THIS IS A TEMP FIX TO PREVENT THE STAGEEVENT FROM BEING FIRED WHEN THE DONE BUTTON IS CLICKED
 			var obj = stage.getObjectUnderPoint( evt.stageX, evt.stageY );
 			if ( obj != null && obj.name == "doneButton_hitarea" ){
 				return;
@@ -1292,6 +1288,25 @@ function hover ( evt, data ){
 
 	var c = evt.currentTarget;
 	switch( data.obj ){
+		case "choiceCircle": 
+			if ( data.type == "add" && !choiceContainer.getChildByName( "choiceLine" ) && data.srcL ){
+				
+				if ( mode = MODE_LOC_HINT ){
+					var nextLoc = data.destL.getMove( data.srcL );	
+				}else{
+					var nextLoc = data.destL
+				}
+
+				var line = drawLine( 2, data.srcL, nextLoc, data.color );
+				line.name = "choiceLine";
+				choiceContainer.addChild( line );
+			}
+			if (data.type == "removal" ){
+				var child = choiceContainer.getChildByName( "choiceLine" );
+				choiceContainer.removeChild( child );
+			}
+			
+
 		case "circle": c.graphics.beginFill( data.color ).drawCircle( 0, 0, CIRCLE_SIZE ).endFill(); break;
 		case "text": c.color = data.color; break;
 		case "pic":
@@ -1332,20 +1347,19 @@ function doMove(){
 		winningString += "won.";
 
 		displayHint( winningString, HINT_WIN );
-		// XXX: Maybe detection was wrong and therefore game shall continue from here on (so no return statement)
-		// XXX: think about consequences and difficulties to implement that...
-		// 		XXX: detection from then on on/off?
-		// 		XXX: ...?
-		// XXX: should only happen IF there are more than one player left
-		// XXX: AND if there are choices left (the same as the IF before???)
 		return;
 	}
 
 	var surr = crntTurn.surrounding;
-	// XXX: TODO. Needs to remove temporarily objects that block the choices.
+	
 	removeBlockingObjects( surr );
 	for ( var i = 0; i < surr.length; i++ ){
-		var circle = drawColoredCircle( crntTurn.player.car.color, surr[i], CIRCLE_SIZE, true );
+		var player = crntTurn.player;
+		var circle = drawColoredCircle( player.color, surr[i], CIRCLE_SIZE, true );
+		circle.cursor = "pointer";
+		circle.on( "mouseover", hover, false, null, {color: crntTurn.player.color, obj: "choiceCircle", type: "add", srcL:player.crntLoc(), destL: surr[i]} );
+		circle.on( "mouseout", hover, false, null, {color: crntTurn.player.color, obj: "choiceCircle", type: "removal"} );
+
 		choiceContainer.addChild( circle );
 		circle.on( "click", function( evt ){
 			choiceContainer.removeAllChildren();
@@ -1359,10 +1373,89 @@ function doMove(){
 	}
 };
 
-// XXX: TODO
 /* Removes objects of menu or HUD that blocks the gameplay */
 function removeBlockingObjects( surr ){
+
+	// unhide previous hidden objects and clear array
+	for ( var i = 0; i < hidingObjects.length; i++ ){
+		hidingObjects[i].visible = true;
+	}
+	hidingObjects.length = 0;
+
+	
+	var objects = [];
+	for ( var i = 0; i < surr.length; i++ ){
+
+		// check wether there is a HUD blocking the view
+		if ( isHUDUnderPoint( surr[i] ) ){
+			hidingObjects.push( HUDContainer );
+			hidingObjects.push( HUDScoreContainer );
+		}
+
+		// XXX: Only working with easeljs 0.7.1 since in 0.8.0 it produces a security problem
+		// XXX: Only handing back objects with mouseevents...
+		var arr = stage.getObjectsUnderPoint( game.toXCoord( surr[i] ), game.toYCoord( surr[i] ));
+
+		for ( var j = 0; j < arr.length; j++ ){
+			objects.push( arr[j] );	
+		}
+		arr.length = 0;
+	}
+
+	var seen = false;
+	for ( var i = 0; i < objects.length; i++ ){
+
+		for ( var j = 0; j < hidingObjects.length; j++ ){
+			if ( objects[i] === hidingObjects[j] ){
+				seen = true;
+			}
+		}
+		if ( !seen ){
+			hidingObjects.push( objects[i] );
+		}
+	}
+
+
+	// hide these objects
+	for ( var i = 0; i < hidingObjects.length; i++ ){
+		hidingObjects[i].visible = false;
+		try{
+			hidingObjects[i].parent.visible = false;
+			hidingObjects.push( hidingObjects[i].parent );
+		}catch( err ){
+			console.log( "There is no parent here..." );
+		}
+	}
+
 };
+
+function isHUDUnderPoint( loc ){
+
+	var x = game.toXCoord( loc );
+	var y = game.toYCoord( loc );
+	// HUD top left
+	if ( x > 0 && x < w*HUD_SIZE
+	     && y > 0 && y < h*HUD_SIZE ){
+		return true;
+	}
+	// HUD top right
+	if ( x > w-w*HUD_SIZE && x < w
+	     && y > 0 && y < h*HUD_SIZE ){
+		return true;
+	}
+	// HUD bottom left
+	if ( x > 0 && x < w*HUD_SIZE
+	     && y > h-h*HUD_SIZE && y < h ){
+		return true;
+	}
+	// HUD bottom right
+	if ( x > w-w*HUD_SIZE && x < w
+	     && y > h-h*HUD_SIZE && y < h ){
+		return true;
+	}
+
+	return false;
+}
 //XXX: TODO
 /* Toggles Sound on of */
 function toggleSound( evt, data ) {
@@ -1378,13 +1471,13 @@ function toggleSound( evt, data ) {
 		hitArea.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
 		hitArea.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
 		hitArea.on( "click" , toggleSound, false, null, {on: false});
-		// XXX: Toggle sound
+		// XXX: TODO Toggle sound
 	} else {
 		pic.image = preload.getResult( "music_off_normal" );
 		hitArea.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_off_hover", obj: "pic"} );
 		hitArea.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_off_normal", obj: "pic"} );
 		hitArea.on( "click" , toggleSound, false, null, {on: true});
-		// XXX: Toggle sound
+		// XXX: TODO Toggle sound
 	}
 };
 //XXX: TODO
@@ -1507,7 +1600,7 @@ function updateCars( player, l, speed, time, fps ) {
   	.to( { x: loc.x-bounds.width/2*newScale, y: loc.y-bounds.height/2*car.scaleY }, time, createjs.Ease.getPowInOut( speed ));
   	car.scaleX = newScale;
   	// XXX: These can be cached!
-  	var line = drawLine( 1, player.crntLoc(), l, player.car.color );
+  	var line = drawLine( 1, player.crntLoc(), l, player.color );
   	lineContainer.addChild( line );
 };
 
@@ -1545,6 +1638,11 @@ function restartGame (){
 };
 
 function returnToMenu(){
+
+	// Remove all playerdata
+	game.activePlayers.length = 0;
+	game.players.length = 0;
+	game.kickedPlayers.length = 0;
 
 	// remove lines
 	lineContainer.removeAllChildren();
