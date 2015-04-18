@@ -46,7 +46,6 @@ trackPosition = 0;
 
 // counter for loading screen 
 loadingProgress = 0;
-loadingPics = [];
 
 // Images and Sounds used in the game. This manifest is loaded with preload.
 manifest = [
@@ -178,10 +177,7 @@ function init() {
 	/* ************** */
 
 	preload = new createjs.LoadQueue( false );
-	// XXX: USe spritesheetnumbers
-	var text = drawText( Math.floor( loadingProgress/manifest.length )+"%", "progressBar", new Location( w/2, h/2 ), Math.floor(20*w/1000)+"px", "Arial", "black", false, "left", "top" );
-	menuContainer.addChild( text );
-	preload.on( "progress", handleProgress );
+
 	preload.on( "fileload", handleLoadedStuff );
 	preload.on( "complete", prepareMenu );
 	preload.loadManifest( manifest );
@@ -193,72 +189,27 @@ function init() {
 };
 
 /* Handler for loaded objects */
-function handleProgress( evt ){
-	var progress = loadingProgress/manifest.length*100
-	var text = menuContainer.getChildByName( "progressBar" );
-	text.text = Math.floor( progress )+"%";
-
-	// XXX: To be completed (loading pic)
-	// var pic = drawPicture( evt.item.id, new Location(0, 0), w*0.8, h*0.8, evt.item.id, false );	
-	// hintContainer.addChild( pic );
-};
-
-/* Handler for loaded objects */
 function handleLoadedStuff( evt ){
+	// update progresscounter
 	loadingProgress++;
-	console.log( evt.item.id + " loaded" );
-	switch( evt.item.id ){
-		case "background": 	
-		break;
-		case "loading_01":
-		case "loading_02":
-		case "loading_03":
-		case "loading_04":
-		case "loading_05":
-		case "loading_06":
-		case "loading_07":
-		case "loading_08":
-		case "loading_09":
-		case "loading_10":
-		case "loading_11":
-		case "loading_12":
-			// XXX: To be completed (loading pic)
-			// loadingPics.push( evt.item.id );
-		break;
-		case "hud0":
-		case "hud1":
-		case "hud2":
-		case "hud3":
-		case "header":
-		case "back_header":
-		case "back_name":
-		case "left_normal":
-		case "right_normal":
-		case "music_on_normal":
-		case "play_normal":
-		case "circle_normal_1":
-		case "circle_normal_2":
-		case "circle_normal_3":
-		case "circle_normal_4":
-		case "circle_finish_1":
-		case "circle_finish_2":
-		case "left_hover":
-		case "right_hover":
-		case "music_on_hover":
-		case "music_off_normal":
-		case "music_off_hover":
-		case "play_hover":
-		break;
-		default: console.log( "SCREW YOU!" ); break;
+	var progress = loadingProgress/manifest.length*100
+
+	// update loadingpicture
+	var picNumber = Math.ceil( progress / 8 );
+	var loadingPic = "loading_" + (picNumber < 10 ? "0"+picNumber: picNumber);
+	if ( picNumber > 0 && picNumber < 13 && !menuContainer.getChildByName( loadingPic )){
+		var pic = drawPicture( loadingPic, new Location(w/2-w*0.8/2, h/2-h*0.8/2), w*0.8, h*0.8, loadingPic, false );	
+		menuContainer.addChild( pic );	
 	}
+
+	// console.log( evt.item.id + " loaded" );
 };
 
 /* Initializes the objects for the menu */
 function prepareMenu() {
 
 	// Remove progress bar
-	menuContainer.removeChild( menuContainer.getChildByName( "progressBar" ) );
-	hintContainer.removeAllChildren();
+	menuContainer.removeAllChildren();
 
 	// helper for displaying objects (graphics and shapes)
 	var obj, g, s;
