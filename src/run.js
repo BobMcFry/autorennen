@@ -120,6 +120,8 @@ manifest = [
 spriteSheetsCar = [];
 spriteSheetNumbers = [];
 
+hidingObjects = [];
+
 isHintDisplayed = false;
 
 /* Method that is called initially on pageload */
@@ -184,6 +186,8 @@ function init() {
 	/* ************** */
 
 	preload = new createjs.LoadQueue( false );
+ 	// XXX: Test for getting the method getobjectsunderpoint to run...
+ 	// preload = new createjs.LoadQueue(false, null, false);
 
 	preload.on( "fileload", handleLoadedStuff );
 	preload.on( "complete", prepareMenu );
@@ -1323,17 +1327,11 @@ function doMove(){
 		winningString += "won.";
 
 		displayHint( winningString, HINT_WIN );
-		// XXX: Maybe detection was wrong and therefore game shall continue from here on (so no return statement)
-		// XXX: think about consequences and difficulties to implement that...
-		// 		XXX: detection from then on on/off?
-		// 		XXX: ...?
-		// XXX: should only happen IF there are more than one player left
-		// XXX: AND if there are choices left (the same as the IF before???)
 		return;
 	}
 
 	var surr = crntTurn.surrounding;
-	// XXX: TODO. Needs to remove temporarily objects that block the choices.
+	// XXX: TESTING!
 	removeBlockingObjects( surr );
 	for ( var i = 0; i < surr.length; i++ ){
 		var circle = drawColoredCircle( crntTurn.player.car.color, surr[i], CIRCLE_SIZE, true );
@@ -1350,10 +1348,89 @@ function doMove(){
 	}
 };
 
-// XXX: TODO
 /* Removes objects of menu or HUD that blocks the gameplay */
 function removeBlockingObjects( surr ){
+
+	// unhide previous hidden objects and clear array
+	for ( var i = 0; i < hidingObjects.length; i++ ){
+		hidingObjects[i].visible = true;
+	}
+	hidingObjects.length = 0;
+
+	
+	var objects = [];
+	for ( var i = 0; i < surr.length; i++ ){
+
+		// check wether there is a HUD blocking the view
+		if ( isHUDUnderPoint( surr[i] ) ){
+			hidingObjects.push( HUDContainer );
+			hidingObjects.push( HUDScoreContainer );
+		}
+
+		// XXX: Only working with easeljs 0.7.1 since in 0.8.0 it produces a security problem
+		// XXX: Only handing back objects with mouseevents...
+		var arr = stage.getObjectsUnderPoint( game.toXCoord( surr[i] ), game.toYCoord( surr[i] ));
+
+		for ( var j = 0; j < arr.length; j++ ){
+			objects.push( arr[j] );	
+		}
+		arr.length = 0;
+	}
+
+	var seen = false;
+	for ( var i = 0; i < objects.length; i++ ){
+
+		for ( var j = 0; j < hidingObjects.length; j++ ){
+			if ( objects[i] === hidingObjects[j] ){
+				seen = true;
+			}
+		}
+		if ( !seen ){
+			hidingObjects.push( objects[i] );
+		}
+	}
+
+
+	// hide these objects
+	for ( var i = 0; i < hidingObjects.length; i++ ){
+		hidingObjects[i].visible = false;
+		try{
+			hidingObjects[i].parent.visible = false;
+			hidingObjects.push( hidingObjects[i].parent );
+		}catch( err ){
+			console.log( "There is no parent here..." );
+		}
+	}
+
 };
+
+function isHUDUnderPoint( loc ){
+
+	var x = game.toXCoord( loc );
+	var y = game.toYCoord( loc );
+	// HUD top left
+	if ( x > 0 && x < w*HUD_SIZE
+	     && y > 0 && y < h*HUD_SIZE ){
+		return true;
+	}
+	// HUD top right
+	if ( x > w-w*HUD_SIZE && x < w
+	     && y > 0 && y < h*HUD_SIZE ){
+		return true;
+	}
+	// HUD bottom left
+	if ( x > 0 && x < w*HUD_SIZE
+	     && y > h-h*HUD_SIZE && y < h ){
+		return true;
+	}
+	// HUD bottom right
+	if ( x > w-w*HUD_SIZE && x < w
+	     && y > h-h*HUD_SIZE && y < h ){
+		return true;
+	}
+
+	return false;
+}
 //XXX: TODO
 /* Toggles Sound on of */
 function toggleSound( evt, data ) {
