@@ -1639,6 +1639,11 @@ function restartGame (){
 
 function returnToMenu(){
 
+	// Remove all playerdata
+	game.activePlayers.length = 0;
+	game.players.length = 0;
+	game.kickedPlayers.length = 0;
+
 	// remove lines
 	lineContainer.removeAllChildren();
 
