@@ -64,6 +64,8 @@ manifest = [
 	{ src:"img/background.png", 			id:"background" },
 	{ src:"img/numbers.png", 				id:"numbers" },
 	{ src:"img/meter.png", 					id:"meter" },
+	{ src:"img/menu_normal.png",			id:"menu_normal" },
+	{ src:"img/menu_hover.png",				id:"menu_hover" },
 	{ src:"img/kilometer.png", 				id:"kilometer" },
 	{ src:"img/instruction_building_1.png",	id:"instruction_building_1" },
 	{ src:"img/instruction_building_2.png",	id:"instruction_building_2" },
@@ -601,6 +603,25 @@ function initScore() {
 		loc.x -= obj.spriteSheet._frameWidth*2;
 		loc.y -= obj.spriteSheet._frameHeight;
 	};
+
+	// add menu button
+	var menuButton = drawPicture( "menu_normal", new Location(3*w/4+w*0.05, h-0.1333*h), w*0.05, -1, "menuButton", true );
+	HUDScoreContainer.addChild( menuButton );
+
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( menuButton.x, menuButton.y, menuButton.width, menuButton.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.name = "menuButton_hitArea";
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: HUDScoreContainer, target: "menuButton", img: "menu_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: HUDScoreContainer, target: "menuButton", img: "menu_normal", obj: "pic"} );
+	s.on( "click" , function( evt ){
+		displayHint( "Menu", HINT_MENU );
+	});
+	HUDScoreContainer.addChild( s );
+	
+
 };
 
 /* Returns the english name of a number (0-9) */
@@ -1048,16 +1069,20 @@ function setPlayers(){
 			game.activePlayers[no].historyLocs.push( loc );
 
 			var playerNumber = game.activePlayers[no].no;
-			var spriteSheet = new createjs.SpriteSheet( spriteSheetsCar[menuCarPositions[playerNumber]] );
-			var car = new createjs.Sprite( spriteSheet, "move" );
-			car.name = "car_"+game.activePlayers[no].no;
+			var car = playerContainer.getChildByName( "car_"+playerNumber );
+			if ( !car ){
+				var spriteSheet = new createjs.SpriteSheet( spriteSheetsCar[menuCarPositions[playerNumber]] );
+				var car = new createjs.Sprite( spriteSheet, "move" );
+				car.name = "car_"+game.activePlayers[no].no;
+				playerContainer.addChild( car );
+			}
+			
 			car.scaleX = SKEW_CARS_TRACK;
 			car.scaleY = SKEW_CARS_TRACK;
 			car.visible = true;
 			var bounds = car.spriteSheet.getFrameBounds(0);
 			car.x = game.toXCoord(loc)-bounds.width*car.scaleX/2;
 			car.y = game.toYCoord(loc)-bounds.height*car.scaleY/2;
-			playerContainer.addChild( car );
 
 			no++;
 			if ( no == max ){
@@ -1473,6 +1498,7 @@ function getNewScaleY( newWidth, oldWidth, oldHeight ){
 	return oldWidth * scaleX * (1/(ratio*oldHeight));
 };
 
+// XXX: Necessary?
 function initCars( visible ) {
 
 };
@@ -1495,6 +1521,9 @@ function updateCars( player, l, speed, time, fps ) {
 };
 
 function restartGame (){
+
+	// remove all choices
+	choiceContainer.removeAllChildren();
 
 	// move players from kickedPlayers to activePlayers (mind the order)
 	game.restoreKickedPlayers();
@@ -1531,6 +1560,9 @@ function returnToMenu(){
 
 	// remove all cars from track
 	playerContainer.removeAllChildren();
+
+	// remove all choices
+	choiceContainer.removeAllChildren();
 
 	// XXX: TODO remove Addons
 
