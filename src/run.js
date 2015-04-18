@@ -85,7 +85,7 @@ manifest = [
 	{ src:"img/instruction_building_1.png",	id:"instruction_building_1" },
 	{ src:"img/instruction_building_2.png",	id:"instruction_building_2" },
 	{ src:"img/instruction_building_3.png",	id:"instruction_building_3" },
-	{ src:"img/kilometer.png", 				id:"kilometer" 
+	{ src:"img/kilometer.png", 				id:"kilometer" },
 	{ src:"img/left_hover.png", 			id:"left_hover" },
 	{ src:"img/left_normal.png", 			id:"left_normal" },
 	{ src:"img/meter.png", 					id:"meter" },
@@ -243,18 +243,19 @@ function prepareMenu() {
 	menuContainer.addChild( obj );
 	
 	// display sound on/off symbol with clickevent
-	obj = drawPicture( "music_on_normal", new Location(3*w/4, h-0.1333*h), w*0.05, -1, "music_toggle", true );
-	HUDContainer.addChild( obj );
-	g = new createjs.Graphics();
-	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
-	s = new createjs.Shape( g );
-	s.alpha = 0.01;
-	s.name = "music_toggle_hitArea";
-	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
-	s.on( "click" , toggleSound, false, null, {img: "music_off_normal"});
-	HUDContainer.addChild( s );
+	// XXX: No music here right now...
+	// obj = drawPicture( "music_on_normal", new Location(3*w/4, h-0.1333*h), w*0.05, -1, "music_toggle", true );
+	// HUDContainer.addChild( obj );
+	// g = new createjs.Graphics();
+	// g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	// s = new createjs.Shape( g );
+	// s.alpha = 0.01;
+	// s.name = "music_toggle_hitArea";
+	// s.cursor = "pointer";
+	// s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
+	// s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
+	// s.on( "click" , toggleSound, false, null, {img: "music_off_normal"});
+	// HUDContainer.addChild( s );
 	
 	// trackMenu: display right arrow
 	obj = drawPicture( "right_normal", new Location(w-w*0.1, h/2-0.1*h/2), w*0.05, 0.1*h, "right_normal_track", false );
@@ -622,8 +623,6 @@ function initScore() {
 		displayHint( "Menu", HINT_MENU );
 	});
 	HUDScoreContainer.addChild( s );
-	
-
 };
 
 /* Returns the english name of a number (0-9) */
