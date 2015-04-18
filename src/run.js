@@ -1041,14 +1041,9 @@ function setPlayers(){
 			var loc = game.toLoc( evt.stageX, evt.stageY );
 			game.activePlayers[no].historyLocs.push( loc );
 
-			// XXX: Does that work???
-			var car = menuContainer.getChildByName( "car_"+game.activePlayers[no].no );
-			if ( !car ){
-				car = playerContainer.getChildByName( "car_"+game.activePlayers[no].no );
-			} else{
-				menuContainer.removeChild(car);
-			}
-			
+			var playerNumber = game.activePlayers[no].no;
+			var spriteSheet = new createjs.SpriteSheet( spriteSheetsCar[menuCarPositions[playerNumber]] );
+			var car = new createjs.Sprite( spriteSheet, "move" );
 			car.name = "car_"+game.activePlayers[no].no;
 			car.scaleX = SKEW_CARS_TRACK;
 			car.scaleY = SKEW_CARS_TRACK;
@@ -1521,8 +1516,12 @@ function restartGame (){
 	prepareTrack();
 
 };
+
 //XXX: TODO
 function returnToMenu(){
+
+	// remove lines
+	lineContainer.removeAllChildren();
 
 };
 //XXX: TODO
