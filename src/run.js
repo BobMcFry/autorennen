@@ -9,10 +9,10 @@
 
 
 // Status of Track Preparation used in prepareTrack()
-BUILD_TRACK  = 0;
-SET_START  = 1;
-PLACE_PLAYERS = 2;
-PREPARE_TURN  = 3;
+BUILD_BUILD_TRACK  = 0;
+BUILD_SET_START  = 1;
+BUILD_PLACE_PLAYERS = 2;
+BUILD_PREPARE_TURN  = 3;
 
 // Types of Hints
 HINT_WIN = 0;
@@ -46,7 +46,6 @@ trackPosition = 0;
 
 // counter for loading screen 
 loadingProgress = 0;
-loadingPics = [];
 
 // Images and Sounds used in the game. This manifest is loaded with preload.
 manifest = [
@@ -62,55 +61,59 @@ manifest = [
 	{ src:"img/loading_10.png", 			id:"loading_10" },
 	{ src:"img/loading_11.png", 			id:"loading_11" },
 	{ src:"img/loading_12.png", 			id:"loading_12" },
-	{ src:"img/background.png", 			id:"background" },
-	{ src:"img/numbers.png", 				id:"numbers" },
-	{ src:"img/meter.png", 					id:"meter" },
-	{ src:"img/kilometer.png", 				id:"kilometer" },
-	{ src:"img/instruction_building_1.png",	id:"instruction_building_1" },
-	{ src:"img/instruction_building_2.png",	id:"instruction_building_2" },
-	{ src:"img/instruction_building_3.png",	id:"instruction_building_3" },
-	{ src:"img/hud_le_to.png", 				id:"hud0" },
-	{ src:"img/hud_ri_to.png", 				id:"hud1" },
-	{ src:"img/hud_le_bo.png", 				id:"hud2" },
-	{ src:"img/hud_ri_bo.png", 				id:"hud3" },
+	{ src:"img/autorennen_header.png", 		id:"header" },
 	{ src:"img/back_header.png", 			id:"back_header" },
 	{ src:"img/back_name.png", 				id:"back_name" },
-	{ src:"img/autorennen_header.png", 		id:"header" },
+	{ src:"img/background.png", 			id:"background" },
+	// XXX: TO ADD from here
+	{ src:"img/circle_finish_1.png", 		id:"circle_finish_1" },
+	{ src:"img/circle_finish_2.png", 		id:"circle_finish_2" },
 	{ src:"img/circle_normal_1.png", 		id:"circle_normal_1" },
 	{ src:"img/circle_normal_2.png", 		id:"circle_normal_2" },
 	{ src:"img/circle_normal_3.png", 		id:"circle_normal_3" },
 	{ src:"img/circle_normal_4.png", 		id:"circle_normal_4" },
-	{ src:"img/circle_finish_1.png", 		id:"circle_finish_1" },
-	{ src:"img/circle_finish_2.png", 		id:"circle_finish_2" },
-	{ src:"img/hintBox.png", 				id:"hintBox" },
-	{ src:"img/cross_normal.png", 			id:"cross_normal" },
-	{ src:"img/cross_hover.png", 			id:"cross_hover" },
-	{ src:"img/left_hover.png", 			id:"left_hover" },
-	{ src:"img/left_normal.png", 			id:"left_normal" },
-	{ src:"img/right_hover.png", 			id:"right_hover" },
-	{ src:"img/right_normal.png", 			id:"right_normal" },
-	{ src:"img/music_on_normal.png", 		id:"music_on_normal" },
-	{ src:"img/music_off_normal.png", 		id:"music_off_normal" },
-	{ src:"img/music_on_hover.png", 		id:"music_on_hover" },
-	{ src:"img/music_off_hover.png", 		id:"music_off_hover" },
-	{ src:"img/play_normal.png", 			id:"play_normal" },
-	{ src:"img/play_hover.png", 			id:"play_hover" },
-	{ src:"img/next_normal.png", 			id:"next_normal" },
-	{ src:"img/next_hover.png", 			id:"next_hover" },
-	{ src:"img/reload_normal.png", 			id:"reload_normal" },
-	{ src:"img/reload_hover.png", 			id:"reload_hover" },
-	{ src:"img/return_normal.png", 			id:"return_normal" },
-	{ src:"img/return_hover.png", 			id:"return_hover" },
+	// XXX: TO ADD till here
 	{ src:"img/continue_normal.png", 		id:"continue_normal" },
 	{ src:"img/continue_hover.png", 		id:"continue_hover" },
-	{ src:"img/sprite_none.png", 			id:"sprite_none" },
+	{ src:"img/cross_normal.png", 			id:"cross_normal" },
+	{ src:"img/cross_hover.png", 			id:"cross_hover" },
+	{ src:"img/hintBox.png", 				id:"hintBox" },
+	{ src:"img/hud_le_to.png", 				id:"hud0" },
+	{ src:"img/hud_ri_to.png", 				id:"hud1" },
+	{ src:"img/hud_le_bo.png", 				id:"hud2" },
+	{ src:"img/hud_ri_bo.png", 				id:"hud3" },
+	{ src:"img/instruction_building_1.png",	id:"instruction_building_1" },
+	{ src:"img/instruction_building_2.png",	id:"instruction_building_2" },
+	{ src:"img/instruction_building_3.png",	id:"instruction_building_3" },
+	{ src:"img/kilometer.png", 				id:"kilometer" },
+	{ src:"img/left_hover.png", 			id:"left_hover" },
+	{ src:"img/left_normal.png", 			id:"left_normal" },
+	{ src:"img/meter.png", 					id:"meter" },
+	{ src:"img/menu_hover.png",				id:"menu_hover" },
+	{ src:"img/menu_normal.png",			id:"menu_normal" },
+	{ src:"img/music_off_hover.png", 		id:"music_off_hover" },
+	{ src:"img/music_off_normal.png", 		id:"music_off_normal" },
+	{ src:"img/music_on_hover.png", 		id:"music_on_hover" },
+	{ src:"img/music_on_normal.png", 		id:"music_on_normal" },
+	{ src:"img/next_hover.png", 			id:"next_hover" },
+	{ src:"img/next_normal.png", 			id:"next_normal" },
+	{ src:"img/numbers.png", 				id:"numbers" },
+	{ src:"img/play_hover.png", 			id:"play_hover" },
+	{ src:"img/play_normal.png", 			id:"play_normal" },
+	{ src:"img/reload_hover.png", 			id:"reload_hover" },
+	{ src:"img/reload_normal.png", 			id:"reload_normal" },
+	{ src:"img/return_hover.png", 			id:"return_hover" },
+	{ src:"img/return_normal.png", 			id:"return_normal" },
+	{ src:"img/right_hover.png", 			id:"right_hover" },
+	{ src:"img/right_normal.png", 			id:"right_normal" },
 	{ src:"img/sprite_car_1.png", 			id:"sprite_car_1" },
 	{ src:"img/sprite_car_2.png", 			id:"sprite_car_2" },
 	{ src:"img/sprite_car_3.png", 			id:"sprite_car_3" },
-	{ src:"img/trackname_own.png", 			id:"trackname_own" },
+	{ src:"img/sprite_none.png", 			id:"sprite_none" },
 	{ src:"img/trackname_doodoo.png", 		id:"trackname_doodoo" },
 	{ src:"img/trackname_drag.png", 		id:"trackname_drag" },
 	{ src:"img/trackname_lummerland.png", 	id:"trackname_lummerland" },
+	{ src:"img/trackname_own.png", 			id:"trackname_own" },
 	{ src:"img/trackname_spaceship.png", 	id:"trackname_spaceship" }
 ];
 
@@ -163,28 +166,29 @@ function init() {
 	// HUD
 	HUDContainer = new createjs.Container();
 	stage.addChildAt( HUDContainer, 8 );
+	// Scores that are displayed in the HUD
+	HUDScoreContainer = new createjs.Container();
+	stage.addChildAt( HUDScoreContainer, 9 );
 	// MenuObjects
 	menuContainer = new createjs.Container();
-	stage.addChildAt( menuContainer, 9 );
+	stage.addChildAt( menuContainer, 10 );
 	// contains button for painting
 	buildingContainer = new createjs.Container();
-	stage.addChildAt( buildingContainer, 10 );
+	stage.addChildAt( buildingContainer, 11 );
 	// contains objects for displaying an error or menu
 	hintContainer = new createjs.Container();
-	stage.addChildAt( hintContainer, 11 );
+	stage.addChildAt( hintContainer, 12 );
 
 	/* ************** */
 	/* PRELOAD IMAGES */
 	/* ************** */
 
 	preload = new createjs.LoadQueue( false );
-	// XXX: USe spritesheetnumbers
-	var text = drawText( Math.floor( loadingProgress/manifest.length )+"%", "progressBar", new Location( w/2, h/2 ), Math.floor(20*w/1000)+"px", "Arial", "black", false, "left", "top" );
-	menuContainer.addChild( text );
-	preload.on( "progress", handleProgress );
+
 	preload.on( "fileload", handleLoadedStuff );
 	preload.on( "complete", prepareMenu );
 	preload.loadManifest( manifest );
+
 	/* ****** */
 	/* TICKER */
 	/* ****** */
@@ -193,72 +197,27 @@ function init() {
 };
 
 /* Handler for loaded objects */
-function handleProgress( evt ){
-	var progress = loadingProgress/manifest.length*100
-	var text = menuContainer.getChildByName( "progressBar" );
-	text.text = Math.floor( progress )+"%";
-
-	// XXX: To be completed (loading pic)
-	// var pic = drawPicture( evt.item.id, new Location(0, 0), w*0.8, h*0.8, evt.item.id, false );	
-	// hintContainer.addChild( pic );
-};
-
-/* Handler for loaded objects */
 function handleLoadedStuff( evt ){
+	// update progresscounter
 	loadingProgress++;
-	console.log( evt.item.id + " loaded" );
-	switch( evt.item.id ){
-		case "background": 	
-		break;
-		case "loading_01":
-		case "loading_02":
-		case "loading_03":
-		case "loading_04":
-		case "loading_05":
-		case "loading_06":
-		case "loading_07":
-		case "loading_08":
-		case "loading_09":
-		case "loading_10":
-		case "loading_11":
-		case "loading_12":
-			// XXX: To be completed (loading pic)
-			// loadingPics.push( evt.item.id );
-		break;
-		case "hud0":
-		case "hud1":
-		case "hud2":
-		case "hud3":
-		case "header":
-		case "back_header":
-		case "back_name":
-		case "left_normal":
-		case "right_normal":
-		case "music_on_normal":
-		case "play_normal":
-		case "circle_normal_1":
-		case "circle_normal_2":
-		case "circle_normal_3":
-		case "circle_normal_4":
-		case "circle_finish_1":
-		case "circle_finish_2":
-		case "left_hover":
-		case "right_hover":
-		case "music_on_hover":
-		case "music_off_normal":
-		case "music_off_hover":
-		case "play_hover":
-		break;
-		default: console.log( "SCREW YOU!" ); break;
+	var progress = loadingProgress/manifest.length*100
+
+	// update loadingpicture
+	var picNumber = Math.ceil( progress / 8 );
+	var loadingPic = "loading_" + (picNumber < 10 ? "0"+picNumber: picNumber);
+	if ( picNumber > 0 && picNumber < 13 && !menuContainer.getChildByName( loadingPic )){
+		var pic = drawPicture( loadingPic, new Location(w/2-w*0.8/2, h/2-h*0.8/2), w*0.8, h*0.8, loadingPic, false );	
+		menuContainer.addChild( pic );	
 	}
+
+	// console.log( evt.item.id + " loaded" );
 };
 
 /* Initializes the objects for the menu */
 function prepareMenu() {
 
 	// Remove progress bar
-	menuContainer.removeChild( menuContainer.getChildByName( "progressBar" ) );
-	hintContainer.removeAllChildren();
+	menuContainer.removeAllChildren();
 
 	// helper for displaying objects (graphics and shapes)
 	var obj, g, s;
@@ -284,18 +243,19 @@ function prepareMenu() {
 	menuContainer.addChild( obj );
 	
 	// display sound on/off symbol with clickevent
-	obj = drawPicture( "music_on_normal", new Location(3*w/4, h-0.1333*h), w*0.05, -1, "music_toggle", true );
-	HUDContainer.addChild( obj );
-	g = new createjs.Graphics();
-	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
-	s = new createjs.Shape( g );
-	s.alpha = 0.01;
-	s.name = "music_toggle_hitArea";
-	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
-	s.on( "click" , toggleSound, false, null, {img: "music_off_normal"});
-	HUDContainer.addChild( s );
+	// XXX: No music here right now...
+	// obj = drawPicture( "music_on_normal", new Location(3*w/4, h-0.1333*h), w*0.05, -1, "music_toggle", true );
+	// HUDContainer.addChild( obj );
+	// g = new createjs.Graphics();
+	// g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	// s = new createjs.Shape( g );
+	// s.alpha = 0.01;
+	// s.name = "music_toggle_hitArea";
+	// s.cursor = "pointer";
+	// s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
+	// s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
+	// s.on( "click" , toggleSound, false, null, {img: "music_off_normal"});
+	// HUDContainer.addChild( s );
 	
 	// trackMenu: display right arrow
 	obj = drawPicture( "right_normal", new Location(w-w*0.1, h/2-0.1*h/2), w*0.05, 0.1*h, "right_normal_track", false );
@@ -490,20 +450,20 @@ function prepareMenu() {
 			}
 
 			HUDContainer.getChildByName("hud"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_speed_1_"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_speed_2_"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_distance_1_"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_distance_2_"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_distance_3_"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_meter_"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_kilometer_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_speed_1_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_speed_2_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_distance_1_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_distance_2_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_distance_3_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_meter_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_kilometer_"+i).visible = visibility;
 		}
 
 		// if own is chosen set trackstatus to building, else to placing.
 		if ( trackPosition == 0 ){
-			buildStatus = BUILD_TRACK;
+			buildStatus = BUILD_BUILD_TRACK;
 		} else {
-			buildStatus = PLACE_PLAYERS;
+			buildStatus = BUILD_PLACE_PLAYERS;
 		}
 		prepareTrack();
 	});
@@ -601,19 +561,19 @@ function initScore() {
 		obj.x = loc.x;
 		obj.y = loc.y;
 		obj.visible = false;
-		HUDContainer.addChild( obj );
+		HUDScoreContainer.addChild( obj );
 		// speed 2:
 	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
 	 	obj.name = "hud_speed_2_"+i;
 		obj.x = loc.x + obj.spriteSheet._frameWidth*4/5;
 		obj.y = loc.y;
 		obj.visible = false;
-		HUDContainer.addChild( obj );
+		HUDScoreContainer.addChild( obj );
 		// Kilometer
 		loc.x += obj.spriteSheet._frameWidth*2;
 		pic = drawPicture( "kilometer", loc, w*0.05, -1, "hud_kilometer_"+i, true );
 		pic.visible = false;
-		HUDContainer.addChild( pic );
+		HUDScoreContainer.addChild( pic );
 		loc.x -= obj.spriteSheet._frameWidth*2;
 
 		// distance 1:
@@ -622,30 +582,47 @@ function initScore() {
 		obj.x = loc.x - obj.spriteSheet._frameWidth * 4/5;
 		obj.y = loc.y + obj.spriteSheet._frameHeight;
 		obj.visible = false;
-		HUDContainer.addChild( obj );
+		HUDScoreContainer.addChild( obj );
 		// distance 2:
 	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
 	 	obj.name = "hud_distance_2_"+i;
 		obj.x = loc.x;
 		obj.y = loc.y + obj.spriteSheet._frameHeight;
 		obj.visible = false;
-		HUDContainer.addChild( obj );
+		HUDScoreContainer.addChild( obj );
 		// distance 3:
 	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
 	 	obj.name = "hud_distance_3_"+i;
 		obj.x = loc.x + obj.spriteSheet._frameWidth * 4/5;
 		obj.y = loc.y + obj.spriteSheet._frameHeight;
 		obj.visible = false;
-		HUDContainer.addChild( obj );
+		HUDScoreContainer.addChild( obj );
 		// Meter
 		loc.x += obj.spriteSheet._frameWidth*2;
 		loc.y += obj.spriteSheet._frameHeight;
 		pic = drawPicture( "meter", loc, w*0.025, -1, "hud_meter_"+i, true );
 		pic.visible = false;
-		HUDContainer.addChild( pic );
+		HUDScoreContainer.addChild( pic );
 		loc.x -= obj.spriteSheet._frameWidth*2;
 		loc.y -= obj.spriteSheet._frameHeight;
 	};
+
+	// add menu button
+	var menuButton = drawPicture( "menu_normal", new Location(3*w/4+w*0.05, h-0.1333*h), w*0.05, -1, "menuButton", true );
+	HUDScoreContainer.addChild( menuButton );
+
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( menuButton.x, menuButton.y, menuButton.width, menuButton.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.name = "menuButton_hitArea";
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: HUDScoreContainer, target: "menuButton", img: "menu_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: HUDScoreContainer, target: "menuButton", img: "menu_normal", obj: "pic"} );
+	s.on( "click" , function( evt ){
+		displayHint( "Menu", HINT_MENU );
+	});
+	HUDScoreContainer.addChild( s );
 };
 
 /* Returns the english name of a number (0-9) */
@@ -673,19 +650,31 @@ function updateScores() {
 		// XXX: Add Color Or CarPic
 		var player = game.activePlayers[i];
 		var no = player.no;
-		var slicedSpeed = sliceNumberIntoPieces( Math.ceil( player.getSpeed() ) );
-		var slicedDistance = sliceNumberIntoPieces( Math.ceil( player.distance ) );
+		var speed, distance;
+		try{
+			speed = player.getSpeed();
+		} catch( err ){
+			speed = 0;
+		}
+		try{
+			distance = player.distance;
+		} catch( err ){
+			distance = 0;
+		}
+		var slicedSpeed = sliceNumberIntoPieces( Math.ceil( speed ) );
+		var slicedDistance = sliceNumberIntoPieces( Math.ceil( distance ) );
 		var obj;
 		
 		// change speed
-		obj = HUDContainer.getChildByName( "hud_speed_1_" + no );
+		// XXX: let first zero be shown!
+		obj = HUDScoreContainer.getChildByName( "hud_speed_1_" + no );
 		if ( slicedSpeed[1] == null ){
 			obj.visible = false;
 		} else {
 			obj.visible = true;
 			obj.gotoAndPlay( getNumberString( slicedSpeed[1] ));	
 		}
-		obj = HUDContainer.getChildByName( "hud_speed_2_" + no );
+		obj = HUDScoreContainer.getChildByName( "hud_speed_2_" + no );
 		if ( slicedSpeed[0] == null ){
 			obj.visible = false;
 		} else {
@@ -693,21 +682,21 @@ function updateScores() {
 			obj.gotoAndPlay( getNumberString( slicedSpeed[0] ));
 		}
 		// change distance
-		obj = HUDContainer.getChildByName( "hud_distance_1_" + no );
+		obj = HUDScoreContainer.getChildByName( "hud_distance_1_" + no );
 		if ( slicedDistance[2] == null ){
 			obj.visible = false;
 		} else {
 			obj.visible = true;
 			obj.gotoAndPlay( getNumberString( slicedDistance[2] ));	
 		}
-		obj = HUDContainer.getChildByName( "hud_distance_2_" + no );
+		obj = HUDScoreContainer.getChildByName( "hud_distance_2_" + no );
 		if ( slicedDistance[1] == null ){
 			obj.visible = false;
 		} else {
 			obj.visible = true;
 			obj.gotoAndPlay( getNumberString( slicedDistance[1] ));	
 		}
-		obj = HUDContainer.getChildByName( "hud_distance_3_" + no );
+		obj = HUDScoreContainer.getChildByName( "hud_distance_3_" + no );
 		if ( slicedDistance[0] == null ){
 			obj.visible = false;
 		} else {
@@ -776,21 +765,23 @@ function prepareTrack(){
 	finishLineContainer.removeAllEventListeners();
 	// hide scores
 	HUDContainer.visible = false;
+	HUDScoreContainer.visible = false;
 
 	switch( buildStatus ){
-		case BUILD_TRACK:
+		case BUILD_BUILD_TRACK:
 			buildTrack();
 		break;
-		case SET_START:
+		case BUILD_SET_START:
 			setStartPoints();
 		break;
-		case PLACE_PLAYERS:
+		case BUILD_PLACE_PLAYERS:
 			paintContainer.removeAllChildren();
 			// Determine Locations of players
 			setPlayers();
 		break;
-		case PREPARE_TURN:
+		case BUILD_PREPARE_TURN:
 			HUDContainer.visible = true;
+			HUDScoreContainer.visible = true;
 			// XXX: Display ingame MenuButton
 			doMove();
 		break;
@@ -1078,15 +1069,21 @@ function setPlayers(){
 			var loc = game.toLoc( evt.stageX, evt.stageY );
 			game.activePlayers[no].historyLocs.push( loc );
 
-			var car = menuContainer.getChildByName("car_"+game.activePlayers[no].no);
-			menuContainer.removeChild(car);
-			car.name = "car_"+game.activePlayers[no].no;
+			var playerNumber = game.activePlayers[no].no;
+			var car = playerContainer.getChildByName( "car_"+playerNumber );
+			if ( !car ){
+				var spriteSheet = new createjs.SpriteSheet( spriteSheetsCar[menuCarPositions[playerNumber]] );
+				var car = new createjs.Sprite( spriteSheet, "move" );
+				car.name = "car_"+game.activePlayers[no].no;
+				playerContainer.addChild( car );
+			}
+			
 			car.scaleX = SKEW_CARS_TRACK;
 			car.scaleY = SKEW_CARS_TRACK;
+			car.visible = true;
 			var bounds = car.spriteSheet.getFrameBounds(0);
 			car.x = game.toXCoord(loc)-bounds.width*car.scaleX/2;
 			car.y = game.toYCoord(loc)-bounds.height*car.scaleY/2;
-			playerContainer.addChild( car );
 
 			no++;
 			if ( no == max ){
@@ -1217,9 +1214,9 @@ function displayHint( content, type ){
 		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_hover", obj: "pic"} );
 			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_normal", obj: "pic"} );
 			s.on( "click", function ( evt ){
-				// XXX: TODO what to do if reload is wanted
 				isHintDisplayed = false;
 				hintContainer.removeAllChildren();
+				restartGame();
 			});
 			hintContainer.addChild( s );
 			
@@ -1234,9 +1231,9 @@ function displayHint( content, type ){
 		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_hover", obj: "pic"} );
 			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_normal", obj: "pic"} );
 			s.on( "click", function ( evt ){
-				// XXX: TODO what to do if return is wanted
 				isHintDisplayed = false;
 				hintContainer.removeAllChildren();
+				returnToMenu();
 			});
 			hintContainer.addChild( s );
 	}
@@ -1502,10 +1499,6 @@ function getNewScaleY( newWidth, oldWidth, oldHeight ){
 	return oldWidth * scaleX * (1/(ratio*oldHeight));
 };
 
-function initCars( visible ) {
-
-};
-
 function updateCars( player, l, speed, time, fps ) {
 	var loc = new Location( game.toXCoord( l ), game.toYCoord( l ));
 	var car = playerContainer.getChildByName( "car_"+player.no );
@@ -1522,22 +1515,67 @@ function updateCars( player, l, speed, time, fps ) {
   	var line = drawLine( 1, player.crntLoc(), l, player.car.color );
   	lineContainer.addChild( line );
 };
-//XXX: TODO
+
 function restartGame (){
+
+	// remove all choices
+	choiceContainer.removeAllChildren();
+
 	// move players from kickedPlayers to activePlayers (mind the order)
-	// game.restoreplayers....
+	game.restoreKickedPlayers();
+	
 	// clear all Players
-	// player.initialiizePlayer....
+	for ( var i = 0; i < game.activePlayers.length; i++ ){
+		game.activePlayers[i].initializePlayer();
+	}
 	
 	// remove lines
+	lineContainer.removeAllChildren();
+	
+	// // remove cars
+	for ( var i = 0; i < game.activePlayers.length; i++ ){
+		var no = game.activePlayers[i].no;
+		var car = playerContainer.getChildByName( "car_"+no );
+		car.visible = false;
+	}
 
-	// start by setplayers.
+	// XXX: TODO remove Addons
 
+	// restore HUD
+	updateScores();
+
+	// start at setplayers
+	buildStatus = BUILD_PLACE_PLAYERS;
+	prepareTrack();
 };
-//XXX: TODO
+
 function returnToMenu(){
 
+	// remove lines
+	lineContainer.removeAllChildren();
+
+	// remove all cars from track
+	playerContainer.removeAllChildren();
+
+	// remove all choices
+	choiceContainer.removeAllChildren();
+
+	// XXX: TODO remove Addons
+
+	// updateScores and hide them
+	updateScores();
+	HUDScoreContainer.visible = false;
+
+	// make all Huds visible
+	for ( var i = 0; i < 4; i++ ){
+		var hud = HUDContainer.getChildByName( "hud" + i );
+		hud.visible = true;
+	}
+
+	// display menu
+	menuContainer.visible = true;
 };
+
 //XXX: TODO
 function showTutorial(){
 
