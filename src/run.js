@@ -162,15 +162,18 @@ function init() {
 	// HUD
 	HUDContainer = new createjs.Container();
 	stage.addChildAt( HUDContainer, 8 );
+	// Scores that are displayed in the HUD
+	HUDScoreContainer = new createjs.Container();
+	stage.addChildAt( HUDScoreContainer, 9 );
 	// MenuObjects
 	menuContainer = new createjs.Container();
-	stage.addChildAt( menuContainer, 9 );
+	stage.addChildAt( menuContainer, 10 );
 	// contains button for painting
 	buildingContainer = new createjs.Container();
-	stage.addChildAt( buildingContainer, 10 );
+	stage.addChildAt( buildingContainer, 11 );
 	// contains objects for displaying an error or menu
 	hintContainer = new createjs.Container();
-	stage.addChildAt( hintContainer, 11 );
+	stage.addChildAt( hintContainer, 12 );
 
 	/* ************** */
 	/* PRELOAD IMAGES */
@@ -442,13 +445,13 @@ function prepareMenu() {
 			}
 
 			HUDContainer.getChildByName("hud"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_speed_1_"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_speed_2_"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_distance_1_"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_distance_2_"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_distance_3_"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_meter_"+i).visible = visibility;
-			HUDContainer.getChildByName("hud_kilometer_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_speed_1_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_speed_2_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_distance_1_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_distance_2_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_distance_3_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_meter_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_kilometer_"+i).visible = visibility;
 		}
 
 		// if own is chosen set trackstatus to building, else to placing.
@@ -553,19 +556,19 @@ function initScore() {
 		obj.x = loc.x;
 		obj.y = loc.y;
 		obj.visible = false;
-		HUDContainer.addChild( obj );
+		HUDScoreContainer.addChild( obj );
 		// speed 2:
 	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
 	 	obj.name = "hud_speed_2_"+i;
 		obj.x = loc.x + obj.spriteSheet._frameWidth*4/5;
 		obj.y = loc.y;
 		obj.visible = false;
-		HUDContainer.addChild( obj );
+		HUDScoreContainer.addChild( obj );
 		// Kilometer
 		loc.x += obj.spriteSheet._frameWidth*2;
 		pic = drawPicture( "kilometer", loc, w*0.05, -1, "hud_kilometer_"+i, true );
 		pic.visible = false;
-		HUDContainer.addChild( pic );
+		HUDScoreContainer.addChild( pic );
 		loc.x -= obj.spriteSheet._frameWidth*2;
 
 		// distance 1:
@@ -574,27 +577,27 @@ function initScore() {
 		obj.x = loc.x - obj.spriteSheet._frameWidth * 4/5;
 		obj.y = loc.y + obj.spriteSheet._frameHeight;
 		obj.visible = false;
-		HUDContainer.addChild( obj );
+		HUDScoreContainer.addChild( obj );
 		// distance 2:
 	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
 	 	obj.name = "hud_distance_2_"+i;
 		obj.x = loc.x;
 		obj.y = loc.y + obj.spriteSheet._frameHeight;
 		obj.visible = false;
-		HUDContainer.addChild( obj );
+		HUDScoreContainer.addChild( obj );
 		// distance 3:
 	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
 	 	obj.name = "hud_distance_3_"+i;
 		obj.x = loc.x + obj.spriteSheet._frameWidth * 4/5;
 		obj.y = loc.y + obj.spriteSheet._frameHeight;
 		obj.visible = false;
-		HUDContainer.addChild( obj );
+		HUDScoreContainer.addChild( obj );
 		// Meter
 		loc.x += obj.spriteSheet._frameWidth*2;
 		loc.y += obj.spriteSheet._frameHeight;
 		pic = drawPicture( "meter", loc, w*0.025, -1, "hud_meter_"+i, true );
 		pic.visible = false;
-		HUDContainer.addChild( pic );
+		HUDScoreContainer.addChild( pic );
 		loc.x -= obj.spriteSheet._frameWidth*2;
 		loc.y -= obj.spriteSheet._frameHeight;
 	};
@@ -641,14 +644,15 @@ function updateScores() {
 		var obj;
 		
 		// change speed
-		obj = HUDContainer.getChildByName( "hud_speed_1_" + no );
+		// XXX: let first zero be shown!
+		obj = HUDScoreContainer.getChildByName( "hud_speed_1_" + no );
 		if ( slicedSpeed[1] == null ){
 			obj.visible = false;
 		} else {
 			obj.visible = true;
 			obj.gotoAndPlay( getNumberString( slicedSpeed[1] ));	
 		}
-		obj = HUDContainer.getChildByName( "hud_speed_2_" + no );
+		obj = HUDScoreContainer.getChildByName( "hud_speed_2_" + no );
 		if ( slicedSpeed[0] == null ){
 			obj.visible = false;
 		} else {
@@ -656,21 +660,21 @@ function updateScores() {
 			obj.gotoAndPlay( getNumberString( slicedSpeed[0] ));
 		}
 		// change distance
-		obj = HUDContainer.getChildByName( "hud_distance_1_" + no );
+		obj = HUDScoreContainer.getChildByName( "hud_distance_1_" + no );
 		if ( slicedDistance[2] == null ){
 			obj.visible = false;
 		} else {
 			obj.visible = true;
 			obj.gotoAndPlay( getNumberString( slicedDistance[2] ));	
 		}
-		obj = HUDContainer.getChildByName( "hud_distance_2_" + no );
+		obj = HUDScoreContainer.getChildByName( "hud_distance_2_" + no );
 		if ( slicedDistance[1] == null ){
 			obj.visible = false;
 		} else {
 			obj.visible = true;
 			obj.gotoAndPlay( getNumberString( slicedDistance[1] ));	
 		}
-		obj = HUDContainer.getChildByName( "hud_distance_3_" + no );
+		obj = HUDScoreContainer.getChildByName( "hud_distance_3_" + no );
 		if ( slicedDistance[0] == null ){
 			obj.visible = false;
 		} else {
@@ -739,6 +743,7 @@ function prepareTrack(){
 	finishLineContainer.removeAllEventListeners();
 	// hide scores
 	HUDContainer.visible = false;
+	HUDScoreContainer.visible = false;
 
 	switch( buildStatus ){
 		case BUILD_BUILD_TRACK:
@@ -754,6 +759,7 @@ function prepareTrack(){
 		break;
 		case BUILD_PREPARE_TURN:
 			HUDContainer.visible = true;
+			HUDScoreContainer.visible = true;
 			// XXX: Display ingame MenuButton
 			doMove();
 		break;
@@ -1199,9 +1205,9 @@ function displayHint( content, type ){
 		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_hover", obj: "pic"} );
 			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_normal", obj: "pic"} );
 			s.on( "click", function ( evt ){
-				// XXX: TODO what to do if return is wanted
 				isHintDisplayed = false;
 				hintContainer.removeAllChildren();
+				returnToMenu();
 			});
 			hintContainer.addChild( s );
 	}
@@ -1508,22 +1514,41 @@ function restartGame (){
 		car.visible = false;
 	}
 
+	// XXX: TODO remove Addons
+
 	// restore HUD
 	updateScores();
 
 	// start at setplayers
 	buildStatus = BUILD_PLACE_PLAYERS;
 	prepareTrack();
-
 };
 
-//XXX: TODO
 function returnToMenu(){
 
 	// remove lines
 	lineContainer.removeAllChildren();
 
+	// remove all cars from track
+	playerContainer.removeAllChildren();
+
+	// XXX: TODO remove Addons
+
+	// updateScores and hide them
+	updateScores();
+	HUDScoreContainer.visible = false;
+
+	// make all Huds visible
+	for ( var i = 0; i < 4; i++ ){
+		var hud = HUDContainer.getChildByName( "hud" + i );
+		hud.visible = true;
+	}
+
+	// display menu
+	menuContainer.visible = true;
+
 };
+
 //XXX: TODO
 function showTutorial(){
 
