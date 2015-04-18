@@ -61,57 +61,59 @@ manifest = [
 	{ src:"img/loading_10.png", 			id:"loading_10" },
 	{ src:"img/loading_11.png", 			id:"loading_11" },
 	{ src:"img/loading_12.png", 			id:"loading_12" },
-	{ src:"img/background.png", 			id:"background" },
-	{ src:"img/numbers.png", 				id:"numbers" },
-	{ src:"img/meter.png", 					id:"meter" },
-	{ src:"img/menu_normal.png",			id:"menu_normal" },
-	{ src:"img/menu_hover.png",				id:"menu_hover" },
-	{ src:"img/kilometer.png", 				id:"kilometer" },
-	{ src:"img/instruction_building_1.png",	id:"instruction_building_1" },
-	{ src:"img/instruction_building_2.png",	id:"instruction_building_2" },
-	{ src:"img/instruction_building_3.png",	id:"instruction_building_3" },
-	{ src:"img/hud_le_to.png", 				id:"hud0" },
-	{ src:"img/hud_ri_to.png", 				id:"hud1" },
-	{ src:"img/hud_le_bo.png", 				id:"hud2" },
-	{ src:"img/hud_ri_bo.png", 				id:"hud3" },
+	{ src:"img/autorennen_header.png", 		id:"header" },
 	{ src:"img/back_header.png", 			id:"back_header" },
 	{ src:"img/back_name.png", 				id:"back_name" },
-	{ src:"img/autorennen_header.png", 		id:"header" },
+	{ src:"img/background.png", 			id:"background" },
+	// XXX: TO ADD from here
+	{ src:"img/circle_finish_1.png", 		id:"circle_finish_1" },
+	{ src:"img/circle_finish_2.png", 		id:"circle_finish_2" },
 	{ src:"img/circle_normal_1.png", 		id:"circle_normal_1" },
 	{ src:"img/circle_normal_2.png", 		id:"circle_normal_2" },
 	{ src:"img/circle_normal_3.png", 		id:"circle_normal_3" },
 	{ src:"img/circle_normal_4.png", 		id:"circle_normal_4" },
-	{ src:"img/circle_finish_1.png", 		id:"circle_finish_1" },
-	{ src:"img/circle_finish_2.png", 		id:"circle_finish_2" },
-	{ src:"img/hintBox.png", 				id:"hintBox" },
-	{ src:"img/cross_normal.png", 			id:"cross_normal" },
-	{ src:"img/cross_hover.png", 			id:"cross_hover" },
-	{ src:"img/left_hover.png", 			id:"left_hover" },
-	{ src:"img/left_normal.png", 			id:"left_normal" },
-	{ src:"img/right_hover.png", 			id:"right_hover" },
-	{ src:"img/right_normal.png", 			id:"right_normal" },
-	{ src:"img/music_on_normal.png", 		id:"music_on_normal" },
-	{ src:"img/music_off_normal.png", 		id:"music_off_normal" },
-	{ src:"img/music_on_hover.png", 		id:"music_on_hover" },
-	{ src:"img/music_off_hover.png", 		id:"music_off_hover" },
-	{ src:"img/play_normal.png", 			id:"play_normal" },
-	{ src:"img/play_hover.png", 			id:"play_hover" },
-	{ src:"img/next_normal.png", 			id:"next_normal" },
-	{ src:"img/next_hover.png", 			id:"next_hover" },
-	{ src:"img/reload_normal.png", 			id:"reload_normal" },
-	{ src:"img/reload_hover.png", 			id:"reload_hover" },
-	{ src:"img/return_normal.png", 			id:"return_normal" },
-	{ src:"img/return_hover.png", 			id:"return_hover" },
+	// XXX: TO ADD till here
 	{ src:"img/continue_normal.png", 		id:"continue_normal" },
 	{ src:"img/continue_hover.png", 		id:"continue_hover" },
-	{ src:"img/sprite_none.png", 			id:"sprite_none" },
+	{ src:"img/cross_normal.png", 			id:"cross_normal" },
+	{ src:"img/cross_hover.png", 			id:"cross_hover" },
+	{ src:"img/hintBox.png", 				id:"hintBox" },
+	{ src:"img/hud_le_to.png", 				id:"hud0" },
+	{ src:"img/hud_ri_to.png", 				id:"hud1" },
+	{ src:"img/hud_le_bo.png", 				id:"hud2" },
+	{ src:"img/hud_ri_bo.png", 				id:"hud3" },
+	{ src:"img/instruction_building_1.png",	id:"instruction_building_1" },
+	{ src:"img/instruction_building_2.png",	id:"instruction_building_2" },
+	{ src:"img/instruction_building_3.png",	id:"instruction_building_3" },
+	{ src:"img/kilometer.png", 				id:"kilometer" 
+	{ src:"img/left_hover.png", 			id:"left_hover" },
+	{ src:"img/left_normal.png", 			id:"left_normal" },
+	{ src:"img/meter.png", 					id:"meter" },
+	{ src:"img/menu_hover.png",				id:"menu_hover" },
+	{ src:"img/menu_normal.png",			id:"menu_normal" },
+	{ src:"img/music_off_hover.png", 		id:"music_off_hover" },
+	{ src:"img/music_off_normal.png", 		id:"music_off_normal" },
+	{ src:"img/music_on_hover.png", 		id:"music_on_hover" },
+	{ src:"img/music_on_normal.png", 		id:"music_on_normal" },
+	{ src:"img/next_hover.png", 			id:"next_hover" },
+	{ src:"img/next_normal.png", 			id:"next_normal" },
+	{ src:"img/numbers.png", 				id:"numbers" },
+	{ src:"img/play_hover.png", 			id:"play_hover" },
+	{ src:"img/play_normal.png", 			id:"play_normal" },
+	{ src:"img/reload_hover.png", 			id:"reload_hover" },
+	{ src:"img/reload_normal.png", 			id:"reload_normal" },
+	{ src:"img/return_hover.png", 			id:"return_hover" },
+	{ src:"img/return_normal.png", 			id:"return_normal" },
+	{ src:"img/right_hover.png", 			id:"right_hover" },
+	{ src:"img/right_normal.png", 			id:"right_normal" },
 	{ src:"img/sprite_car_1.png", 			id:"sprite_car_1" },
 	{ src:"img/sprite_car_2.png", 			id:"sprite_car_2" },
 	{ src:"img/sprite_car_3.png", 			id:"sprite_car_3" },
-	{ src:"img/trackname_own.png", 			id:"trackname_own" },
+	{ src:"img/sprite_none.png", 			id:"sprite_none" },
 	{ src:"img/trackname_doodoo.png", 		id:"trackname_doodoo" },
 	{ src:"img/trackname_drag.png", 		id:"trackname_drag" },
 	{ src:"img/trackname_lummerland.png", 	id:"trackname_lummerland" },
+	{ src:"img/trackname_own.png", 			id:"trackname_own" },
 	{ src:"img/trackname_spaceship.png", 	id:"trackname_spaceship" }
 ];
 
@@ -1498,11 +1500,6 @@ function getNewScaleY( newWidth, oldWidth, oldHeight ){
 	return oldWidth * scaleX * (1/(ratio*oldHeight));
 };
 
-// XXX: Necessary?
-function initCars( visible ) {
-
-};
-
 function updateCars( player, l, speed, time, fps ) {
 	var loc = new Location( game.toXCoord( l ), game.toYCoord( l ));
 	var car = playerContainer.getChildByName( "car_"+player.no );
@@ -1578,7 +1575,6 @@ function returnToMenu(){
 
 	// display menu
 	menuContainer.visible = true;
-
 };
 
 //XXX: TODO
