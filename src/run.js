@@ -547,6 +547,8 @@ function prepareMenu() {
 /* Initializes the objects for the HUD */
 function initScore() {
 
+	HUDScoreContainer.visible = false;
+	
 	for ( var i = 0; i < 4; i++ ) {
 		var parent = HUDContainer.getChildByName( "hud"+i );
 		var loc = new Location( parent.x + parent.width*HUD_OFFSET, parent.y + parent.height*HUD_OFFSET );
@@ -560,19 +562,16 @@ function initScore() {
 	 	obj.name = "hud_speed_1_"+i;
 		obj.x = loc.x;
 		obj.y = loc.y;
-		obj.visible = false;
 		HUDScoreContainer.addChild( obj );
 		// speed 2:
 	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
 	 	obj.name = "hud_speed_2_"+i;
 		obj.x = loc.x + obj.spriteSheet._frameWidth*4/5;
 		obj.y = loc.y;
-		obj.visible = false;
 		HUDScoreContainer.addChild( obj );
 		// Kilometer
 		loc.x += obj.spriteSheet._frameWidth*2;
 		pic = drawPicture( "kilometer", loc, w*0.05, -1, "hud_kilometer_"+i, true );
-		pic.visible = false;
 		HUDScoreContainer.addChild( pic );
 		loc.x -= obj.spriteSheet._frameWidth*2;
 
@@ -581,27 +580,23 @@ function initScore() {
 	 	obj.name = "hud_distance_1_"+i;
 		obj.x = loc.x - obj.spriteSheet._frameWidth * 4/5;
 		obj.y = loc.y + obj.spriteSheet._frameHeight;
-		obj.visible = false;
 		HUDScoreContainer.addChild( obj );
 		// distance 2:
 	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
 	 	obj.name = "hud_distance_2_"+i;
 		obj.x = loc.x;
 		obj.y = loc.y + obj.spriteSheet._frameHeight;
-		obj.visible = false;
 		HUDScoreContainer.addChild( obj );
 		// distance 3:
 	 	obj = new createjs.Sprite( spriteSheet, getNumberString( 0 ) );
 	 	obj.name = "hud_distance_3_"+i;
 		obj.x = loc.x + obj.spriteSheet._frameWidth * 4/5;
 		obj.y = loc.y + obj.spriteSheet._frameHeight;
-		obj.visible = false;
 		HUDScoreContainer.addChild( obj );
 		// Meter
 		loc.x += obj.spriteSheet._frameWidth*2;
 		loc.y += obj.spriteSheet._frameHeight;
 		pic = drawPicture( "meter", loc, w*0.025, -1, "hud_meter_"+i, true );
-		pic.visible = false;
 		HUDScoreContainer.addChild( pic );
 		loc.x -= obj.spriteSheet._frameWidth*2;
 		loc.y -= obj.spriteSheet._frameHeight;
