@@ -3,12 +3,12 @@
 /* ################## */
 
 // XXX: remove car
-var Car = function( typ, col ){
-	/* Type of Car */
-	this.type = typ;
-	/* Color of Car */
-	this.color = col;
-}
+// var Car = function( typ, col ){
+// 	/* Type of Car */
+// 	this.type = typ;
+// 	/* Color of Car */
+// 	this.color = col;
+// }
 
 
 /* ################## */
@@ -398,11 +398,10 @@ Game.prototype.getCurrentPlayer = function() {
 /* ################## */
 
 // XXX: remove car
-var	Player = function( car, no ){
+var	Player = function( col, no ){
 	this.initializePlayer()
-	this.car = car;
+	this.color = col;
 	this.no = no;
-	
 }
 
 Player.prototype.initializePlayer = function() {

@@ -40,6 +40,7 @@ COLOR_FINISHLINE = "#1C63A0";
 COLOR_SURR = "#575757";
 
 // Modes
+// XXX: Implement this feature (only a checkbox somewhere)
 MODE_LOC_HINT = 0;
 MODE_NO_LOC_HINT = 1;
 
@@ -139,7 +140,7 @@ function init() {
 
 	stage = new createjs.Stage( "board" );
 	stage.enableMouseOver();
-	// XXX: HARD CODED SIZES!!!!!!!!
+	
 	w = stage.canvas.width;
 	h = stage.canvas.height;
 	game = new Game();
@@ -192,8 +193,6 @@ function init() {
 	/* ************** */
 
 	preload = new createjs.LoadQueue( false );
- 	// XXX: Test for getting the method getobjectsunderpoint to run...
- 	// preload = new createjs.LoadQueue(false, null, false);
 
 	preload.on( "fileload", handleLoadedStuff );
 	preload.on( "complete", prepareMenu );
@@ -254,18 +253,18 @@ function prepareMenu() {
 	
 	// display sound on/off symbol with clickevent
 	// XXX: No music here right now...
-	obj = drawPicture( "music_on_normal", new Location(w-w*0.07, h*HUD_SIZE), w*0.07, -1, "music_toggle", true );
-	HUDContainer.addChild( obj );
-	g = new createjs.Graphics();
-	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
-	s = new createjs.Shape( g );
-	s.alpha = 0.01;
-	s.name = "music_toggle_hitArea";
-	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
-	s.on( "click" , toggleSound, false, null, {img: "music_off_normal"});
-	HUDContainer.addChild( s );
+	// obj = drawPicture( "music_on_normal", new Location(w-w*0.07, h*HUD_SIZE), w*0.07, -1, "music_toggle", true );
+	// HUDContainer.addChild( obj );
+	// g = new createjs.Graphics();
+	// g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	// s = new createjs.Shape( g );
+	// s.alpha = 0.01;
+	// s.name = "music_toggle_hitArea";
+	// s.cursor = "pointer";
+	// s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
+	// s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
+	// s.on( "click" , toggleSound, false, null, {img: "music_off_normal"});
+	// HUDContainer.addChild( s );
 	
 	// trackMenu: display right arrow
 	obj = drawPicture( "right_normal", new Location(w-w*0.1, h/2-0.1*h/2), w*0.05, 0.1*h, "right_normal_track", false );
@@ -451,7 +450,7 @@ function prepareMenu() {
 			if (menuCarPositions[i] != 0){
 				// XXX: Color needs to be read from menu...
 				color = createjs.Graphics.getHSL( Math.random()*360, 100, 50 );
-				var player = new Player( new Car( null, color ), i );
+				var player = new Player( color, i );
 				game.activePlayers.push( player );
 				game.players.push( player );
 				visibility = true;
@@ -671,7 +670,6 @@ function updateScores() {
 		var obj;
 		
 		// change speed
-		// XXX: let first zero be shown!
 		obj = HUDScoreContainer.getChildByName( "hud_speed_1_" + no );
 		if ( slicedSpeed[1] == null ){
 			obj.visible = false;
@@ -736,7 +734,7 @@ function changeTrack ( evt, data ) {
 
 	finishLineContainer.removeAllChildren();
 	trackContainer.removeAllChildren();
-	// XXX: Remove child by name???
+	
 	menuContainer.removeChild( menuContainer.getChildByName("trackname") );
 
 	// sets a position of the current chosen track
@@ -744,7 +742,7 @@ function changeTrack ( evt, data ) {
 	if ( trackPosition < 0 ) {
 		trackPosition = tracks.length-1; 
 	}
-	// XXX: Display the corresponding name in the middle
+	
 	game.track = tracks[trackPosition];
 	var trackTitle = drawPicture( "trackname_"+game.track.name, new Location( w/2-w*0.3/2,h/2-0.1665*h/2 ), w*0.3, h*0.1, "trackname", true );
 	menuContainer.addChild(trackTitle);
@@ -778,7 +776,6 @@ function prepareTrack(){
 		case BUILD_PREPARE_TURN:
 			HUDContainer.visible = true;
 			HUDScoreContainer.visible = true;
-			// XXX: Display ingame MenuButton
 			doMove();
 		break;
 		default: console.log( "Well OK?" );
@@ -811,7 +808,6 @@ function buildTrack(){
 		if ( isHintDisplayed ) 
 			return;
 
-		// XXX: THIS IS A TEMP FIX TO PREVENT THE STAGEEVENT FROM BEING FIRED WHEN THE DONE BUTTON IS CLICKED
 		var obj = stage.getObjectUnderPoint( evt.stageX, evt.stageY );
 		if ( obj != null && (obj.name == "doneButton_hitarea" )){
 			return;
@@ -835,7 +831,6 @@ function buildTrack(){
 		timeup = Date.now();
 		// compare times and determine wether the user wants to fill a circle
 		if ( timeup - timedown < 300 ){
-			// XXX: THIS IS A TEMP FIX TO PREVENT THE STAGEEVENT FROM BEING FIRED WHEN THE DONE BUTTON IS CLICKED
 			var obj = stage.getObjectUnderPoint( evt.stageX, evt.stageY );
 			if ( obj != null && obj.name == "doneButton_hitarea" ){
 				return;
@@ -1360,10 +1355,10 @@ function doMove(){
 	removeBlockingObjects( surr );
 	for ( var i = 0; i < surr.length; i++ ){
 		var player = crntTurn.player;
-		var circle = drawColoredCircle( player.car.color, surr[i], CIRCLE_SIZE, true );
+		var circle = drawColoredCircle( player.color, surr[i], CIRCLE_SIZE, true );
 		circle.cursor = "pointer";
-		circle.on( "mouseover", hover, false, null, {color: crntTurn.player.car.color, obj: "choiceCircle", type: "add", srcL:player.crntLoc(), destL: surr[i]} );
-		circle.on( "mouseout", hover, false, null, {color: crntTurn.player.car.color, obj: "choiceCircle", type: "removal"} );
+		circle.on( "mouseover", hover, false, null, {color: crntTurn.player.color, obj: "choiceCircle", type: "add", srcL:player.crntLoc(), destL: surr[i]} );
+		circle.on( "mouseout", hover, false, null, {color: crntTurn.player.color, obj: "choiceCircle", type: "removal"} );
 
 		choiceContainer.addChild( circle );
 		circle.on( "click", function( evt ){
@@ -1476,13 +1471,13 @@ function toggleSound( evt, data ) {
 		hitArea.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
 		hitArea.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
 		hitArea.on( "click" , toggleSound, false, null, {on: false});
-		// XXX: Toggle sound
+		// XXX: TODO Toggle sound
 	} else {
 		pic.image = preload.getResult( "music_off_normal" );
 		hitArea.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_off_hover", obj: "pic"} );
 		hitArea.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_off_normal", obj: "pic"} );
 		hitArea.on( "click" , toggleSound, false, null, {on: true});
-		// XXX: Toggle sound
+		// XXX: TODO Toggle sound
 	}
 };
 //XXX: TODO
@@ -1605,7 +1600,7 @@ function updateCars( player, l, speed, time, fps ) {
   	.to( { x: loc.x-bounds.width/2*newScale, y: loc.y-bounds.height/2*car.scaleY }, time, createjs.Ease.getPowInOut( speed ));
   	car.scaleX = newScale;
   	// XXX: These can be cached!
-  	var line = drawLine( 1, player.crntLoc(), l, player.car.color );
+  	var line = drawLine( 1, player.crntLoc(), l, player.color );
   	lineContainer.addChild( line );
 };
 
