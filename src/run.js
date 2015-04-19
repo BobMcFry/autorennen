@@ -26,7 +26,8 @@ PAINT_SIZE = 6;
 
 // HUD SIZE (percentage of width and height
 HUD_SIZE = 0.2;
-HUD_OFFSET = 0.25;
+HUD_X_OFFSET = 0.25;
+HUD_Y_OFFSET = 0.1;
 
 // Scale factor for cars
 SKEW_CARS_MENU = 0.8;
@@ -484,6 +485,7 @@ function prepareMenu() {
 			HUDScoreContainer.getChildByName("hud_distance_3_"+i).visible = visibility;
 			HUDScoreContainer.getChildByName("hud_meter_"+i).visible = visibility;
 			HUDScoreContainer.getChildByName("hud_kilometer_"+i).visible = visibility;
+			HUDScoreContainer.getChildByName("hud_car_"+i).visible = visibility;
 		}
 
 		// if own is chosen set trackstatus to building, else to placing.
@@ -579,8 +581,16 @@ function initScore() {
 
 	for ( var i = 0; i < 4; i++ ) {
 		var parent = HUDContainer.getChildByName( "hud"+i );
-		var loc = new Location( parent.x + parent.width*HUD_OFFSET, parent.y + parent.height*HUD_OFFSET );
-
+		var loc;
+		var widthScores = parent.width*3/8;
+		var heightScores = parent.height*2/5;
+		switch( i ){
+			case 0: loc = new Location( parent.x + parent.width*HUD_X_OFFSET, parent.y + parent.height*HUD_Y_OFFSET); break;
+			case 1: loc = new Location( parent.x + parent.width - widthScores - parent.width*HUD_X_OFFSET, parent.y + parent.height*HUD_Y_OFFSET ); break;
+			case 2: loc = new Location( parent.x + parent.width*HUD_X_OFFSET, parent.y + parent.height - parent.height*HUD_Y_OFFSET - heightScores ); break;
+			case 3: loc = new Location( parent.x + parent.width - widthScores - parent.width*HUD_X_OFFSET, parent.y + parent.height - parent.height*HUD_Y_OFFSET - heightScores ); break;
+		}
+		
 		// XXX: Add average speed
 		// XXX: Create/change number methoden schreiben um auszulagern...
 		var obj, pic;
@@ -629,6 +639,45 @@ function initScore() {
 		loc.x -= obj.spriteSheet._frameWidth*2;
 		loc.y -= obj.spriteSheet._frameHeight;
 	};
+	
+	// XXX: Make coordinates dependent on HUD Sizes/positions
+	var spriteSheet = new createjs.SpriteSheet(spriteSheetsCar[0]);
+	var animation = new createjs.Sprite(spriteSheet, "move" );
+	animation.name = "hud_car_0";
+	animation.no = 0;
+	animation.x = w*0.06;
+	animation.y = 0.1*h;
+	animation.scaleX = SKEW_CARS_TRACK*w/1000;
+	animation.scaleY = SKEW_CARS_TRACK*h/600;
+	HUDScoreContainer.addChild(animation);
+
+	animation = new createjs.Sprite(spriteSheet, "move");
+	animation.name = "hud_car_1";
+	animation.no = 0;
+	animation.scaleX = SKEW_CARS_TRACK*w/1000;
+	animation.scaleY = SKEW_CARS_TRACK*h/600;
+	animation.x = w-w*0.06-w*0.06;
+	animation.y = 0.1*h;
+	HUDScoreContainer.addChild(animation);
+
+	animation = new createjs.Sprite(spriteSheet, "move");
+	animation.name = "hud_car_2";
+	animation.no = 0;
+	animation.x = w*0.06;
+	animation.y = h-0.09*h-0.0833*h;
+	animation.scaleX = SKEW_CARS_TRACK*w/1000;
+	animation.scaleY = SKEW_CARS_TRACK*h/600;
+	HUDScoreContainer.addChild(animation);
+
+	animation = new createjs.Sprite(spriteSheet, "move");
+	animation.name = "hud_car_3";
+	animation.no = 0;
+	animation.x = w-w*0.06-w*0.06;
+	animation.y = h-0.09*h-0.0833*h;
+	animation.scaleX = SKEW_CARS_TRACK*w/1000;
+	animation.scaleY = SKEW_CARS_TRACK*h/600;
+	HUDScoreContainer.addChild(animation);
+
 
 	// add menu button
 	var menuButton = drawPicture( "menu_normal", new Location(w-2*w*0.07, h*HUD_SIZE), w*0.07, -1, "menuButton", true );
@@ -672,9 +721,17 @@ function getNumberString( number ){
 function updateScores() {
 
 	for ( var i = 0; i < game.activePlayers.length; i++ ){
-		// XXX: Add Color Or CarPic
+		
 		var player = game.activePlayers[i];
 		var no = player.no;
+
+		// Set carPicture if not the one intended
+		var child = HUDScoreContainer.getChildByName( "hud_car_"+no );
+		if ( child.no != menuCarPositions[no] ){
+			child.spriteSheet = new createjs.SpriteSheet( spriteSheetsCar[menuCarPositions[no]] );
+			child.no = menuCarPositions[no];
+		}
+
 		var speed, distance;
 		try{
 			speed = player.getSpeed();
