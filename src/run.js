@@ -135,7 +135,8 @@ manifest = [
 	{ src:"img/trackname_drag.png", 		id:"trackname_drag" },
 	{ src:"img/trackname_lummerland.png", 	id:"trackname_lummerland" },
 	{ src:"img/trackname_own.png", 			id:"trackname_own" },
-	{ src:"img/trackname_spaceship.png", 	id:"trackname_spaceship" }
+	{ src:"img/trackname_spaceship.png", 	id:"trackname_spaceship" },
+	{ src:"img/trackname_wiring.png", 	id:"trackname_wiring" }
 ];
 
 spriteSheetsCar = [];
@@ -1170,24 +1171,26 @@ function setPlayers(){
 				backgroundContainer.removeChild( oldInstr );
 				buildStatus++;
 				game.calculateTrackPoints();
+				
 				// XXX: for creating tracks
-				// printArray( game.track.trackBorders, "track.trackBorders" );
-				// printArray( game.track.finishLine, "track.finishLine" );
-				// printArray( game.track.surrPoints, "track.surrPoints" );
-				// printArray( game.track.trackPoints, "track.trackPoints" );
+				printArray( game.track.trackBorders, "track.trackBorders" );
+				printArray( game.track.finishLine, "track.finishLine" );
+				printArray( game.track.surrPoints, "track.surrPoints" );
+				printArray( game.track.trackPoints, "track.trackPoints" );
+
 				prepareTrack();
 			}
 		})
 	};
 };
 // XXX: for creating tracks
-// function printArray ( array, name ){
-// 	var string = "";
-// 	for ( var i = 0; i < array.length; i++ ){
-// 		string += name+".push( new Location" + array[i].toString()+");";
-// 	}
-// 	console.log( string );
-// }
+function printArray ( array, name ){
+	var string = "";
+	for ( var i = 0; i < array.length; i++ ){
+		string += name+".push( new Location" + array[i].toString()+");";
+	}
+	console.log( string );
+}
 
 /* Colorizes/Displays certain type of the track */
 function paintTrack( array, type ){
