@@ -31,6 +31,7 @@ HUD_OFFSET = 0.25;
 // Scale factor for cars
 SKEW_CARS_MENU = 0.8;
 SKEW_CARS_TRACK = 0.5;
+SKEW_CARS_HINT = 0.6;
 
 // Color design
 COLOR_HOVER = "#8B2A18";
@@ -66,6 +67,20 @@ manifest = [
 	{ src:"img/loading_10.png", 			id:"loading_10" },
 	{ src:"img/loading_11.png", 			id:"loading_11" },
 	{ src:"img/loading_12.png", 			id:"loading_12" },
+	// XXX: To Sort from here
+	{ src:"img/win.png", 					id:"win" },
+	{ src:"img/wins.png", 					id:"wins" },
+	{ src:"img/chooseCars.png", 			id:"chooseCars" },
+	{ src:"img/restartGame.png", 			id:"restartGame" },
+	{ src:"img/gotoMenu.png", 				id:"gotoMenu" },
+	{ src:"img/player.png", 				id:"player" },
+	{ src:"img/players.png", 				id:"players" },
+	{ src:"img/easyMode.png", 				id:"easyMode" },
+	{ src:"img/checkbox_blank.png",			id:"checkbox_blank" },
+	{ src:"img/checkbox_checked.png", 		id:"checkbox_checked" },
+	{ src:"img/moreFinishLine.png",			id:"moreFinishLine" },
+	{ src:"img/draw.png", 					id:"draw" },
+	// XXX: To Sort till here
 	{ src:"img/autorennen_header.png", 		id:"header" },
 	{ src:"img/back_header.png", 			id:"back_header" },
 	{ src:"img/back_name.png", 				id:"back_name" },
@@ -439,7 +454,10 @@ function prepareMenu() {
 			}
 		}
 		if ( carcounter < 2 ){
-			displayHint( "Please choose at least 2 cars.", HINT_ALERT );
+			var content = {};
+			content.type = HINT_ALERT;
+			content.text = "chooseCars";
+			displayHint( content );
 			return;
 		}
 
@@ -556,6 +574,7 @@ function prepareMenu() {
 /* Initializes the objects for the HUD */
 function initScore() {
 
+	
 	HUDScoreContainer.visible = false;
 
 	for ( var i = 0; i < 4; i++ ) {
@@ -624,7 +643,9 @@ function initScore() {
 	s.on( "mouseover", hover, false, null, {container: HUDScoreContainer, target: "menuButton", img: "menu_hover", obj: "pic"} );
 	s.on( "mouseout", hover, false, null, {container: HUDScoreContainer, target: "menuButton", img: "menu_normal", obj: "pic"} );
 	s.on( "click" , function( evt ){
-		displayHint( "Menu", HINT_MENU );
+		var content = {};
+		content.type = HINT_MENU;
+		displayHint( content );
 	});
 	HUDScoreContainer.addChild( s );
 };
@@ -1010,7 +1031,10 @@ function setStartPoints(){
 			return;
 
 		if ( game.track.finishLine.length < game.activePlayers.length ){
-			displayHint( "Please draw more finish-line points.",HINT_ALERT );
+			var content = {};
+			content.type = HINT_ALERT;
+			content.text = "moreFinishLine";
+			displayHint( content );
 			return;
 		}
 		buildStatus++;
@@ -1156,12 +1180,15 @@ function paintTrack( array, type ){
 };
 
 /* Displays a hint or menu */
-function displayHint( content, type ){
+// XXX: Make width and height dependent on width and height
+function displayHint( content ){
 
 	if ( isHintDisplayed ) 
 		return;
 
 	isHintDisplayed = true;
+
+	// Display Images
 	var g = new createjs.Graphics();
  	g.beginFill("#000000");
  	g.drawRect(0,0,w,h);
@@ -1189,45 +1216,94 @@ function displayHint( content, type ){
 	});
 	hintContainer.addChild( s );
 
-	var text = drawText ( content, "hintBoxText", new Location( w/2-w*0.2/2,h/2-h*0.2/2 ), Math.floor(15*w/1000)+"px", "Arial", "black", false, "left", "top" );
- 	hintContainer.addChild(text);
-
 	// Add content dependent on type of hint
-	if ( type == HINT_MENU || type == HINT_WIN || type == HINT_DRAW){
-		var reload = drawPicture( "reload_normal", new Location( hintBox.x+0.333*hintBox.width-w*0.06/2, hintBox.y+0.666*hintBox.height-h*0.1/2 ), w*0.06, h*0.1, "hintBoxReloadButton", false );
-		 	hintContainer.addChild( reload );
-		 	g = new createjs.Graphics();
-			g.beginFill("#f00").drawRect( reload.x, reload.y, reload.width, reload.height ).endFill();
-			s = new createjs.Shape( g );
-			s.alpha = 0.01;
-			s.name = "hintBoxReloadButton_hitarea";
-			s.cursor = "pointer";
-		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_hover", obj: "pic"} );
-			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_normal", obj: "pic"} );
-			s.on( "click", function ( evt ){
-				isHintDisplayed = false;
-				hintContainer.removeAllChildren();
-				restartGame();
-			});
-			hintContainer.addChild( s );
-			
-			var returnMenu = drawPicture( "return_normal", new Location( hintBox.x+0.666*hintBox.width-w*0.06/2, hintBox.y+0.666*hintBox.height-h*0.1/2 ), w*0.06, h*0.1, "hintBoxReturnButton", false );
-		 	hintContainer.addChild( returnMenu );
-		 	g = new createjs.Graphics();
-			g.beginFill("#f00").drawRect( returnMenu.x, returnMenu.y, returnMenu.width, returnMenu.height ).endFill();
-			s = new createjs.Shape( g );
-			s.alpha = 0.01;
-			s.name = "hintBoxReturnButton_hitarea";
-			s.cursor = "pointer";
-		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_hover", obj: "pic"} );
-			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_normal", obj: "pic"} );
-			s.on( "click", function ( evt ){
-				isHintDisplayed = false;
-				hintContainer.removeAllChildren();
-				returnToMenu();
-			});
-			hintContainer.addChild( s );
+	if ( content.type == HINT_MENU || content.type == HINT_WIN || content.type == HINT_DRAW){
+		var reload = drawPicture( "reload_normal", new Location( hintBox.x+0.333*hintBox.width-w*0.06/2, hintBox.y+0.5*hintBox.height-h*0.1/2 ), w*0.06, h*0.1, "hintBoxReloadButton", false );
+	 	hintContainer.addChild( reload );
+	 	g = new createjs.Graphics();
+		g.beginFill("#f00").drawRect( reload.x, reload.y, reload.width, reload.height ).endFill();
+		s = new createjs.Shape( g );
+		s.alpha = 0.01;
+		s.name = "hintBoxReloadButton_hitarea";
+		s.cursor = "pointer";
+	 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_hover", obj: "pic"} );
+		s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_normal", obj: "pic"} );
+		s.on( "click", function ( evt ){
+			isHintDisplayed = false;
+			hintContainer.removeAllChildren();
+			restartGame();
+		});
+		hintContainer.addChild( s );
+		var reload = drawPicture( "restartGame", new Location( hintBox.x+0.333*hintBox.width-w*0.1/2, hintBox.y+0.7*hintBox.height-h*0.05/2 ), w*0.1, h*0.05, "hintBoxReloadLabel", false );
+	 	hintContainer.addChild( reload );
+		
+		var returnMenu = drawPicture( "return_normal", new Location( hintBox.x+0.666*hintBox.width-w*0.06/2, hintBox.y+0.5*hintBox.height-h*0.1/2 ), w*0.06, h*0.1, "hintBoxReturnButton", false );
+	 	hintContainer.addChild( returnMenu );
+	 	g = new createjs.Graphics();
+		g.beginFill("#f00").drawRect( returnMenu.x, returnMenu.y, returnMenu.width, returnMenu.height ).endFill();
+		s = new createjs.Shape( g );
+		s.alpha = 0.01;
+		s.name = "hintBoxReturnButton_hitarea";
+		s.cursor = "pointer";
+	 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_hover", obj: "pic"} );
+		s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_normal", obj: "pic"} );
+		s.on( "click", function ( evt ){
+			isHintDisplayed = false;
+			hintContainer.removeAllChildren();
+			returnToMenu();
+		});
+		hintContainer.addChild( s );
+		var returnMenu = drawPicture( "gotoMenu", new Location( hintBox.x+0.666*hintBox.width-w*0.1/2, hintBox.y+0.7*hintBox.height-h*0.05/2 ), w*0.1, h*0.05, "hintBoxReturnLabel", false );
+	 	hintContainer.addChild( returnMenu );
 	}
+
+	// Display Texts
+	switch( content.type ){
+		case HINT_ALERT: 
+ 			var text = drawPicture( content.text, new Location( hintBox.x+0.5*hintBox.width-w*0.25/2, hintBox.y+hintBox.height/2-h*0.05 ), w*0.25, h*0.05, "hintBoxText", false );
+			hintContainer.addChild( text );
+		break;
+		case HINT_DRAW: 
+			var text = drawPicture( "draw", new Location( hintBox.x+0.5*hintBox.width-w*0.1/2, hintBox.y+0.15*hintBox.height ), w*0.1, h*0.05, "hintBoxText", false );
+			hintContainer.addChild( text );
+		break;
+		case HINT_WIN: 
+			// initialize singular texts
+			var player = "player";
+			var win = "wins";
+			if ( content.winner.length > 1 ){
+				player += "s";
+				win = "win";
+			}
+
+			var text = drawPicture( player, new Location( hintBox.x+0.5*hintBox.width-w*0.07-content.winner.length*w*0.05/2, hintBox.y+0.2*hintBox.height ), w*0.07, h*0.05, "hintBoxTextPlayer", false );
+			hintContainer.addChild( text );
+			var text = drawPicture( win, new Location( hintBox.x+0.5*hintBox.width+content.winner.length*w*0.06/2, hintBox.y+0.15*hintBox.height ), w*0.05, h*0.05, "hintBoxTextWin", false );
+			hintContainer.addChild( text );
+
+			// Add picture of winnercars
+			for ( var i = 0; i < content.winner.length; i++ ){
+				var no = content.winner[i].no;
+				var spriteSheet = new createjs.SpriteSheet( spriteSheetsCar[menuCarPositions[no]] );
+				var car = new createjs.Sprite( spriteSheet, "move" );
+				car.name = "hintBoxCar_" + no;
+				car.scaleX = SKEW_CARS_HINT;
+				car.scaleY = SKEW_CARS_HINT;
+				car.visible = true;
+				var bounds = car.spriteSheet.getFrameBounds(0);
+				car.x = hintBox.x+0.5*hintBox.width-content.winner.length*w*0.05/2+i*0.05*w;
+				car.y = hintBox.y+0.15*hintBox.height;
+				hintContainer.addChild( car );
+			}
+			return;
+		break;
+		case HINT_MENU:
+			// XXX: Add checkbox
+			return;
+		break;
+	}
+	
+	
 };
 
 /* Detects points that lie on a line between srs and dest */
@@ -1328,11 +1404,18 @@ function doMove(){
 	
 	if ( crntTurn.win ){
 		if ( crntTurn.win.length == 0 ){
-			displayHint( "Draw Situation", HINT_DRAW );
+			var content = {};
+			content.type = HINT_DRAW;
+			displayHint( content );
 			return;
 		}
+
 		var winningString = "Player" + (crntTurn.win.length > 1 ? "s " : " ");
+		var content = {};
+		content.type = HINT_WIN;
+		content.winner = [];
 		for (var i = 0; i < crntTurn.win.length; i++){
+			content.winner.push( crntTurn.win[i] );
 			winningString += crntTurn.win[i].no;
 			if ( i < crntTurn.win.length-1 ){
 				winningString += " and "
@@ -1346,7 +1429,7 @@ function doMove(){
 		}
 		winningString += "won.";
 
-		displayHint( winningString, HINT_WIN );
+		displayHint( content );
 		return;
 	}
 

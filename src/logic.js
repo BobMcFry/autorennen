@@ -1,17 +1,4 @@
 /* ################## */
-/* ####### CAR ###### */
-/* ################## */
-
-// XXX: remove car
-// var Car = function( typ, col ){
-// 	/* Type of Car */
-// 	this.type = typ;
-// 	/* Color of Car */
-// 	this.color = col;
-// }
-
-
-/* ################## */
 /* #### LOCATION #### */
 /* ################## */
 
@@ -113,7 +100,7 @@ var	Track = function( width, height, name ){
 	this.width = width;
 	this.height = height;
 	this.gamePoints = [height*width];
-	// XXX: brauch ich das noch? wird das jemals verwendet?
+	
 	var cnt = 0;
 	for ( var i = 0; i < height; i++ ) {
 		for ( var j = 0; j < width; j++ ) {
