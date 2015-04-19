@@ -40,6 +40,7 @@ COLOR_TRACK = "#A6A6A6";
 COLOR_BORDER = "#8BACBB";
 COLOR_FINISHLINE = "#1C63A0";
 COLOR_SURR = "#575757";
+colors = ["#4D94B8", "#BF94FF", "#FF4D4D", "#99FF66"];
 
 // Modes
 // XXX: Implement this feature (only a checkbox somewhere)
@@ -468,8 +469,7 @@ function prepareMenu() {
 		for (var i = 0; i < menuCarPositions.length; i++){
 			
 			if (menuCarPositions[i] != 0){
-				// XXX: Color needs to be read from menu...
-				color = createjs.Graphics.getHSL( Math.random()*360, 100, 50 );
+				color = colors[i];
 				var player = new Player( color, i );
 				game.activePlayers.push( player );
 				game.players.push( player );
@@ -1173,10 +1173,10 @@ function setPlayers(){
 				game.calculateTrackPoints();
 				
 				// XXX: for creating tracks
-				printArray( game.track.trackBorders, "track.trackBorders" );
-				printArray( game.track.finishLine, "track.finishLine" );
-				printArray( game.track.surrPoints, "track.surrPoints" );
-				printArray( game.track.trackPoints, "track.trackPoints" );
+				// printArray( game.track.trackBorders, "track.trackBorders" );
+				// printArray( game.track.finishLine, "track.finishLine" );
+				// printArray( game.track.surrPoints, "track.surrPoints" );
+				// printArray( game.track.trackPoints, "track.trackPoints" );
 
 				prepareTrack();
 			}
@@ -1184,13 +1184,13 @@ function setPlayers(){
 	};
 };
 // XXX: for creating tracks
-function printArray ( array, name ){
-	var string = "";
-	for ( var i = 0; i < array.length; i++ ){
-		string += name+".push( new Location" + array[i].toString()+");";
-	}
-	console.log( string );
-}
+// function printArray ( array, name ){
+// 	var string = "";
+// 	for ( var i = 0; i < array.length; i++ ){
+// 		string += name+".push( new Location" + array[i].toString()+");";
+// 	}
+// 	console.log( string );
+// }
 
 /* Colorizes/Displays certain type of the track */
 function paintTrack( array, type ){
@@ -1743,7 +1743,7 @@ function updateCars( player, l, speed, time, fps ) {
   	.to( { x: loc.x-bounds.width/2*newScale, y: loc.y-bounds.height/2*car.scaleY }, time, createjs.Ease.getPowInOut( speed ));
   	car.scaleX = newScale;
   	// XXX: These can be cached!
-  	var line = drawLine( 1, player.crntLoc(), l, player.color );
+  	var line = drawLine( 2, player.crntLoc(), l, player.color );
   	lineContainer.addChild( line );
 };
 
