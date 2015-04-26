@@ -138,6 +138,7 @@ manifest = [
 	{ src:"img/sprite_car_1.png", 			id:"sprite_car_1" },
 	{ src:"img/sprite_car_2.png", 			id:"sprite_car_2" },
 	{ src:"img/sprite_car_3.png", 			id:"sprite_car_3" },
+	{ src:"img/sprite_car_4.png", 			id:"sprite_car_4" },
 	{ src:"img/sprite_none.png", 			id:"sprite_none" },
 	{ src:"img/trackname_doodoo.png", 		id:"trackname_doodoo" },
 	{ src:"img/trackname_drag.png", 		id:"trackname_drag" },
@@ -542,14 +543,20 @@ function prepareMenu() {
  	});
  	spriteSheetsCar.push({
 		images: [preload.getResult( "sprite_car_2" )],
-		frames: {width:70, height:61},
-		animations: {"move":[0,6], "hold":[5]},
-		framerate: 15
+		frames: {width:691/8, height:70},
+		animations: {"move":[0,7], "hold":[0]},
+		framerate: 10
  	});
  	spriteSheetsCar.push({
 		images: [preload.getResult( "sprite_car_3" )],
 		frames: {width:292/3, height:88},
 		animations: {"move":[0,2], "hold":[0]},
+		framerate: 7
+ 	});
+ 	spriteSheetsCar.push({
+		images: [preload.getResult( "sprite_car_4" )],
+		frames: {width:358/4, height:90},
+		animations: {"move":[0,3], "hold":[0]},
 		framerate: 7
  	});
 
@@ -1898,8 +1905,3 @@ function returnToMenu(){
 	// display menu
 	menuContainer.visible = true;
 };
-
-//XXX: TODO
-function showTutorial(){
-
-}
