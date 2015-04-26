@@ -19,6 +19,7 @@ HINT_WIN = 0;
 HINT_DRAW = 1;
 HINT_MENU = 2;
 HINT_ALERT = 3;
+HINT_TUTORIAL = 4;
 
 // Circle and paint size used to draw them to the canvas
 CIRCLE_SIZE = 6;
@@ -82,6 +83,12 @@ manifest = [
 	{ src:"img/checkbox_checked.png", 		id:"checkbox_checked" },
 	{ src:"img/moreFinishLine.png",			id:"moreFinishLine" },
 	{ src:"img/draw.png", 					id:"draw" },
+	{ src:"img/tutorial_0.png", 			id:"tutorial_0" },
+	{ src:"img/tutorial_1.png", 			id:"tutorial_1" },
+	{ src:"img/tutorial_2.png", 			id:"tutorial_2" },
+	{ src:"img/tutorial_3.png",				id:"tutorial_3" },
+	{ src:"img/question_hover.png",			id:"question_hover" },
+	{ src:"img/question_normal.png",		id:"question_normal" },
 	// XXX: To Sort till here
 	{ src:"img/autorennen_header.png", 		id:"header" },
 	{ src:"img/back_header.png", 			id:"back_header" },
@@ -131,6 +138,7 @@ manifest = [
 	{ src:"img/sprite_car_1.png", 			id:"sprite_car_1" },
 	{ src:"img/sprite_car_2.png", 			id:"sprite_car_2" },
 	{ src:"img/sprite_car_3.png", 			id:"sprite_car_3" },
+	{ src:"img/sprite_car_4.png", 			id:"sprite_car_4" },
 	{ src:"img/sprite_none.png", 			id:"sprite_none" },
 	{ src:"img/trackname_doodoo.png", 		id:"trackname_doodoo" },
 	{ src:"img/trackname_drag.png", 		id:"trackname_drag" },
@@ -146,6 +154,8 @@ spriteSheetNumbers = [];
 hidingObjects = [];
 
 isHintDisplayed = false;
+
+tutorialPos = 0;
 
 mode = MODE_NO_LOC_HINT;
 
@@ -283,6 +293,24 @@ function prepareMenu() {
 	// s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
 	// s.on( "click" , toggleSound, false, null, {img: "music_off_normal"});
 	// HUDContainer.addChild( s );
+
+	// display Tutorial
+	obj = drawPicture( "question_normal", new Location(w-w*0.07, h*HUD_SIZE), w*0.07, -1, "tutorialButton", true );
+	HUDContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.name = "tutorialButton_hitArea";
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "tutorialButton", img: "question_hover", obj: "pic"} );
+	s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "tutorialButton", img: "question_normal", obj: "pic"} );
+	s.on( "click" , function( evt ){
+		var content = {};
+		content.type = HINT_TUTORIAL;
+		displayHint( content )
+	});	
+	HUDContainer.addChild( s );
 	
 	// trackMenu: display right arrow
 	obj = drawPicture( "right_normal", new Location(w-w*0.1, h/2-0.1*h/2), w*0.05, 0.1*h, "right_normal_track", false );
@@ -515,14 +543,20 @@ function prepareMenu() {
  	});
  	spriteSheetsCar.push({
 		images: [preload.getResult( "sprite_car_2" )],
-		frames: {width:70, height:61},
-		animations: {"move":[0,6], "hold":[5]},
-		framerate: 15
+		frames: {width:691/8, height:70},
+		animations: {"move":[0,7], "hold":[0]},
+		framerate: 10
  	});
  	spriteSheetsCar.push({
 		images: [preload.getResult( "sprite_car_3" )],
 		frames: {width:292/3, height:88},
 		animations: {"move":[0,2], "hold":[0]},
+		framerate: 7
+ 	});
+ 	spriteSheetsCar.push({
+		images: [preload.getResult( "sprite_car_4" )],
+		frames: {width:358/4, height:90},
+		animations: {"move":[0,3], "hold":[0]},
 		framerate: 7
  	});
 
@@ -577,7 +611,6 @@ function prepareMenu() {
 /* Initializes the objects for the HUD */
 function initScore() {
 
-	
 	HUDScoreContainer.visible = false;
 
 	for ( var i = 0; i < 4; i++ ) {
@@ -1257,8 +1290,13 @@ function displayHint( content ){
  	shape.alpha=0.7;
  	hintContainer.addChild(shape);
  	
- 	var hintBox = drawPicture( "hintBox", new Location(w/2-w*0.4/2, h/2-h*0.4/2), w*0.4, h*0.4, "hintBox", false );
- 	hintContainer.addChild( hintBox );
+ 	var hintBox;
+ 	if (content.type == HINT_TUTORIAL){
+ 		hintBox = drawPicture( "hintBox", new Location(w/2-w*0.8/2, h/2-h*0.8/2), w*0.8, h*0.8, "hintBox", false );
+ 	} else {
+	 	hintBox = drawPicture( "hintBox", new Location(w/2-w*0.4/2, h/2-h*0.4/2), w*0.4, h*0.4, "hintBox", false );
+	}
+	hintContainer.addChild( hintBox );
 
  	var hintBoxCloseButton = drawPicture( "cross_normal", new Location(hintBox.x+hintBox.width-w*0.06/2, hintBox.y-h*0.1/2), w*0.06, h*0.1, "hintBoxCloseButton", false );
  	hintContainer.addChild( hintBoxCloseButton );
@@ -1282,7 +1320,7 @@ function displayHint( content ){
 	 	hintContainer.addChild( reload );
 	 	g = new createjs.Graphics();
 		g.beginFill("#f00").drawRect( reload.x, reload.y, reload.width, reload.height ).endFill();
-		s = new createjs.Shape( g );
+		var s = new createjs.Shape( g );
 		s.alpha = 0.01;
 		s.name = "hintBoxReloadButton_hitarea";
 		s.cursor = "pointer";
@@ -1359,6 +1397,62 @@ function displayHint( content ){
 		break;
 		case HINT_MENU:
 			// XXX: Add checkbox
+			return;
+		case HINT_TUTORIAL:
+			tutorialPos = 0;
+			var tutorial = drawPicture( "tutorial_0", new Location( hintBox.x+0.2*hintBox.width/2, hintBox.y ), 0.8*hintBox.width, 0.8*hintBox.height, "hintBoxTutorial", false );
+	 		hintContainer.addChild( tutorial );
+
+ 			var spriteSheet = new createjs.SpriteSheet( spriteSheetNumbers );
+	 		var no = new createjs.Sprite( spriteSheet, getNumberString( tutorialPos+1 ) );
+	 		no.name = "hintBoxTutorialNumber";
+	 		no.x = hintBox.x+hintBox.width*0.1;
+	 		no.y = hintBox.y+hintBox.height-hintBox.height*0.25;
+	 		hintContainer.addChild( no );
+
+	 		var left = drawPicture( "left_normal", new Location( hintBox.x+0.05*hintBox.width, hintBox.y+hintBox.height*0.1 ), 0.05*hintBox.width, 0.1*hintBox.height, "hintBoxTutorialLeft", false );
+	 		hintContainer.addChild( left );
+	 		g = new createjs.Graphics();
+	 		g.beginFill("#f00").drawRect( left.x, left.y, left.width, left.height ).endFill();
+			s = new createjs.Shape( g );
+			s.alpha = 0.01;
+			s.name = "hintBoxTutorialLeft_hitarea";
+			s.cursor = "pointer";
+		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxTutorialLeft", img: "left_hover", obj: "pic"} );
+			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxTutorialLeft", img: "left_normal", obj: "pic"} );
+			s.on( "click", function ( evt ){
+				var child = hintContainer.getChildByName( "hintBoxTutorial" );
+				hintContainer.removeChild( child );
+				tutorialPos = ((tutorialPos+4)-1)%4;
+				var newTut = drawPicture( "tutorial_"+tutorialPos, new Location( hintBox.x+0.2*hintBox.width/2, hintBox.y ), 0.8*hintBox.width, 0.8*hintBox.height, "hintBoxTutorial", false );
+	 			hintContainer.addChild( newTut );
+	 			var no = hintContainer.getChildByName( "hintBoxTutorialNumber" );
+	 			no.gotoAndPlay( getNumberString( tutorialPos+1 ));
+			});
+			hintContainer.addChild( s );
+
+	 		var right = drawPicture( "right_normal", new Location( hintBox.x+hintBox.width-0.1*hintBox.width, hintBox.y+hintBox.height*0.1 ), 0.05*hintBox.width, 0.1*hintBox.height, "hintBoxTutorialRight", false );
+	 		hintContainer.addChild( right );
+	 		g = new createjs.Graphics();
+	 		g.beginFill("#f00").drawRect( right.x, right.y, right.width, right.height ).endFill();
+			s = new createjs.Shape( g );
+			s.alpha = 0.01;
+			s.name = "hintBoxTutorialRight_hitarea";
+			s.cursor = "pointer";
+		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxTutorialRight", img: "right_hover", obj: "pic"} );
+			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxTutorialRight", img: "right_normal", obj: "pic"} );
+			s.on( "click", function ( evt ){
+				var child = hintContainer.getChildByName( "hintBoxTutorial" );
+				hintContainer.removeChild( child );
+				tutorialPos = (tutorialPos+1)%4;
+				var newTut = drawPicture( "tutorial_"+tutorialPos, new Location( hintBox.x+0.2*hintBox.width/2, hintBox.y ), 0.8*hintBox.width, 0.8*hintBox.height, "hintBoxTutorial", false );
+	 			hintContainer.addChild( newTut );
+	 			var no = hintContainer.getChildByName( "hintBoxTutorialNumber" );
+	 			no.gotoAndPlay( getNumberString( tutorialPos+1 ));
+			});
+			hintContainer.addChild( s );
+
+	 		// XXX: Add left and/or right button
 			return;
 		break;
 	}
@@ -1811,8 +1905,3 @@ function returnToMenu(){
 	// display menu
 	menuContainer.visible = true;
 };
-
-//XXX: TODO
-function showTutorial(){
-
-}
