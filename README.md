@@ -4,7 +4,7 @@ This is a javascript based paper game.
 
 You can play Autorennen right here:
 
-	bobmcfry.github.io/autorennen/
+bobmcfry.github.io/autorennen/
 
 ---
 
