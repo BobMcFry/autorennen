@@ -196,24 +196,22 @@ Game.prototype.initializeGame = function() {
 };
 
 Game.prototype.restoreKickedPlayers = function() {
-	
-	this.activePlayers = this.players;
 
-	// // add kicked players to active players
-	// for ( var i = 0; i < this.kickedPlayers.length; i++ ){
-	// 	this.activePlayers.push( this.kickedPlayers[i] );
-	// }
+	// add kicked players to active players
+	for ( var i = 0; i < this.kickedPlayers.length; i++ ){
+		this.activePlayers.push( this.kickedPlayers[i] );
+	}
 
-	// // clear kickedPlayers array
-	// this.kickedPlayers.length = 0;
+	// clear kickedPlayers array
+	this.kickedPlayers.length = 0;
 
-	// // restore order of active players
-	// var newActivePlayers = [];
-	// for ( var i = 0; i < this.activePlayers.length; i++ ){
-	// 	newActivePlayers[this.activePlayers[i].no] = this.activePlayers[i];
-	// }
+	// restore order of active players
+	var newActivePlayers = [];
+	for ( var i = 0; i < this.activePlayers.length; i++ ){
+		newActivePlayers[this.activePlayers[i].no] = this.activePlayers[i];
+	}
 
-	// this.activePlayers = newActivePlayers;
+	this.activePlayers = newActivePlayers;
 }
 
 /* Checks surrounding for Occupation by other Players */
@@ -283,7 +281,7 @@ Game.prototype.turn = function( loc ) {
 	// checks wether there is finishLine in last move. Then the player wins
 	var between = detectPointsInBetween( crntPlayer.lastLoc(),loc );
 	for ( var i = 0; i < between.length; i++ ){
-		if ( this.track.isFinishLine( between[i] )){
+		if ( this.track.isFinishLine( between[i] ) && this.round >= 3){
 			crntPlayer.winner = true;
 			break;
 		}
