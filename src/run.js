@@ -145,7 +145,7 @@ manifest = [
 	{ src:"img/trackname_lummerland.png", 	id:"trackname_lummerland" },
 	{ src:"img/trackname_own.png", 			id:"trackname_own" },
 	{ src:"img/trackname_spaceship.png", 	id:"trackname_spaceship" },
-	{ src:"img/trackname_wiring.png", 	id:"trackname_wiring" }
+	{ src:"img/trackname_wiring.png", 		id:"trackname_wiring" }
 ];
 
 spriteSheetsCar = [];
@@ -1564,24 +1564,12 @@ function doMove(){
 			return;
 		}
 
-		var winningString = "Player" + (crntTurn.win.length > 1 ? "s " : " ");
 		var content = {};
 		content.type = HINT_WIN;
 		content.winner = [];
 		for (var i = 0; i < crntTurn.win.length; i++){
 			content.winner.push( crntTurn.win[i] );
-			winningString += crntTurn.win[i].no;
-			if ( i < crntTurn.win.length-1 ){
-				winningString += " and "
-			}
 		}
-		if ( crntTurn.win.length > 1 ){
-			winningString += " have ";
-		}
-		else {
-			winningString += " has ";
-		}
-		winningString += "won.";
 
 		displayHint( content );
 		return;
@@ -1880,6 +1868,9 @@ function returnToMenu(){
 	game.activePlayers.length = 0;
 	game.players.length = 0;
 	game.kickedPlayers.length = 0;
+	console.log(game.activePlayers);
+	console.log(game.players);
+	console.log(game.kickedPlayers);
 
 	// remove lines
 	lineContainer.removeAllChildren();

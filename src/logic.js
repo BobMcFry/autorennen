@@ -283,7 +283,7 @@ Game.prototype.turn = function( loc ) {
 	// checks wether there is finishLine in last move. Then the player wins
 	var between = detectPointsInBetween( crntPlayer.lastLoc(),loc );
 	for ( var i = 0; i < between.length; i++ ){
-		if ( this.track.isFinishLine( between[i] )){
+		if ( this.track.isFinishLine( between[i] ) && this.round >= 3){
 			crntPlayer.winner = true;
 			break;
 		}
