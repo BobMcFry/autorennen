@@ -1868,9 +1868,6 @@ function returnToMenu(){
 	game.activePlayers.length = 0;
 	game.players.length = 0;
 	game.kickedPlayers.length = 0;
-	console.log(game.activePlayers);
-	console.log(game.players);
-	console.log(game.kickedPlayers);
 
 	// remove lines
 	lineContainer.removeAllChildren();
