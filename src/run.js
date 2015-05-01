@@ -276,8 +276,8 @@ function displayHint( content ){
 	s.alpha = 0.01;
 	s.name = "hintBoxCloseButton_hitarea";
 	s.cursor = "pointer";
- 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxCloseButton", img: "cross_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxCloseButton", img: "cross_normal", obj: "pic"} );
+ 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxCloseButton", img: "cross_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxCloseButton", img: "cross_normal", obj: "sprite"} );
 	s.on( "click", function ( evt ){
 		isHintDisplayed = false;
 		hintContainer.removeAllChildren();
@@ -294,8 +294,8 @@ function displayHint( content ){
 		s.alpha = 0.01;
 		s.name = "hintBoxReloadButton_hitarea";
 		s.cursor = "pointer";
-	 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_hover", obj: "pic"} );
-		s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_normal", obj: "pic"} );
+	 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_hover", obj: "sprite"} );
+		s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReloadButton", img: "reload_normal", obj: "sprite"} );
 		s.on( "click", function ( evt ){
 			isHintDisplayed = false;
 			hintContainer.removeAllChildren();
@@ -313,8 +313,8 @@ function displayHint( content ){
 		s.alpha = 0.01;
 		s.name = "hintBoxReturnButton_hitarea";
 		s.cursor = "pointer";
-	 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_hover", obj: "pic"} );
-		s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_normal", obj: "pic"} );
+	 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_hover", obj: "sprite"} );
+		s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxReturnButton", img: "return_normal", obj: "sprite"} );
 		s.on( "click", function ( evt ){
 			isHintDisplayed = false;
 			hintContainer.removeAllChildren();
@@ -388,8 +388,8 @@ function displayHint( content ){
 			s.alpha = 0.01;
 			s.name = "hintBoxTutorialLeft_hitarea";
 			s.cursor = "pointer";
-		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxTutorialLeft", img: "left_hover", obj: "pic"} );
-			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxTutorialLeft", img: "left_normal", obj: "pic"} );
+		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxTutorialLeft", img: "left_hover", obj: "sprite"} );
+			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxTutorialLeft", img: "left_normal", obj: "sprite"} );
 			s.on( "click", function ( evt ){
 				var child = hintContainer.getChildByName( "hintBoxTutorial" );
 				hintContainer.removeChild( child );
@@ -409,8 +409,8 @@ function displayHint( content ){
 			s.alpha = 0.01;
 			s.name = "hintBoxTutorialRight_hitarea";
 			s.cursor = "pointer";
-		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxTutorialRight", img: "right_hover", obj: "pic"} );
-			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxTutorialRight", img: "right_normal", obj: "pic"} );
+		 	s.on( "mouseover", hover, false, null, {container: hintContainer, target: "hintBoxTutorialRight", img: "right_hover", obj: "sprite"} );
+			s.on( "mouseout", hover, false, null, {container: hintContainer, target: "hintBoxTutorialRight", img: "right_normal", obj: "sprite"} );
 			s.on( "click", function ( evt ){
 				var child = hintContainer.getChildByName( "hintBoxTutorial" );
 				hintContainer.removeChild( child );
@@ -469,9 +469,8 @@ function detectPointsInBetween( srcLoc, destLoc ){
 
 /* Progresses hover effects */
 function hover ( evt, data ){
-
 	if ( isHintDisplayed && !data.target.startsWith("hintBox") ) 
-			return;
+		return;
 
 	var c = evt.currentTarget;
 	switch( data.obj ){
@@ -501,6 +500,13 @@ function hover ( evt, data ){
 			if ( target == null )
 				return;
 			target.image = preload.getResult( data.img );
+		break;
+		case "sprite":
+			var target = data.container.getChildByName( data.target );
+			if (target == null ){
+				return;
+			}
+			target.gotoAndPlay( data.img );
 		break;
 		default: console.log( "Missing case in hover." ); break;
 	}
@@ -651,14 +657,14 @@ function toggleSound( evt, data ) {
 	hitArea.removeAllEventListeners();
 	if ( data.on ){
 		pic.image = preload.getResult( "music_on_normal" );
-		hitArea.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
-		hitArea.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
+		hitArea.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "sprite"} );
+		hitArea.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "sprite"} );
 		hitArea.on( "click" , toggleSound, false, null, {on: false});
 		// XXX: TODO Toggle sound
 	} else {
 		pic.image = preload.getResult( "music_off_normal" );
-		hitArea.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_off_hover", obj: "pic"} );
-		hitArea.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_off_normal", obj: "pic"} );
+		hitArea.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_off_hover", obj: "sprite"} );
+		hitArea.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_off_normal", obj: "sprite"} );
 		hitArea.on( "click" , toggleSound, false, null, {on: true});
 		// XXX: TODO Toggle sound
 	}
@@ -723,18 +729,34 @@ function drawColoredCircle( color, l, radius, fill ) {
 function drawPicture( pic, loc, width, height, name, keepRatio ) {
 	var img = preload.getResult( pic );
 	var bg = new createjs.Bitmap( img );
+	if ( bg.image == null ){
+		var spriteSheet;
+		if (pic in trySpritesheet.animations){
+			spriteSheet = new createjs.SpriteSheet( trySpritesheet );
+		} else {
+			console.log( pic );
+		}
+		bg = new createjs.Sprite ( spriteSheet,pic );
+	}
     bg.name = name;
     bg.x = loc.x;
     bg.y = loc.y;
+    var bounds = bg.getBounds();
+
     if ( keepRatio ){
-    	bg.scaleX = width/bg.image.width;
-    	bg.scaleY = getNewScaleY( width, bg.image.width, bg.image.height );
+    	bg.scaleX = width/bounds.width;
+    	bg.scaleY = getNewScaleY( width, bounds.width, bounds.height );
     } else {
-	    bg.scaleX = width/bg.image.width;
-	    bg.scaleY = height/bg.image.height;
+	    bg.scaleX = width/bounds.width;
+	    bg.scaleY = height/bounds.height;
 	}
-	bg.width = bg.image.width*bg.scaleX;
-    bg.height = bg.image.height*bg.scaleY;
+	try{
+		bg.width = bounds.width*bg.scaleX;
+    	bg.height = bounds.height*bg.scaleY;	
+	} catch( e ){
+		console.log (e);
+	}
+	
     return bg;
 };
 

@@ -9,7 +9,7 @@
 
 // counter for loading screen 
 loadingProgress = 0;
-
+trySpritesheet = {};
 // Images and Sounds used in the game. This manifest is loaded with preload.
 manifest = [
 	{ src:"img/loading_01.png", 			id:"loading_01" },
@@ -24,10 +24,11 @@ manifest = [
 	{ src:"img/loading_10.png", 			id:"loading_10" },
 	{ src:"img/loading_11.png", 			id:"loading_11" },
 	{ src:"img/loading_12.png", 			id:"loading_12" },
-	{ src:"img/autorennen_header.png", 		id:"header" },
-	{ src:"img/back_header.png", 			id:"back_header" },
-	{ src:"img/back_name.png", 				id:"back_name" },
-	{ src:"img/background.png", 			id:"background" },
+	{ src:"img/spritesheets/try0.png",		id:"try0"},
+	// { src:"img/autorennen_header.png", 		id:"header" },
+	// { src:"img/back_header.png", 			id:"back_header" },
+	// { src:"img/back_name.png", 				id:"back_name" },
+	// { src:"img/background.png", 			id:"background" },
 	// { src:"img/circle_finish_1.png", 		id:"circle_finish_1" },
 	// { src:"img/circle_finish_2.png", 		id:"circle_finish_2" },
 	// { src:"img/circle_normal_1.png", 		id:"circle_normal_1" },
@@ -36,67 +37,68 @@ manifest = [
 	// { src:"img/circle_normal_4.png", 		id:"circle_normal_4" },
 	// { src:"img/checkbox_blank.png",			id:"checkbox_blank" },
 	// { src:"img/checkbox_checked.png", 		id:"checkbox_checked" },
-	{ src:"img/chooseCars.png", 			id:"chooseCars" },
-	{ src:"img/continue_normal.png", 		id:"continue_normal" },
-	{ src:"img/continue_hover.png", 		id:"continue_hover" },
-	{ src:"img/cross_normal.png", 			id:"cross_normal" },
-	{ src:"img/cross_hover.png", 			id:"cross_hover" },
-	{ src:"img/draw.png", 					id:"draw" },
-	{ src:"img/easyMode.png", 				id:"easyMode" },
-	{ src:"img/gotoMenu.png", 				id:"gotoMenu" },
-	{ src:"img/hintBox.png", 				id:"hintBox" },
-	{ src:"img/hud_le_to.png", 				id:"hud0" },
-	{ src:"img/hud_ri_to.png", 				id:"hud1" },
-	{ src:"img/hud_le_bo.png", 				id:"hud2" },
-	{ src:"img/hud_ri_bo.png", 				id:"hud3" },
-	{ src:"img/instruction_building_1.png",	id:"instruction_building_1" },
-	{ src:"img/instruction_building_2.png",	id:"instruction_building_2" },
-	{ src:"img/instruction_building_3.png",	id:"instruction_building_3" },
-	{ src:"img/kilometer.png", 				id:"kilometer" },
-	{ src:"img/left_hover.png", 			id:"left_hover" },
-	{ src:"img/left_normal.png", 			id:"left_normal" },
-	{ src:"img/meter.png", 					id:"meter" },
-	{ src:"img/menu_hover.png",				id:"menu_hover" },
-	{ src:"img/menu_normal.png",			id:"menu_normal" },
-	{ src:"img/moreFinishLine.png",			id:"moreFinishLine" },
-	{ src:"img/music_off_hover.png", 		id:"music_off_hover" },
-	{ src:"img/music_off_normal.png", 		id:"music_off_normal" },
-	{ src:"img/music_on_hover.png", 		id:"music_on_hover" },
-	{ src:"img/music_on_normal.png", 		id:"music_on_normal" },
-	{ src:"img/next_hover.png", 			id:"next_hover" },
-	{ src:"img/next_normal.png", 			id:"next_normal" },
+	// { src:"img/chooseCars.png", 			id:"chooseCars" },
+	// { src:"img/continue_normal.png", 		id:"continue_normal" },
+	// { src:"img/continue_hover.png", 		id:"continue_hover" },
+	// { src:"img/cross_normal.png", 			id:"cross_normal" },
+	// { src:"img/cross_hover.png", 			id:"cross_hover" },
+	// { src:"img/draw.png", 					id:"draw" },
+	// { src:"img/easyMode.png", 				id:"easyMode" },
+	// { src:"img/gotoMenu.png", 				id:"gotoMenu" },
+	// { src:"img/hintBox.png", 				id:"hintBox" },
+	// { src:"img/hud0.png", 				id:"hud0" },
+	// { src:"img/hud1.png", 				id:"hud1" },
+	// { src:"img/hud2.png", 				id:"hud2" },
+	// { src:"img/hud3.png", 				id:"hud3" },
+	// { src:"img/instruction_building_1.png",	id:"instruction_building_1" },
+	// { src:"img/instruction_building_2.png",	id:"instruction_building_2" },
+	// { src:"img/instruction_building_3.png",	id:"instruction_building_3" },
+	// { src:"img/kilometer.png", 				id:"kilometer" },
+	// { src:"img/left_hover.png", 			id:"left_hover" },
+	// { src:"img/left_normal.png", 			id:"left_normal" },
+	// { src:"img/meter.png", 					id:"meter" },
+	// { src:"img/menu_hover.png",				id:"menu_hover" },
+	// { src:"img/menu_normal.png",			id:"menu_normal" },
+	// { src:"img/moreFinishLine.png",			id:"moreFinishLine" },
+	// { src:"img/music_off_hover.png", 		id:"music_off_hover" },
+	// { src:"img/music_off_normal.png", 		id:"music_off_normal" },
+	// { src:"img/music_on_hover.png", 		id:"music_on_hover" },
+	// { src:"img/music_on_normal.png", 		id:"music_on_normal" },
+	// { src:"img/next_hover.png", 			id:"next_hover" },
+	// { src:"img/next_normal.png", 			id:"next_normal" },
 	{ src:"img/numbers.png", 				id:"numbers" },
-	{ src:"img/play_hover.png", 			id:"play_hover" },
-	{ src:"img/play_normal.png", 			id:"play_normal" },
-	{ src:"img/player.png", 				id:"player" },
-	{ src:"img/players.png", 				id:"players" },
-	{ src:"img/question_hover.png",			id:"question_hover" },
-	{ src:"img/question_normal.png",		id:"question_normal" },
-	{ src:"img/reload_hover.png", 			id:"reload_hover" },
-	{ src:"img/reload_normal.png", 			id:"reload_normal" },
-	{ src:"img/restartGame.png", 			id:"restartGame" },
-	{ src:"img/return_hover.png", 			id:"return_hover" },
-	{ src:"img/return_normal.png", 			id:"return_normal" },
-	{ src:"img/right_hover.png", 			id:"right_hover" },
-	{ src:"img/right_normal.png", 			id:"right_normal" },
+	// { src:"img/play_hover.png", 			id:"play_hover" },
+	// { src:"img/play_normal.png", 			id:"play_normal" },
+	// { src:"img/player.png", 				id:"player" },
+	// { src:"img/players.png", 				id:"players" },
+	// { src:"img/question_hover.png",			id:"question_hover" },
+	// { src:"img/question_normal.png",		id:"question_normal" },
+	// { src:"img/reload_hover.png", 			id:"reload_hover" },
+	// { src:"img/reload_normal.png", 			id:"reload_normal" },
+	// { src:"img/restartGame.png", 			id:"restartGame" },
+	// { src:"img/return_hover.png", 			id:"return_hover" },
+	// { src:"img/return_normal.png", 			id:"return_normal" },
+	// { src:"img/right_hover.png", 			id:"right_hover" },
+	// { src:"img/right_normal.png", 			id:"right_normal" },
 	{ src:"img/sprite_car_1.png", 			id:"sprite_car_1" },
 	{ src:"img/sprite_car_2.png", 			id:"sprite_car_2" },
 	{ src:"img/sprite_car_3.png", 			id:"sprite_car_3" },
 	{ src:"img/sprite_car_4.png", 			id:"sprite_car_4" },
-	{ src:"img/sprite_none.png", 			id:"sprite_none" },
-	{ src:"img/trackname_doodoo.png", 		id:"trackname_doodoo" },
-	{ src:"img/trackname_drag.png", 		id:"trackname_drag" },
-	{ src:"img/trackname_lummerland.png", 	id:"trackname_lummerland" },
-	{ src:"img/trackname_own.png", 			id:"trackname_own" },
-	{ src:"img/trackname_spaceship.png", 	id:"trackname_spaceship" },
-	{ src:"img/trackname_wiring.png", 		id:"trackname_wiring" }
-	{ src:"img/tutorial_0.png", 			id:"tutorial_0" },
-	{ src:"img/tutorial_1.png", 			id:"tutorial_1" },
-	{ src:"img/tutorial_2.png", 			id:"tutorial_2" },
-	{ src:"img/tutorial_3.png",				id:"tutorial_3" },
-	{ src:"img/win.png", 					id:"win" },
-	{ src:"img/wins.png", 					id:"wins" },
+	{ src:"img/sprite_none.png", 			id:"sprite_none" }
+	// { src:"img/trackname_doodoo.png", 		id:"trackname_doodoo" },
+	// { src:"img/trackname_drag.png", 		id:"trackname_drag" },
+	// { src:"img/trackname_lummerland.png", 	id:"trackname_lummerland" },
+	// { src:"img/trackname_own.png", 			id:"trackname_own" },
+	// { src:"img/trackname_spaceship.png", 	id:"trackname_spaceship" },
+	// { src:"img/trackname_wiring.png", 		id:"trackname_wiring" }
+	// { src:"img/tutorial_0.png", 			id:"tutorial_0" },
+	// { src:"img/tutorial_1.png", 			id:"tutorial_1" },
+	// { src:"img/tutorial_2.png", 			id:"tutorial_2" },
+	// { src:"img/tutorial_3.png",				id:"tutorial_3" },
+	// { src:"img/win.png", 					id:"win" },
+	// { src:"img/wins.png", 					id:"wins" },
 ];
+
 
 
 
@@ -181,7 +183,7 @@ function handleLoadedStuff( evt ){
 	var progress = loadingProgress/manifest.length*100
 
 	// update loadingpicture
-	var picNumber = Math.ceil( progress / 8 );
+	var picNumber = Math.ceil( progress / 6 );
 	var loadingPic = "loading_" + (picNumber < 10 ? "0"+picNumber: picNumber);
 	if ( picNumber > 0 && picNumber < 13 && !menuContainer.getChildByName( loadingPic )){
 		var pic = drawPicture( loadingPic, new Location(w/2-w*0.8/2, h/2-h*0.8/2), w*0.8, h*0.8, loadingPic, false );	
@@ -193,6 +195,145 @@ function handleLoadedStuff( evt ){
 
 /* Initializes the objects for the menu */
 function prepareMenu() {
+
+	trySpritesheet={
+"images": [preload.getResult("try0")],
+"frames": [
+
+    [2006, 1810, 652, 169], 
+    [2, 2, 1866, 482], 
+    [3008, 1025, 600, 165], 
+    [3008, 1329, 400, 217], 
+    [2, 486, 1000, 603], 
+    [3512, 1671, 100, 60], 
+    [3614, 1671, 100, 60], 
+    [2, 1969, 400, 49], 
+    [3500, 1192, 100, 100], 
+    [3410, 1467, 100, 100], 
+    [3008, 1731, 50, 50], 
+    [1813, 573, 50, 50], 
+    [627, 1900, 136, 61], 
+    [3610, 726, 200, 67], 
+    [2006, 1981, 200, 39], 
+    [1004, 486, 600, 331], 
+    [3610, 604, 203, 120], 
+    [1606, 486, 205, 165], 
+    [1606, 653, 200, 164], 
+    [801, 1695, 200, 150], 
+    [2872, 2, 996, 600], 
+    [2, 1091, 1000, 602], 
+    [1870, 2, 1000, 602], 
+    [404, 1990, 58, 25], 
+    [3818, 604, 50, 79], 
+    [1813, 486, 54, 85], 
+    [3410, 1569, 100, 100], 
+    [3512, 1467, 100, 100], 
+    [3500, 1294, 25, 21], 
+    [2, 1900, 400, 67], 
+    [3285, 1920, 100, 88], 
+    [3612, 897, 100, 88], 
+    [3714, 795, 100, 88], 
+    [3714, 885, 100, 88], 
+    [404, 1900, 221, 88], 
+    [3062, 1920, 221, 88], 
+    [3008, 1548, 400, 181], 
+    [2660, 1810, 400, 181], 
+    [3410, 1671, 100, 45], 
+    [2208, 1981, 100, 39], 
+    [3512, 1569, 100, 100], 
+    [3614, 1467, 100, 100], 
+    [3614, 1569, 100, 100], 
+    [3716, 1467, 100, 100], 
+    [801, 1847, 200, 42], 
+    [3716, 1569, 100, 100], 
+    [3612, 795, 100, 100], 
+    [3714, 975, 50, 79], 
+    [3387, 1920, 51, 81], 
+    [3008, 1192, 490, 135], 
+    [3062, 1731, 377, 187], 
+    [2, 1695, 797, 203], 
+    [3410, 1329, 403, 136], 
+    [3008, 848, 602, 175], 
+    [3008, 604, 600, 242], 
+    [1004, 819, 1000, 600], 
+    [1004, 1421, 1000, 600], 
+    [2006, 606, 1000, 600], 
+    [2006, 1208, 1000, 600], 
+    [3716, 1671, 100, 67], 
+    [3612, 987, 100, 67]
+],
+"animations": {
+    
+        "autorennen_header":[0], 
+        "autorennen_header_bak":[1], 
+        "back_header":[2], 
+        "back_name":[3], 
+        "background":[4], 
+        "checkbox_blank":[5], 
+        "checkbox_checked":[6], 
+        "chooseCars":[7], 
+        "continue_hover":[8], 
+        "continue_normal":[9], 
+        "cross_hover":[10], 
+        "cross_normal":[11], 
+        "draw":[12], 
+        "easyMode":[13], 
+        "gotoMenu":[14], 
+        "hintBox":[15], 
+        "hud0":[16], 
+        "hud1":[17], 
+        "hud2":[18], 
+        "hud3":[19], 
+        "instruction_building_1":[20], 
+        "instruction_building_2":[21], 
+        "instruction_building_3":[22], 
+        "kilometer":[23], 
+        "left_hover":[24], 
+        "left_normal":[25], 
+        "menu_hover":[26], 
+        "menu_normal":[27], 
+        "meter":[28], 
+        "moreFinishLine":[29], 
+        "music_off_hover":[30], 
+        "music_off_normal":[31], 
+        "music_on_hover":[32], 
+        "music_on_normal":[33], 
+        "next_hover":[34], 
+        "next_normal":[35], 
+        "play_hover":[36], 
+        "play_normal":[37], 
+        "player":[38], 
+        "players":[39], 
+        "question_hover":[40], 
+        "question_normal":[41], 
+        "reload_hover":[42], 
+        "reload_normal":[43], 
+        "restartGame":[44], 
+        "return_hover":[45], 
+        "return_normal":[46], 
+        "right_hover":[47], 
+        "right_normal":[48], 
+        "trackname_doodoo":[49], 
+        "trackname_drag":[50], 
+        "trackname_lummerland":[51], 
+        "trackname_own":[52], 
+        "trackname_spaceship":[53], 
+        "trackname_wiring":[54], 
+        "tutorial_0":[55], 
+        "tutorial_1":[56], 
+        "tutorial_2":[57], 
+        "tutorial_3":[58], 
+        "win":[59], 
+        "wins":[60]
+},
+"texturepacker": [
+        "SmartUpdateHash: $TexturePacker:SmartUpdate:cc66e9ae4d72301d15d28ba168db9ac1:cb07f7e8d82b86817b1a4cc0cd9bf659:bed0d16fb1e8021d1fb9a19f08f819cf$",
+        "Created with TexturePacker (http://www.texturepacker.com) for EaselJS"
+]
+}
+
+
+
 
 	// Remove progress bar
 	menuContainer.removeAllChildren();
@@ -217,7 +358,7 @@ function prepareMenu() {
 	menuContainer.addChild( obj );
 
 	// display Header
-	obj = drawPicture( "header", new Location(w/2-w*0.35/2, 0.0666*h), w*0.35, -1, "header", true );
+	obj = drawPicture( "autorennen_header", new Location(w/2-w*0.35/2, 0.0666*h), w*0.35, -1, "autorennen_header", true );
 	menuContainer.addChild( obj );
 	
 	// display sound on/off symbol with clickevent
@@ -230,8 +371,8 @@ function prepareMenu() {
 	// s.alpha = 0.01;
 	// s.name = "music_toggle_hitArea";
 	// s.cursor = "pointer";
-	// s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "pic"} );
-	// s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "pic"} );
+	// s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "sprite"} );
+	// s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "sprite"} );
 	// s.on( "click" , toggleSound, false, null, {img: "music_off_normal"});
 	// HUDContainer.addChild( s );
 
@@ -244,8 +385,8 @@ function prepareMenu() {
 	s.alpha = 0.01;
 	s.name = "tutorialButton_hitArea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "tutorialButton", img: "question_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "tutorialButton", img: "question_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "tutorialButton", img: "question_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "tutorialButton", img: "question_normal", obj: "sprite"} );
 	s.on( "click" , function( evt ){
 		var content = {};
 		content.type = HINT_TUTORIAL;
@@ -261,8 +402,8 @@ function prepareMenu() {
 	s = new createjs.Shape( g );
 	s.alpha = 0.01;
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_track", img: "right_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_track", img: "right_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_track", img: "right_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_track", img: "right_normal", obj: "sprite"} );
 	s.on( "click" , changeTrack, false, null, {dir: "right"});
 	menuContainer.addChild( s );
 	// trackMenu: display left arrow
@@ -273,8 +414,8 @@ function prepareMenu() {
 	s = new createjs.Shape( g );
 	s.alpha = 0.01;
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_track", img: "left_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_track", img: "left_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_track", img: "left_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_track", img: "left_normal", obj: "sprite"} );
 	s.on( "click" , changeTrack, false, null, {dir: "left"});
 	menuContainer.addChild( s );
 	
@@ -300,8 +441,8 @@ function prepareMenu() {
 	s.alpha = 0.01;
 	s.name = "right_normal_car_0_hitArea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_0", img: "right_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_0", img: "right_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_0", img: "right_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_0", img: "right_normal", obj: "sprite"} );
 	s.on( "click", changeCar, false, null, {target: "car_0", dir: "right", no:0});
 	menuContainer.addChild( s );
 
@@ -314,8 +455,8 @@ function prepareMenu() {
 	s.alpha = 0.01;
 	s.name = "left_normal_car_0_hitArea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car_0", img: "left_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car_0", img: "left_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car_0", img: "left_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car_0", img: "left_normal", obj: "sprite"} );
 	s.on( "click", changeCar, false, null, {target: "car_0", dir: "left", no:0});
 	menuContainer.addChild( s );
 	
@@ -328,8 +469,8 @@ function prepareMenu() {
 	s.alpha = 0.01;
 	s.name = "right_normal_car_1_hitArea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_1", img: "right_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_1", img: "right_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_1", img: "right_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_1", img: "right_normal", obj: "sprite"} );
 	s.on( "click", changeCar, false, null, {target: "car_1", dir: "right", no:1});
 	menuContainer.addChild( s );
 
@@ -342,8 +483,8 @@ function prepareMenu() {
 	s.alpha = 0.01;
 	s.name = "left_normal_car_1_hitArea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car_1", img: "left_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car_1", img: "left_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car_1", img: "left_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car_1", img: "left_normal", obj: "sprite"} );
 	s.on( "click", changeCar, false, null, {target: "car_1", dir: "left", no:1});
 	menuContainer.addChild( s );
 	
@@ -356,8 +497,8 @@ function prepareMenu() {
 	s.alpha = 0.01;
 	s.name = "right_normal_car_2_hitArea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_2", img: "right_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_2", img: "right_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_2", img: "right_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_2", img: "right_normal", obj: "sprite"} );
 	s.on( "click", changeCar, false, null, {target: "car_2", dir: "right", no:2});
 	menuContainer.addChild( s );
 
@@ -370,8 +511,8 @@ function prepareMenu() {
 	s.alpha = 0.01;
 	s.name = "left_normal_car_2_hitArea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car_2", img: "left_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car_2", img: "left_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car_2", img: "left_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car_2", img: "left_normal", obj: "sprite"} );
 	s.on( "click", changeCar, false, null, {target: "car_2", dir: "left", no:2});
 	menuContainer.addChild( s );
 
@@ -384,8 +525,8 @@ function prepareMenu() {
 	s.alpha = 0.01;
 	s.name = "right_normal_car_3_hitArea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_3", img: "right_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_3", img: "right_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "right_normal_car_3", img: "right_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "right_normal_car_3", img: "right_normal", obj: "sprite"} );
 	s.on( "click", changeCar, false, null, {target: "car_3", dir: "right", no:3});
 	menuContainer.addChild( s );
 
@@ -398,8 +539,8 @@ function prepareMenu() {
 	s.alpha = 0.01;
 	s.name = "left_normal_car_3_hitArea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car_3", img: "left_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car_3", img: "left_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "left_normal_car_3", img: "left_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "left_normal_car_3", img: "left_normal", obj: "sprite"} );
 	s.on( "click", changeCar, false, null, {target: "car_3", dir: "left", no:3});
 	menuContainer.addChild( s );
 
@@ -411,8 +552,8 @@ function prepareMenu() {
 	s = new createjs.Shape( g );
 	s.alpha = 0.01;
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: menuContainer, target: "play_normal", img: "play_normal", obj: "sprite"} );
 	s.on( "click", function( evt ){
 		
 		if ( isHintDisplayed ) 
@@ -664,8 +805,8 @@ function initScore() {
 	s.alpha = 0.01;
 	s.name = "menuButton_hitArea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: HUDScoreContainer, target: "menuButton", img: "menu_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: HUDScoreContainer, target: "menuButton", img: "menu_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: HUDScoreContainer, target: "menuButton", img: "menu_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: HUDScoreContainer, target: "menuButton", img: "menu_normal", obj: "sprite"} );
 	s.on( "click" , function( evt ){
 		var content = {};
 		content.type = HINT_MENU;

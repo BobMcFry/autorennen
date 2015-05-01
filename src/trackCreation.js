@@ -147,8 +147,8 @@ function buildTrack(){
 	s.alpha = 0.01;
 	s.name = "doneButton_hitarea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_normal", obj: "sprite"} );
 	s.on( "click", function ( evt ){
 
 		if ( isHintDisplayed ) 
@@ -256,8 +256,8 @@ function setStartPoints(){
 	s.alpha = 0.01;
 	s.name = "doneButton_hitarea";
 	s.cursor = "pointer";
-	s.on( "mouseover", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_hover", obj: "pic"} );
-	s.on( "mouseout", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_normal", obj: "pic"} );
+	s.on( "mouseover", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: buildingContainer, target: "doneButton", img: "next_normal", obj: "sprite"} );
 	s.on( "click", function ( evt ){
 		
 		if ( isHintDisplayed ) 
