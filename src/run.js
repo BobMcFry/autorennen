@@ -645,7 +645,6 @@ function isHUDUnderPoint( loc ){
 	return false;
 }
 
-//XXX: TODO
 /* Toggles Sound on of */
 function toggleSound( evt, data ) {
 	// XXX: Maybe not useful...turning of music during hint, why not?
@@ -660,13 +659,15 @@ function toggleSound( evt, data ) {
 		hitArea.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "sprite"} );
 		hitArea.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "sprite"} );
 		hitArea.on( "click" , toggleSound, false, null, {on: false});
-		// XXX: TODO Toggle sound
+		// resume sound
+		soundInstance.paused = false;
 	} else {
 		pic.image = preload.getResult( "music_off_normal" );
 		hitArea.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_off_hover", obj: "sprite"} );
 		hitArea.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_off_normal", obj: "sprite"} );
 		hitArea.on( "click" , toggleSound, false, null, {on: true});
-		// XXX: TODO Toggle sound
+		// pause sound
+		soundInstance.paused = true;
 	}
 };
 

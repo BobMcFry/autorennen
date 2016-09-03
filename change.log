@@ -1,0 +1,6 @@
+1.0.1 
+- Bugfix: Cars now don't win directly after starting.
+- Bugfix: Restarting the game created problems with the player information that
+          caused the game to break at some point.
+- Removed some code that was not used anymore.
+

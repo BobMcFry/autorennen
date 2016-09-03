@@ -10,6 +10,7 @@
 // counter for loading screen 
 loadingProgress = 0;
 trySpritesheet = {};
+
 // Images and Sounds used in the game. This manifest is loaded with preload.
 manifest = [
 	{ src:"img/loading_01.png", 			id:"loading_01" },
@@ -84,7 +85,7 @@ manifest = [
 	{ src:"img/sprite_car_2.png", 			id:"sprite_car_2" },
 	{ src:"img/sprite_car_3.png", 			id:"sprite_car_3" },
 	{ src:"img/sprite_car_4.png", 			id:"sprite_car_4" },
-	{ src:"img/sprite_none.png", 			id:"sprite_none" }
+	{ src:"img/sprite_none.png", 			id:"sprite_none" },
 	// { src:"img/trackname_doodoo.png", 		id:"trackname_doodoo" },
 	// { src:"img/trackname_drag.png", 		id:"trackname_drag" },
 	// { src:"img/trackname_lummerland.png", 	id:"trackname_lummerland" },
@@ -97,6 +98,7 @@ manifest = [
 	// { src:"img/tutorial_3.png",				id:"tutorial_3" },
 	// { src:"img/win.png", 					id:"win" },
 	// { src:"img/wins.png", 					id:"wins" },
+	{ src:"sound/music.ogg", id: "music" }
 ];
 
 
@@ -164,7 +166,9 @@ function init() {
 	/* ************** */
 
 	preload = new createjs.LoadQueue( false );
-
+	createjs.Sound.alternateExtensions = ["mp3"];
+	// set plugins
+	preload.installPlugin(createjs.Sound);
 	preload.on( "fileload", handleLoadedStuff );
 	preload.on( "complete", prepareMenu );
 	preload.loadManifest( manifest );
@@ -195,6 +199,11 @@ function handleLoadedStuff( evt ){
 
 /* Initializes the objects for the menu */
 function prepareMenu() {
+
+	// play sound
+	soundInstance = createjs.Sound.play("music");
+	// loop infinitely
+	soundInstance.loop = -1;
 
 	trySpritesheet={
 "images": [preload.getResult("try0")],
@@ -362,19 +371,19 @@ function prepareMenu() {
 	menuContainer.addChild( obj );
 	
 	// display sound on/off symbol with clickevent
-	// XXX: No music here right now...
-	// obj = drawPicture( "music_on_normal", new Location(w-w*0.07, h*HUD_SIZE), w*0.07, -1, "music_toggle", true );
-	// HUDContainer.addChild( obj );
-	// g = new createjs.Graphics();
-	// g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
-	// s = new createjs.Shape( g );
-	// s.alpha = 0.01;
-	// s.name = "music_toggle_hitArea";
-	// s.cursor = "pointer";
-	// s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "sprite"} );
-	// s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "sprite"} );
-	// s.on( "click" , toggleSound, false, null, {img: "music_off_normal"});
-	// HUDContainer.addChild( s );
+	obj = drawPicture( "music_on_normal", new Location(w-w*0.14, h*HUD_SIZE), w*0.07, -1, "music_toggle", true );
+	HUDContainer.addChild( obj );
+	g = new createjs.Graphics();
+	g.beginFill("#f00").drawRect( obj.x, obj.y, obj.width, obj.height ).endFill();
+	s = new createjs.Shape( g );
+	s.alpha = 0.01;
+	s.name = "music_toggle_hitArea";
+	s.cursor = "pointer";
+	s.on( "mouseover", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_hover", obj: "sprite"} );
+	s.on( "mouseout", hover, false, null, {container: HUDContainer, target: "music_toggle", img: "music_on_normal", obj: "sprite"} );
+	s.on( "click" , toggleSound, false, null, {img: "music_off_normal"});
+	HUDContainer.addChild( s );
+
 
 	// display Tutorial
 	obj = drawPicture( "question_normal", new Location(w-w*0.07, h*HUD_SIZE), w*0.07, -1, "tutorialButton", true );
@@ -814,3 +823,4 @@ function initScore() {
 	});
 	HUDScoreContainer.addChild( s );
 };
+
