@@ -166,7 +166,7 @@ function init() {
 	/* ************** */
 
 	preload = new createjs.LoadQueue( false );
-	// createjs.Sound.alternateExtensions = ["mp3"];
+	createjs.Sound.alternateExtensions = ["mp3"];
 	// set plugins
 	preload.installPlugin(createjs.Sound);
 	preload.on( "fileload", handleLoadedStuff );
