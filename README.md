@@ -11,7 +11,7 @@ Credits:
 Thanks to everyone who helped me making this game!
 Especially to the following people:
 * Adrian Barfuss - First Chiefmaster of Idea Providing & Car Designer
-* Wolfgang Stammer - Contemporary Music Director (musik will follow?!)
+* Wolfgang Stammer - Contemporary Music Director
 
 Tools used:
 SublimeText 2, Inkscape, Google Chrome, EaselJS
